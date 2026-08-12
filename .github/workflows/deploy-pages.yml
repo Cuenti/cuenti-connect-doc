@@ -21,7 +21,6 @@ jobs:
       PUBLIC_ASSET_PREFIX: /cuenti-connect-doc/
       PUBLIC_PROXY_BASE_URL: https://cuenti-connect.cuenti.co
       PUBLIC_TRY_IT_ENABLED: 'true'
-      NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/cuenti-npmrc
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,6 +39,7 @@ jobs:
       - name: Configure private registry
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/cuenti-npmrc
         run: |
           test -n "$NPM_TOKEN"
           printf '%s\n' '@cuenti-dna:registry=https://package-manager.cuenti.co/' > "$NPM_CONFIG_USERCONFIG"
