@@ -1,0 +1,77 @@
+name: Deploy developer portal to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_ASSET_PREFIX: /cuenti-connect-doc/
+      PUBLIC_PROXY_BASE_URL: https://cuenti-connect.cuenti.co
+      PUBLIC_TRY_IT_ENABLED: 'true'
+      NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/cuenti-npmrc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.3.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Configure private registry
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          test -n "$NPM_TOKEN"
+          printf '%s\n' '@cuenti-dna:registry=https://package-manager.cuenti.co/' > "$NPM_CONFIG_USERCONFIG"
+          case "$NPM_TOKEN" in
+            *:_authToken=*) printf '%s\n' "$NPM_TOKEN" >> "$NPM_CONFIG_USERCONFIG" ;;
+            *) printf '//package-manager.cuenti.co/:_authToken=%s\n' "$NPM_TOKEN" >> "$NPM_CONFIG_USERCONFIG" ;;
+          esac
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check types
+        run: pnpm run typecheck
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

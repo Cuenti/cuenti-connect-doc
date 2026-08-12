@@ -67,9 +67,11 @@ describe('request builder', () => {
     expect(headers.get('X-Id-Empleado')).toBe(credentials.employee);
     expect(headers.get('X-gtm')).toBe('GMT-0500');
     expect(headers.get('Authorization')).toBe('Bearer bearer-secret');
-    expect(request.curl).toContain('X-Auth-Token-empresa: <empresa>');
+    expect(request.curl).toContain('X-Auth-Token-empresa: {{id_empresa}}');
     expect(request.curl).toContain('X-gtm: GMT-0500');
-    expect(request.curl).toContain('Authorization: Bearer <token>');
+    expect(request.curl).toContain('Authorization: Bearer {{token}}');
+    expect(request.curl).toContain('X-Auth-Token-sucursal: {{id_sucursal}}');
+    expect(request.curl).toContain('X-Id-Empleado: {{id_empleado}}');
     expect(request.curl).not.toContain('\n+');
     expect(request.curl).not.toContain(credentials.company);
     expect(request.curl).not.toContain('bearer-secret');

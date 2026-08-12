@@ -12,6 +12,7 @@ declare module '*.svg?react' {
 interface ImportMetaEnv {
   readonly PUBLIC_PROXY_BASE_URL?: string;
   readonly PUBLIC_TRY_IT_ENABLED?: string;
+  readonly PUBLIC_ASSET_PREFIX?: string;
 }
 
 interface ImportMeta {

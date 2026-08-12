@@ -58,11 +58,11 @@ const headerValues = (credentials: Credentials) => ({
 });
 
 const headerPlaceholders: Record<string, string> = {
-  'X-Auth-Token-empresa': '<empresa>',
+  'X-Auth-Token-empresa': '{{id_empresa}}',
   'X-gtm': DEFAULT_TIMEZONE,
-  Authorization: 'Bearer <token>',
-  'X-Auth-Token-sucursal': '<id-sucursal>',
-  'X-Id-Empleado': '<id-empleado>',
+  Authorization: 'Bearer {{token}}',
+  'X-Auth-Token-sucursal': '{{id_sucursal}}',
+  'X-Id-Empleado': '{{id_empleado}}',
   'Content-Type': 'application/json',
 };
 

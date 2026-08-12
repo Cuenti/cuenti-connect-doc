@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 FROM node:22-alpine AS build
 
-WORKDIR /workspace/apps/developer-portal
+WORKDIR /workspace/developer-portal
 
 RUN corepack enable
 
-COPY apps/developer-portal/package.json apps/developer-portal/pnpm-lock.yaml apps/developer-portal/.npmrc ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 
 RUN --mount=type=secret,id=NPM_TOKEN \
   auth="$(cat /run/secrets/NPM_TOKEN)" \
@@ -17,8 +17,7 @@ RUN --mount=type=secret,id=NPM_TOKEN \
   && pnpm install --frozen-lockfile \
   && rm -f .npmrc
 
-COPY apps/developer-portal/ ./
-COPY contracts /workspace/contracts
+COPY . ./
 
 ARG PUBLIC_PROXY_BASE_URL
 ARG PUBLIC_TRY_IT_ENABLED=true
@@ -30,8 +29,8 @@ RUN test -n "${PUBLIC_PROXY_BASE_URL}" \
 
 FROM nginx:1.29-alpine
 
-COPY apps/developer-portal/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /workspace/apps/developer-portal/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /workspace/developer-portal/dist /usr/share/nginx/html
 
 EXPOSE 8080
 

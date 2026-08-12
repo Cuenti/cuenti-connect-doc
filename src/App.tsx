@@ -539,11 +539,11 @@ const exampleCurl = (endpoint: EndpointDoc, curlBaseUrl: string) => {
     ]),
   );
   draft.credentials = {
-    company: '<empresa>',
+    company: '{{id_empresa}}',
     timezone: DEFAULT_TIMEZONE,
-    token: '<token>',
-    branch: '<id-sucursal>',
-    employee: '<id-empleado>',
+    token: '{{token}}',
+    branch: '{{id_sucursal}}',
+    employee: '{{id_empleado}}',
   };
   try {
     return buildRequest(endpoint, draft, curlBaseUrl).curl;
@@ -566,7 +566,7 @@ const EndpointDetail = ({
   <article className="endpoint-detail">
     <header className="endpoint-hero">
       <nav className="breadcrumb" aria-label="Ubicación">
-        <span>Guía de integración</span>
+        <span>Documentación Cuenti Connect</span>
         <span aria-hidden="true">/</span>
         <span>{endpoint.category}</span>
       </nav>
@@ -959,7 +959,7 @@ const App = () => {
               size="md"
               aria-label="Cuenti"
             />
-            <span>Guía de integración</span>
+            <span>Documentación Cuenti Connect</span>
           </div>
           <div className="sidebar-intro">
             <p className="eyebrow">Índice implementado</p>

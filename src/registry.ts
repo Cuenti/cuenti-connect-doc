@@ -1,4 +1,4 @@
-import rawRegistry from '../../../contracts/j4/endpoints.json';
+import rawRegistry from '../contracts/j4/endpoints.json';
 import {
   type CachePolicy,
   type CanonicalRegistry,

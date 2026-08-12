@@ -287,7 +287,9 @@ describe('documentation application', () => {
 
   it('renders the visible controls and functional endpoint documentation in Spanish', () => {
     render(<App />);
-    expect(screen.getAllByText('Guía de integración').length).toBeGreaterThan(
+    expect(
+      screen.getAllByText('Documentación Cuenti Connect').length,
+    ).toBeGreaterThan(
       0,
     );
     expect(screen.queryByText('Documentación API ERP')).not.toBeInTheDocument();

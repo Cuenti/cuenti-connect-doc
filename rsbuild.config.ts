@@ -7,6 +7,9 @@ export default defineConfig({
   html: {
     title: 'Guía de integración de Cuenti',
   },
+  output: {
+    assetPrefix: process.env.PUBLIC_ASSET_PREFIX ?? '/',
+  },
   plugins: [
     pluginReact({
       reactCompiler: true,
