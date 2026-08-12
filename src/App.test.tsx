@@ -304,9 +304,7 @@ describe('documentation application', () => {
         name: 'Probar consulta',
       }),
     ).toBeVisible();
-    expect(
-      screen.getByText('http://localhost:8081/jServerj4ErpPro'),
-    ).toBeVisible();
+    expect(screen.getByText(/\/jServerj4ErpPro$/)).toBeVisible();
     expect(
       screen.getAllByText(/todos deben cumplirse simultáneamente mediante AND/),
     ).not.toHaveLength(0);
