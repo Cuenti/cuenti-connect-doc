@@ -16,7 +16,12 @@ import { useEffect, useState } from 'react';
 import { formatJsonText, JsonCodeBlock } from './JsonCodeBlock';
 import type { EndpointDoc, EndpointPreset, ParameterSpec } from './model';
 import type { Credentials } from './request';
-import { buildRequest, defaultDraft, hasRequiredCredentials } from './request';
+import {
+  buildCurl,
+  buildRequest,
+  defaultDraft,
+  hasRequiredCredentials,
+} from './request';
 
 interface TryItProps {
   endpoint: EndpointDoc;
@@ -171,10 +176,9 @@ export const TryIt = ({
 
   const copyCurl = async () => {
     try {
-      const request = buildRequest(endpoint, draft, curlBaseUrl, {
-        includeCredentials: true,
-      });
-      await navigator.clipboard.writeText(request.curl);
+      await navigator.clipboard.writeText(
+        buildCurl(endpoint, draft, curlBaseUrl),
+      );
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch (reason) {

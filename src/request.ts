@@ -23,6 +23,7 @@ export interface BuiltRequest {
 
 export interface CurlOptions {
   includeCredentials?: boolean;
+  preservePathTemplates?: boolean;
 }
 
 export const DEFAULT_TIMEZONE = 'GMT-0500';
@@ -133,10 +134,17 @@ export const buildRequest = (
   let path = endpoint.path;
   for (const parameter of endpoint.pathParams) {
     const value = valueFor(draft.path, parameter);
-    path = path.replace(`{${parameter.name}}`, encodeURIComponent(value));
+    const pathValue =
+      curlOptions.preservePathTemplates && value === `{{${parameter.name}}}`
+        ? value
+        : encodeURIComponent(value);
+    path = path.replace(`{${parameter.name}}`, pathValue);
   }
 
-  if (/\{[^}]+\}/.test(path))
+  const pathWithoutCurlTemplates = curlOptions.preservePathTemplates
+    ? path.replace(/\{\{[^}]+\}\}/g, '')
+    : path;
+  if (/\{[^}]+\}/.test(pathWithoutCurlTemplates))
     errors.push('Faltan parámetros obligatorios en la ruta.');
 
   const query = new URLSearchParams();
@@ -215,6 +223,42 @@ export const buildRequest = (
   }
 
   return { url, init, curl: curlParts.join(' \\\n  ') };
+};
+
+const placeholderCredentials: Credentials = {
+  company: '{{id_empresa}}',
+  timezone: DEFAULT_TIMEZONE,
+  token: '{{token}}',
+  branch: '{{id_sucursal}}',
+  employee: '{{id_empleado}}',
+};
+
+export const buildCurl = (
+  endpoint: EndpointDoc,
+  draft: RequestDraft,
+  baseUrl: string,
+) => {
+  const includeCredentials = hasRequiredCredentials(draft.credentials);
+  const path = Object.fromEntries(
+    endpoint.pathParams.map((parameter) => {
+      const value = draft.path[parameter.name]?.trim() ?? '';
+      const isDocumentaryMarker =
+        !value ||
+        value === `<${parameter.name}>` ||
+        value === `{{${parameter.name}}}`;
+      return [parameter.name, isDocumentaryMarker ? `{{${parameter.name}}}` : value];
+    }),
+  );
+  const curlDraft = {
+    ...draft,
+    path,
+    credentials: includeCredentials ? draft.credentials : placeholderCredentials,
+  };
+
+  return buildRequest(endpoint, curlDraft, baseUrl, {
+    includeCredentials,
+    preservePathTemplates: true,
+  }).curl;
 };
 
 export const defaultDraft = (endpoint: EndpointDoc): RequestDraft => ({

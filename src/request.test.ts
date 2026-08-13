@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { endpointFromLocation, endpointUrl } from './navigation';
 import { registry } from './registry';
-import { buildRequest, defaultDraft, hasRequiredCredentials } from './request';
+import {
+  buildCurl,
+  buildRequest,
+  defaultDraft,
+  hasRequiredCredentials,
+} from './request';
 
 const credentials = {
   company: 'tenant-secret',
@@ -98,6 +103,74 @@ describe('request builder', () => {
     );
     expect(request.curl).toContain(`X-Id-Empleado: ${credentials.employee}`);
     expect(request.curl).toContain('Authorization: Bearer bearer-secret');
+  });
+
+  it('builds an anonymous curl with exact Postman placeholders', () => {
+    const endpoint = registry.endpoints.find(
+      (item) => item.id === 'consultaProductoPaginadaMCP',
+    );
+    if (!endpoint) throw new Error('Product endpoint was not found.');
+    const draft = defaultDraft(endpoint);
+    draft.path = { id_sucursal: '3', pagina: '0' };
+
+    const curl = buildCurl(endpoint, draft, 'https://proxy.example.test');
+
+    expect(curl).toContain('X-Auth-Token-empresa: {{id_empresa}}');
+    expect(curl).toContain('X-Auth-Token-sucursal: {{id_sucursal}}');
+    expect(curl).toContain('X-Id-Empleado: {{id_empleado}}');
+    expect(curl).toContain('Authorization: Bearer {{token}}');
+    expect(curl).toContain('X-gtm: GMT-0500');
+  });
+
+  it('preserves Postman path variables instead of encoding documentary markers', () => {
+    const endpoint = registry.endpoints.find(
+      (item) => item.id === 'consultaProductoPaginadaMCP',
+    );
+    if (!endpoint) throw new Error('Product endpoint was not found.');
+    const draft = defaultDraft(endpoint);
+    draft.path = {
+      id_sucursal: '<id_sucursal>',
+      pagina: '<pagina>',
+    };
+
+    const curl = buildCurl(endpoint, draft, 'https://proxy.example.test');
+
+    expect(curl).toContain(
+      '/consultaProductoPaginadaMCP/{{id_sucursal}}/{{pagina}}',
+    );
+    expect(curl).not.toMatch(/%3C|%3E|%7B|%7D/i);
+  });
+
+  it('keeps URL encoding enabled for real request path values', () => {
+    const endpoint = registry.endpoints.find(
+      (item) => item.id === 'consultaProductoPaginadaMCP',
+    );
+    if (!endpoint) throw new Error('Product endpoint was not found.');
+    const draft = defaultDraft(endpoint);
+    draft.path = { id_sucursal: 'branch/with space', pagina: '0' };
+    draft.credentials = credentials;
+
+    const request = buildRequest(endpoint, draft, 'https://proxy.example.test');
+
+    expect(request.url).toContain(
+      '/consultaProductoPaginadaMCP/branch%2Fwith%20space/0',
+    );
+  });
+
+  it('builds an authenticated curl from in-memory credentials', () => {
+    const endpoint = registry.endpoints.find(
+      (item) => item.id === 'consultaProductoPaginadaMCP',
+    );
+    if (!endpoint) throw new Error('Product endpoint was not found.');
+    const draft = defaultDraft(endpoint);
+    draft.path = { id_sucursal: '3', pagina: '0' };
+    draft.credentials = credentials;
+
+    const curl = buildCurl(endpoint, draft, 'https://proxy.example.test');
+
+    expect(curl).toContain(`X-Auth-Token-empresa: ${credentials.company}`);
+    expect(curl).toContain('Authorization: Bearer bearer-secret');
+    expect(curl).not.toContain('{{token}}');
   });
 
   it('builds a POST with global headers and exactly one Bearer prefix', () => {

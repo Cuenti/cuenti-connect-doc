@@ -44,11 +44,39 @@ describe('documentation application', () => {
   it('renders the Cuenti logo in the sidebar', () => {
     render(<App />);
 
-    expect(document.querySelector('.sidebar .sidebar-logo')).toBeVisible();
-    expect(document.querySelector('.sidebar .sidebar-logo')).toHaveAttribute(
-      'aria-label',
-      'Cuenti',
+    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).toBeVisible();
+    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).toHaveAttribute(
+      'aria-hidden',
+      'true',
     );
+  });
+
+  it('collapses and expands the desktop sidebar accessibly', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Contraer barra lateral' }),
+    );
+
+    expect(document.querySelector('.app-shell')).toHaveClass(
+      'sidebar-collapsed',
+    );
+    expect(document.querySelector('.sidebar-isotype')).toBeVisible();
+    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Expandir barra lateral' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Expandir barra lateral' }),
+    );
+
+    expect(document.querySelector('.app-shell')).not.toHaveClass(
+      'sidebar-collapsed',
+    );
+    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).toBeVisible();
   });
 
   it('renders a collapsed index and opens endpoint groups on demand', async () => {
@@ -313,13 +341,68 @@ describe('documentation application', () => {
       'GMT-0500',
     );
     await user.click(
-      within(dialog).getByRole('button', { name: 'Usar configuración' }),
+      within(dialog).getByRole('button', { name: 'Aceptar' }),
     );
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /Credenciales/i }));
     expect(screen.getByLabelText('Empresa *')).toHaveValue('empresa-1');
     expect(screen.getByLabelText('Token *')).toHaveValue('token-1');
+  });
+
+  it('copies the top curl anonymously and with active in-memory credentials', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const quickStart = screen
+      .getByRole('heading', { name: 'Ejecuta esta operación' })
+      .closest('section');
+    expect(quickStart).not.toBeNull();
+    expect(within(quickStart as HTMLElement).getByText(/\{\{id_empresa\}\}/)).toBeVisible();
+    expect(quickStart).toHaveTextContent('Bearer {{token}}');
+    expect(within(quickStart as HTMLElement).getByText(/GMT-0500/)).toBeVisible();
+
+    await user.click(
+      within(quickStart as HTMLElement).getByRole('button', {
+        name: 'Copiar curl',
+      }),
+    );
+    expect(await navigator.clipboard.readText()).toContain(
+      'X-Auth-Token-empresa: {{id_empresa}}',
+    );
+
+    await user.click(screen.getByRole('button', { name: /Credenciales/i }));
+    const dialog = screen.getByRole('dialog', {
+      name: 'Contexto y credenciales',
+    });
+    await user.type(within(dialog).getByLabelText('Empresa *'), 'empresa-ui');
+    await user.type(within(dialog).getByLabelText('Token *'), 'token-ui');
+    await user.type(within(dialog).getByLabelText('Sucursal *'), '3');
+    await user.type(within(dialog).getByLabelText('Empleado *'), '9');
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Aceptar' }),
+    );
+
+    expect(
+      within(quickStart as HTMLElement).getByText(
+        'El comando usa la configuración actual, almacenada solo en memoria.',
+      ),
+    ).toBeVisible();
+    expect(
+      within(quickStart as HTMLElement).queryByText('Con credenciales activas'),
+    ).not.toBeInTheDocument();
+    await user.click(
+      within(quickStart as HTMLElement).getByRole('button', {
+        name: /Curl copiado|Copiar curl/,
+      }),
+    );
+    expect(await navigator.clipboard.readText()).toContain(
+      'X-Auth-Token-empresa: empresa-ui',
+    );
+    expect(await navigator.clipboard.readText()).toContain(
+      'Authorization: Bearer token-ui',
+    );
+    expect(await navigator.clipboard.readText()).not.toContain('{{token}}');
   });
 
   it('offers the public MCP skill with installation instructions', async () => {
@@ -380,7 +463,7 @@ describe('documentation application', () => {
     await user.type(within(dialog).getByLabelText('Sucursal *'), '1');
     await user.type(within(dialog).getByLabelText('Empleado *'), '7');
     await user.click(
-      within(dialog).getByRole('button', { name: 'Usar configuración' }),
+      within(dialog).getByRole('button', { name: 'Aceptar' }),
     );
 
     expect(sendButton).toBeEnabled();
@@ -434,6 +517,15 @@ describe('documentation application', () => {
         'id_producto debe ser mayor que cero cuando se proporciona.',
       ),
     ).toBeVisible();
+  });
+
+  it('presents preset options as readable fields instead of JSON', () => {
+    render(<App />);
+
+    expect(screen.getAllByText('Valores de la ruta').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Filtros').length).toBeGreaterThan(0);
+    expect(document.querySelector('.preset-docs .json-code')).not.toBeInTheDocument();
+    expect(document.querySelector('.preset-docs .preset-value-list')).toBeInTheDocument();
   });
 
   it('enables interactive requests by default only in development', () => {

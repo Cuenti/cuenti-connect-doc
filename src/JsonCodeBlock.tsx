@@ -19,7 +19,7 @@ export const formatJsonText = (text: string) => {
   }
 };
 
-const highlightJson = (text: string) => {
+export const highlightJson = (text: string) => {
   const parts: ReactNode[] = [];
   let cursor = 0;
 

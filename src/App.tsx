@@ -9,6 +9,7 @@ import {
 import { CloseX } from '@cuenti-dna/react/icons';
 import { Input } from '@cuenti-dna/react/input';
 import { Label } from '@cuenti-dna/react/label';
+import { CuentiIsotype } from '@cuenti-dna/react/isotype';
 import { CuentiLogo } from '@cuenti-dna/react/logo';
 import { Switch } from '@cuenti-dna/react/switch';
 import {
@@ -26,6 +27,7 @@ import {
 } from 'react';
 import './App.css';
 import { CatalogGuide } from './CatalogGuide';
+import { CurlCodeBlock } from './CurlCodeBlock';
 import { McpGuide } from './McpGuide';
 import {
   getFieldDescription,
@@ -49,7 +51,7 @@ import {
 } from './navigation';
 import { registry } from './registry';
 import {
-  buildRequest,
+  buildCurl,
   type Credentials,
   DEFAULT_TIMEZONE,
   defaultDraft,
@@ -143,6 +145,25 @@ const MoonIcon = ({ active }: { active: boolean }) => (
     <path d="M20.7 15.1A8.5 8.5 0 0 1 8.9 3.3 8.5 8.5 0 1 0 20.7 15Z" />
   </svg>
 );
+
+const NavigationIcon = ({ kind }: { kind: string }) => {
+  const paths: Record<string, React.ReactNode> = {
+    mcp: <><circle cx="12" cy="12" r="3" /><path d="M12 2v4m0 12v4M2 12h4m12 0h4M5 5l3 3m8 8 3 3m0-14-3 3M8 16l-3 3" /></>,
+    catalog: <><path d="M4 5h16v14H4z" /><path d="M8 9h8M8 13h5" /></>,
+    'Productos e inventario': <><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" /><path d="m4 7.5 8 4.5 8-4.5M12 12v9" /></>,
+    'Categorías e impuestos': <><path d="M4 4h7v7H4zM13 13h7v7h-7z" /><path d="m14 4 6 6M20 4l-6 6M4 16h7" /></>,
+    Terceros: <><circle cx="9" cy="8" r="3" /><circle cx="17" cy="10" r="2" /><path d="M3 20c0-4 2-6 6-6s6 2 6 6M15 15c3 0 5 2 5 5" /></>,
+    Maestros: <><path d="M5 3h14v18H5z" /><path d="M9 7h6M9 11h6M9 15h4" /></>,
+    'Facturas e historiales': <><path d="M5 3h14v18l-3-2-4 2-4-2-3 2z" /><path d="M9 8h6M9 12h6" /></>,
+    Cartera: <><path d="M3 7h18v12H3z" /><path d="M3 10h18M16 15h2" /></>,
+    Comandas: <><path d="M6 3h12v18H6z" /><path d="M9 8h6M9 12h6M9 16h4" /></>,
+  };
+  return (
+    <svg aria-hidden="true" className="navigation-icon" viewBox="0 0 24 24">
+      {paths[kind] ?? paths.catalog}
+    </svg>
+  );
+};
 
 const FieldTooltip = ({
   label,
@@ -359,7 +380,7 @@ const CredentialsModal = ({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit">Usar configuración</Button>
+            <Button type="submit">Aceptar</Button>
           </footer>
         </form>
       </section>
@@ -506,6 +527,84 @@ const JsonBlock = ({
   fallback?: string;
 }) => {
   return <JsonCodeBlock value={value} fallback={fallback} />;
+};
+
+const PresetValues = ({ value }: { value: unknown }) => {
+  if (Array.isArray(value)) {
+    if (value.every((item) => typeof item !== 'object' || item === null)) {
+      return (
+        <ul className="preset-chip-list">
+          {value.map((item, index) => (
+            <li key={`${String(item)}-${index}`}>{String(item)}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    return (
+      <div className="preset-record-list">
+        {value.map((item, index) => (
+          <section className="preset-record" key={`record-${index}`}>
+            <h5>Registro {index + 1}</h5>
+            <PresetValues value={item} />
+          </section>
+        ))}
+      </div>
+    );
+  }
+
+  if (value && typeof value === 'object') {
+    return (
+      <dl className="preset-value-list">
+        {Object.entries(value).map(([name, item]) => (
+          <div className="preset-value" key={name}>
+            <dt>{name}</dt>
+            <dd>
+              <PresetValues value={item} />
+            </dd>
+          </div>
+        ))}
+      </dl>
+    );
+  }
+
+  if (value === null || value === undefined || value === '') {
+    return <span className="preset-empty-value">Sin valor</span>;
+  }
+
+  return <span className="preset-scalar">{String(value)}</span>;
+};
+
+const PresetOptions = ({
+  path,
+  query,
+  body,
+}: {
+  path?: Record<string, string>;
+  query?: Record<string, string>;
+  body?: unknown;
+}) => {
+  const sections = [
+    { label: 'Valores de la ruta', value: path },
+    { label: 'Filtros', value: query },
+    { label: 'Datos enviados', value: body },
+  ].filter(({ value }) => {
+    if (value === null || value === undefined) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'object') return Object.keys(value).length > 0;
+    return true;
+  });
+
+  return (
+    <div className="preset-options">
+      {sections.map(({ label, value }) => (
+        <section className="preset-option-group" key={label}>
+          <h4>{label}</h4>
+          <PresetValues value={value} />
+        </section>
+      ))}
+    </div>
+  );
 };
 
 const ParameterTable = ({
@@ -715,7 +814,11 @@ const EndpointGuidance = ({ guidance }: { guidance: EndpointDoc['guidance'] }) =
 const columnDescription = (endpoint: EndpointDoc, column: string) =>
   getFieldDescription(endpoint.id, column);
 
-const exampleCurl = (endpoint: EndpointDoc, curlBaseUrl: string) => {
+const endpointCurl = (
+  endpoint: EndpointDoc,
+  curlBaseUrl: string,
+  credentials: Credentials,
+) => {
   const draft = defaultDraft(endpoint);
   draft.path = Object.fromEntries(
     endpoint.pathParams.map((parameter) => [
@@ -723,18 +826,54 @@ const exampleCurl = (endpoint: EndpointDoc, curlBaseUrl: string) => {
       parameter.example ?? parameter.defaultValue ?? `<${parameter.name}>`,
     ]),
   );
-  draft.credentials = {
-    company: '{{id_empresa}}',
-    timezone: DEFAULT_TIMEZONE,
-    token: '{{token}}',
-    branch: '{{id_sucursal}}',
-    employee: '{{id_empleado}}',
-  };
+  draft.credentials = credentials;
   try {
-    return buildRequest(endpoint, draft, curlBaseUrl).curl;
+    return buildCurl(endpoint, draft, curlBaseUrl);
   } catch {
     return `curl --request ${endpoint.method} '${curlBaseUrl}${endpoint.path}'`;
   }
+};
+
+const EndpointQuickStart = ({
+  endpoint,
+  curlBaseUrl,
+  credentials,
+}: {
+  endpoint: EndpointDoc;
+  curlBaseUrl: string;
+  credentials: Credentials;
+}) => {
+  const [copied, setCopied] = useState(false);
+  const authenticated = hasRequiredCredentials(credentials);
+  const curl = endpointCurl(endpoint, curlBaseUrl, credentials);
+
+  const copyCurl = async () => {
+    await navigator.clipboard.writeText(curl);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
+
+  return (
+    <section className="quick-start" aria-labelledby="quick-start-title">
+      <header className="quick-start-header">
+        <div>
+          <p className="eyebrow">Inicio rápido</p>
+          <h2 id="quick-start-title">Ejecuta esta operación</h2>
+        </div>
+      </header>
+      <pre className="quick-start-code"><CurlCodeBlock curl={curl} /></pre>
+      <footer className="quick-start-footer">
+        <p>
+          {authenticated
+            ? 'El comando usa la configuración actual, almacenada solo en memoria.'
+            : 'Configura las variables al importar el comando en Postman.'}
+        </p>
+        <Button type="button" onClick={copyCurl}>
+          {copied ? 'Curl copiado' : 'Copiar curl'}
+        </Button>
+      </footer>
+    </section>
+  );
 };
 
 const EndpointDetail = ({
@@ -769,6 +908,11 @@ const EndpointDetail = ({
         {methodBadge(endpoint.method)}
         <code>{endpoint.path.replace(/^\/jServerj4ErpPro/, '')}</code>
       </div>
+      <EndpointQuickStart
+        endpoint={endpoint}
+        curlBaseUrl={curlBaseUrl}
+        credentials={credentials}
+      />
     </header>
 
     <div className="detail-sections">
@@ -869,11 +1013,15 @@ const EndpointDetail = ({
           </p>
           <div className="preset-docs">
             {endpoint.presets.map((preset) => (
-              <details key={preset.id}>
-                <summary>{preset.name}</summary>
-                <p>{preset.description}</p>
-                <JsonBlock value={{ query: preset.query, body: preset.body }} />
-              </details>
+               <details key={preset.id}>
+                 <summary>{preset.name}</summary>
+                 <p>{preset.description}</p>
+                 <PresetOptions
+                   path={preset.path}
+                   query={preset.query}
+                   body={preset.body}
+                 />
+               </details>
             ))}
           </div>
         </section>
@@ -916,8 +1064,6 @@ const EndpointDetail = ({
             </CardContent>
           </Card>
         </div>
-        <h3>Ejemplo de solicitud curl</h3>
-        <JsonBlock value={exampleCurl(endpoint, curlBaseUrl)} />
       </section>
 
       <section className="doc-section" aria-labelledby="behavior-title">
@@ -988,6 +1134,7 @@ const App = () => {
   });
   const [search, setSearch] = useState('');
   const [navigationOpen, setNavigationOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [credentialsOpen, setCredentialsOpen] = useState(false);
   const [skillInstallOpen, setSkillInstallOpen] = useState(false);
   const [showMcpGuide, setShowMcpGuide] = useState(initialMcpGuide);
@@ -1077,7 +1224,7 @@ const App = () => {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="app-shell">
+      <div className={`app-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
         <a className="skip-link" href="#main-content">
           Saltar al contenido
         </a>
@@ -1157,14 +1304,42 @@ const App = () => {
           id="endpoint-navigation"
           className={`sidebar ${navigationOpen ? 'sidebar-open' : ''}`}
         >
-          <div className="sidebar-brand">
-            <CuentiLogo
-              className="sidebar-logo"
-              color={theme === 'dark' ? 'white' : 'default'}
-              size="md"
-              aria-label="Cuenti"
-            />
-            <span>Documentación Cuenti Connect</span>
+          <div className="sidebar-header">
+            <Button
+              type="button"
+              className="sidebar-brand-control"
+              variant="ghost"
+              aria-label={
+                sidebarCollapsed
+                  ? 'Expandir barra lateral'
+                  : 'Contraer barra lateral'
+              }
+              aria-expanded={!sidebarCollapsed}
+              onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+            >
+              {sidebarCollapsed ? (
+                <CuentiIsotype
+                  className="sidebar-isotype"
+                  color="default"
+                  size="sm"
+                  aria-hidden="true"
+                />
+              ) : (
+                <>
+                  <CuentiLogo
+                    className="sidebar-logo"
+                    color="white"
+                    size="md"
+                    aria-hidden="true"
+                  />
+                  <span>Documentación Cuenti Connect</span>
+                </>
+              )}
+            </Button>
+            <div className="sidebar-mobile-brand">
+              <CuentiLogo color="white" size="md" aria-label="Cuenti" />
+              <span>Documentación Cuenti Connect</span>
+            </div>
           </div>
           <div className="sidebar-intro">
             <p className="eyebrow">Índice implementado</p>
@@ -1188,20 +1363,22 @@ const App = () => {
             <button
               type="button"
               className={`guide-link${showMcpGuide ? ' active' : ''}`}
+              aria-label="Guía de conexión MCP"
               aria-current={showMcpGuide ? 'page' : undefined}
               onClick={selectMcpGuide}
             >
-              <span className="guide-link-mark" aria-hidden="true">MCP</span>
-              <span>Guía de conexión MCP</span>
+              <NavigationIcon kind="mcp" />
+              <span className="guide-link-label">Guía de conexión MCP</span>
             </button>
             <button
               type="button"
               className={`guide-link${showCatalogGuide ? ' active' : ''}`}
+              aria-label="Catálogos y valores"
               aria-current={showCatalogGuide ? 'page' : undefined}
               onClick={selectCatalogGuide}
             >
-              <span className="guide-link-mark" aria-hidden="true">IDs</span>
-              <span>Catálogos y valores</span>
+              <NavigationIcon kind="catalog" />
+              <span className="guide-link-label">Catálogos y valores</span>
             </button>
             {categories.map((category) => {
               const endpoints = filteredEndpoints.filter(
@@ -1219,8 +1396,14 @@ const App = () => {
                       className="nav-group-toggle"
                       aria-expanded={isExpanded}
                       aria-controls={panelId}
-                      onClick={() => toggleCategory(category)}
+                      aria-label={sidebarCollapsed ? category : undefined}
+                      title={sidebarCollapsed ? category : undefined}
+                      onClick={() => {
+                        if (sidebarCollapsed) setSidebarCollapsed(false);
+                        toggleCategory(category);
+                      }}
                     >
+                      <NavigationIcon kind={category} />
                       <span className="nav-group-title">{category}</span>
                       <span className="nav-group-count">
                         {endpoints.length}

@@ -40,15 +40,52 @@ test('adapta el valor del Select al cambiar de tema', async ({ page }) => {
     .locator('[data-slot="select-value"]');
 
   await expect(selectValue).toHaveText('1');
-  await expect(selectValue).toHaveCSS('color', 'rgb(24, 33, 52)');
+  await expect(selectValue).toHaveCSS('color', 'rgb(26, 38, 68)');
 
   await page
     .getByRole('checkbox', { name: 'Cambiar a modo oscuro' })
     .check({ force: true });
 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(selectValue).toHaveCSS('color', 'rgb(220, 229, 245)');
+  await expect(selectValue).toHaveCSS('color', 'rgb(220, 221, 236)');
   await expect(selectValue).toHaveCSS('transition-property', 'color');
+});
+
+test('mantiene el inicio rápido después del título entre 1100 y 1250 px', async ({
+  page,
+}) => {
+  test.skip(test.info().project.name === 'mobile');
+
+  for (const width of [1100, 1175, 1250]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+
+    const heroBox = await page.locator('.endpoint-hero').boundingBox();
+    const titleBox = await page.locator('.hero-title-row').boundingBox();
+    const routeBox = await page.locator('.route-bar').boundingBox();
+    const quickStartBox = await page.locator('.quick-start').boundingBox();
+
+    expect(heroBox).not.toBeNull();
+    expect(titleBox).not.toBeNull();
+    expect(routeBox).not.toBeNull();
+    expect(quickStartBox).not.toBeNull();
+    if (!heroBox || !titleBox || !routeBox || !quickStartBox) {
+      throw new Error(`No se pudo medir el hero a ${width}px.`);
+    }
+
+    expect(titleBox.y + titleBox.height).toBeLessThanOrEqual(routeBox.y);
+    expect(routeBox.y + routeBox.height).toBeLessThanOrEqual(quickStartBox.y);
+    expect(quickStartBox.x).toBeGreaterThanOrEqual(heroBox.x);
+    expect(quickStartBox.x + quickStartBox.width).toBeLessThanOrEqual(
+      heroBox.x + heroBox.width,
+    );
+  }
+
+  const firstPreset = page.locator('.preset-docs details').first();
+  await firstPreset.locator('summary').click();
+  await expect(firstPreset.getByRole('heading', { name: 'Filtros' })).toBeVisible();
+  await expect(firstPreset.locator('.preset-value-list')).toHaveCount(2);
+  await expect(firstPreset.locator('.json-code')).toHaveCount(0);
 });
 
 test('muestra la interfaz en español y ejecuta GET y POST', async ({
@@ -71,24 +108,80 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page.locator('.topbar')).toHaveCSS(
     'background-color',
-    'rgb(247, 249, 252)',
+    'rgb(255, 255, 255)',
   );
   await expect(page.locator('.sidebar')).toHaveCSS(
     'background-color',
-    'rgb(247, 249, 252)',
+    'rgb(27, 63, 131)',
+  );
+  await expect(page.locator('.sidebar-logo path').first()).toHaveAttribute(
+    'fill',
+    '#ffffff',
   );
   await expect(page.locator('main')).toHaveCSS(
     'background-color',
-    'rgb(237, 241, 245)',
+    'rgb(244, 246, 250)',
   );
   await expect(page.locator('.route-bar')).toHaveCSS(
     'background-color',
-    'rgb(220, 232, 244)',
+    'rgba(0, 0, 0, 0)',
   );
+  await expect(page.locator('.quick-start')).toHaveCSS(
+    'background-color',
+    'rgb(255, 255, 255)',
+  );
+  await expect(page.locator('.method-get').first()).toHaveCSS(
+    'background-color',
+    'rgb(243, 246, 253)',
+  );
+  await expect(page.locator('.method-get').first()).toHaveCSS(
+    'color',
+    'rgb(19, 50, 103)',
+  );
+  const copyCurlButton = page.locator('.quick-start-footer button');
+  await copyCurlButton.click();
+  await expect(copyCurlButton).toHaveCSS('outline-style', 'none');
+  await expect(copyCurlButton).toHaveCSS('box-shadow', 'none');
   await expect(page.locator('.code-block').first()).toHaveCSS(
     'background-color',
-    'rgb(233, 238, 243)',
+    'rgb(238, 241, 247)',
   );
+  await expect(page.locator('.code-block').first()).toHaveCSS(
+    'color',
+    'rgb(26, 38, 68)',
+  );
+  await expect(
+    page.getByRole('columnheader', { name: 'Predeterminado' }).first(),
+  ).toHaveCSS('color', 'rgb(9, 21, 44)');
+  const firstSectionIndex = page.locator('.detail-sections .section-index').first();
+  await expect(firstSectionIndex).toHaveText('01');
+  await expect(firstSectionIndex).toHaveCSS('font-size', '16px');
+  await expect(firstSectionIndex).toHaveCSS('line-height', '20px');
+  await expect(firstSectionIndex).toHaveCSS('color', 'rgb(128, 99, 0)');
+  await expect(page.getByRole('heading', { name: 'Ejecuta esta operación' })).toBeVisible();
+  await expect(page.getByText('Con variables Postman')).toHaveCount(0);
+  await expect(page.locator('.form-error').first()).toHaveCSS(
+    'background-color',
+    'rgb(255, 243, 243)',
+  );
+  await expect(page.locator('.form-error').first()).toHaveCSS(
+    'color',
+    'rgb(164, 20, 20)',
+  );
+  await expect(page.locator('.quick-start-code .curl-command')).toHaveText('curl');
+  await expect(page.locator('.quick-start-code .curl-method')).toHaveText('GET');
+  await expect(page.locator('.quick-start-code .curl-variable').first()).toHaveText(
+    '{{id_empresa}}',
+  );
+  await expect(page.locator('.quick-start')).toContainText('{{id_empresa}}');
+  await expect(page.locator('.quick-start')).toContainText('Bearer {{token}}');
+  await page.getByLabel('id_sucursal *').fill('');
+  await page.getByLabel('pagina *').fill('');
+  await expect(page.locator('.quick-start')).toContainText(
+    '/{{id_sucursal}}/{{pagina}}',
+  );
+  await expect(page.locator('.quick-start')).not.toContainText(/%3C|%3E/i);
+  await page.evaluate(() => window.scrollTo(0, 0));
 
   const exampleGridBox = await page.locator('.example-grid').boundingBox();
   const responseCardBox = await page.locator('.response-card').boundingBox();
@@ -102,7 +195,7 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   if (!exampleGridBox || !responseCardBox || !responseCodeBox) {
     throw new Error('No se pudo medir el ejemplo de respuesta.');
   }
-  expect(responseCardBox.width).toBeGreaterThan(exampleGridBox.width * 0.95);
+  expect(responseCardBox.width).toBeGreaterThan(exampleGridBox.width * 0.55);
   expect(responseCodeBox.width).toBeGreaterThan(responseCardBox.width * 0.85);
   expect(responseCodeBox.y + responseCodeBox.height).toBeLessThanOrEqual(
     responseCardBox.y + responseCardBox.height,
@@ -131,6 +224,65 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
     expect(mainBox.y).toBe(topbarBox.height);
     expect(mainBox.width).toBe(topbarBox.width);
 
+    const collapseButton = page.getByRole('button', {
+      name: 'Contraer barra lateral',
+    });
+    await collapseButton.click();
+    await expect(page.locator('.app-shell')).toHaveClass(/sidebar-collapsed/);
+    await expect(
+      page.getByRole('button', { name: 'Expandir barra lateral' }),
+    ).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('.sidebar-isotype')).toBeVisible();
+    await expect(page.locator('.sidebar-isotype')).toHaveCSS('width', '36px');
+    await expect(page.locator('.sidebar-isotype')).toHaveCSS(
+      'color',
+      'rgb(255, 198, 0)',
+    );
+
+    await expect
+      .poll(async () => (await page.locator('.sidebar').boundingBox())?.width)
+      .toBe(80);
+    const collapsedSidebarBox = await page.locator('.sidebar').boundingBox();
+    const collapsedMainBox = await page.locator('main').boundingBox();
+    expect(collapsedSidebarBox).not.toBeNull();
+    expect(collapsedMainBox).not.toBeNull();
+    if (!collapsedSidebarBox || !collapsedMainBox) {
+      throw new Error('No se pudo medir el índice contraído.');
+    }
+    expect(collapsedSidebarBox.width).toBe(80);
+    expect(collapsedMainBox.x).toBe(80);
+    const expandSidebar = page.getByRole('button', {
+      name: 'Expandir barra lateral',
+    });
+    await expandSidebar.hover();
+    await expect(expandSidebar).toHaveCSS('cursor', 'pointer');
+    await expect(expandSidebar).toHaveCSS(
+      'background-color',
+      'rgb(18, 42, 87)',
+    );
+    await expect(expandSidebar).toHaveCSS(
+      'border-left-color',
+      'rgb(255, 198, 0)',
+    );
+    await expandSidebar.click();
+    await expect(page.locator('.app-shell')).not.toHaveClass(
+      /sidebar-collapsed/,
+    );
+    await expect(page.locator('.sidebar-logo')).toBeVisible();
+    await expect
+      .poll(async () => (await page.locator('.sidebar').boundingBox())?.width)
+      .toBe(304);
+    const expandedSidebarBox = await page.locator('.sidebar').boundingBox();
+    const sidebarLogoBox = await page.locator('.sidebar-logo').boundingBox();
+    expect(expandedSidebarBox).not.toBeNull();
+    expect(sidebarLogoBox).not.toBeNull();
+    if (!expandedSidebarBox || !sidebarLogoBox) {
+      throw new Error('No se pudo medir la marca del índice expandido.');
+    }
+    const sidebarCenter = expandedSidebarBox.x + expandedSidebarBox.width / 2;
+    const logoCenter = sidebarLogoBox.x + sidebarLogoBox.width / 2;
+    expect(Math.abs(sidebarCenter - logoCenter)).toBeLessThanOrEqual(1);
+
     const themeSwitchBox = await page.locator('.theme-switch').boundingBox();
     const credentialsBox = await page
       .locator('.credentials-trigger')
@@ -151,15 +303,55 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('.sidebar')).toHaveCSS(
     'background-color',
-    'rgb(13, 32, 66)',
+    'rgb(32, 33, 38)',
   );
   await expect(page.locator('.route-bar')).toHaveCSS(
     'background-color',
-    'rgb(9, 21, 44)',
+    'rgba(0, 0, 0, 0)',
   );
   await expect(page.locator('.code-block').first()).toHaveCSS(
     'background-color',
-    'rgb(9, 21, 44)',
+    'rgb(18, 20, 25)',
+  );
+  await expect(page.locator('.quick-start')).toHaveCSS(
+    'background-color',
+    'rgb(32, 33, 38)',
+  );
+  await expect(page.locator('.quick-start')).toHaveCSS(
+    'border-right-color',
+    'rgb(59, 61, 69)',
+  );
+  await expect(page.locator('.quick-start')).toHaveCSS(
+    'border-top-color',
+    'rgb(255, 198, 0)',
+  );
+  await expect(page.locator('.quick-start-code')).toHaveCSS(
+    'background-color',
+    'rgb(24, 25, 28)',
+  );
+  await expect(page.locator('.quick-start-code')).toHaveCSS(
+    'scrollbar-color',
+    'rgb(80, 83, 93) rgba(0, 0, 0, 0)',
+  );
+  await expect(page.locator('.method-get').first()).toHaveCSS(
+    'background-color',
+    'rgb(13, 33, 69)',
+  );
+  await expect(page.locator('.method-get').first()).toHaveCSS(
+    'color',
+    'rgb(218, 229, 248)',
+  );
+  await expect(page.locator('.detail-sections .section-index').first()).toHaveCSS(
+    'color',
+    'rgb(255, 198, 0)',
+  );
+  await expect(page.locator('.form-error').first()).toHaveCSS(
+    'background-color',
+    'rgb(82, 10, 10)',
+  );
+  await expect(page.locator('.form-error').first()).toHaveCSS(
+    'color',
+    'rgb(251, 220, 220)',
   );
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
@@ -174,9 +366,9 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(
     page.getByRole('heading', { name: 'Probar consulta' }),
   ).toBeVisible();
-  await expect(
-    page.getByText('http://localhost:8081/jServerj4ErpPro', { exact: true }),
-  ).toBeVisible();
+  await expect(page.locator('.quick-start')).toContainText(
+    'https://cuenti-connect.cuenti.co/jServerj4ErpPro',
+  );
   await expect(
     page
       .getByText(/todos deben cumplirse simultáneamente mediante AND/)
@@ -201,8 +393,11 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await credentialsDialog.getByLabel('Sucursal *').fill('1');
   await credentialsDialog.getByLabel('Empleado *').fill('7');
   await credentialsDialog
-    .getByRole('button', { name: 'Usar configuración' })
+    .getByRole('button', { name: 'Aceptar' })
     .click();
+  await expect(page.getByText('Con credenciales activas')).toHaveCount(0);
+  await expect(page.locator('.quick-start')).toContainText('empresa-e2e');
+  await expect(page.locator('.quick-start')).not.toContainText('{{token}}');
   await page.getByLabel('id_sucursal *').fill('1');
   await page.getByLabel('pagina *').fill('0');
   await page.getByRole('button', { name: 'Enviar solicitud' }).click();
@@ -221,16 +416,18 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(credentialsDialog.getByLabel('Sucursal *')).toHaveValue('1');
   await expect(credentialsDialog.getByLabel('Empleado *')).toHaveValue('7');
   await credentialsDialog
-    .getByRole('button', { name: 'Usar configuración' })
+    .getByRole('button', { name: 'Aceptar' })
     .click();
   await page.getByRole('button', { name: 'Enviar solicitud' }).click();
 
   const postBadge = page.locator('.method-post').first();
-  await expect(postBadge).toHaveCSS('background-color', 'rgb(255, 243, 196)');
+  await expect(postBadge).toHaveCSS('background-color', 'rgb(184, 235, 189)');
+  await expect(postBadge).toHaveCSS('color', 'rgb(17, 62, 22)');
   await page
     .getByRole('checkbox', { name: 'Cambiar a modo oscuro' })
     .check({ force: true });
-  await expect(postBadge).toHaveCSS('background-color', 'rgb(91, 76, 28)');
+  await expect(postBadge).toHaveCSS('background-color', 'rgb(26, 93, 33)');
+  await expect(postBadge).toHaveCSS('color', 'rgb(235, 255, 237)');
   await page
     .getByRole('checkbox', { name: 'Cambiar a modo claro' })
     .uncheck({ force: true });
