@@ -101,7 +101,7 @@ describe('canonical documentation registry', () => {
     );
   });
 
-  it('documents guardarTercero transport types and nullable epoch fields', () => {
+  it('documents guardarTercero required creation fields and transport types', () => {
     const thirdParty = registry.endpoints.find(
       (endpoint) => endpoint.id === 'guardarTercero',
     );
@@ -110,8 +110,22 @@ describe('canonical documentation registry', () => {
     );
 
     expect(fields.get('id_tipo_persona')).toEqual(
-      expect.objectContaining({ type: 'string', typeLabel: 'texto' }),
+      expect.objectContaining({
+        type: 'string',
+        typeLabel: 'texto',
+        required: true,
+      }),
     );
+    for (const fieldName of [
+      'nombre_cliente',
+      'identificacion',
+      'telefonos',
+      'correos',
+    ]) {
+      expect(fields.get(fieldName)).toEqual(
+        expect.objectContaining({ required: true }),
+      );
+    }
     expect(fields.get('es_consumidor_final')).toEqual(
       expect.objectContaining({ type: 'string', typeLabel: 'texto | null' }),
     );

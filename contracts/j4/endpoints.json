@@ -275,9 +275,9 @@
         "groups": [],
         "fields": [
           {"name": "id_cliente", "type": "integer", "required": true},
-          {"name": "nombre_cliente", "type": "string", "required": false, "nullable": false},
-          {"name": "id_tipo_persona", "type": "string", "required": false, "nullable": false},
-          {"name": "identificacion", "type": "string", "required": false, "nullable": false},
+          {"name": "nombre_cliente", "type": "string", "required": true, "nullable": false},
+          {"name": "id_tipo_persona", "type": "string", "required": true, "nullable": false},
+          {"name": "identificacion", "type": "string", "required": true, "nullable": false},
           {"name": "id_empresa_portal", "type": "integer", "required": false, "nullable": true},
           {"name": "id_usuario_portal", "type": "integer", "required": false, "nullable": true},
           {"name": "primer_nombre", "type": "string", "required": false, "nullable": true},
@@ -344,8 +344,8 @@
           {"name": "es_consumidor_final", "type": "string", "required": false, "nullable": true},
           {"name": "genera_bonos", "type": "integer", "required": false, "nullable": true},
           {"name": "solo_remision2", "type": "integer", "required": false, "nullable": true},
-          {"name": "telefonos", "type": "array", "required": false, "nullable": true},
-          {"name": "correos", "type": "array", "required": false, "nullable": true},
+          {"name": "telefonos", "type": "array", "required": true, "nullable": true},
+          {"name": "correos", "type": "array", "required": true, "nullable": true},
           {"name": "lstContactoCliente", "type": "array", "required": false, "nullable": true},
           {"name": "id_empleado", "type": "integer", "required": false, "nullable": true}
         ],

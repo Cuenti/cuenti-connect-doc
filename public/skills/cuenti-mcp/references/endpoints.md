@@ -20,11 +20,11 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Productos e inventario | `consultaProductoPaginadaMCP` |
-| Categorías e impuestos | `buscarCategorias`, `actualizarImpuestosLicores` |
+| Productos e inventario | `consultaProductoPaginadaMCP`, `grabarMovimientoArr` |
+| Categorías e impuestos | `buscarCategorias`, `actualizarImpuestosLicores`, `consultarImpuestoCuenti` |
 | Terceros | `buscarTercero`, `guardarTercero` |
-| Maestros | `buscarImpuestos`, `buscarBancos`, `buscarMediosPago`, `buscarConsecutivos`, `buscarSucursales`, `buscarEmpleados` |
-| Facturas e historiales | `buscarTransacciones`, `buscarProductosComprados`, `buscarDescuentos`, `buscarConsolidado` |
+| Maestros | `buscarImpuestos`, `buscarBancos`, `buscarMediosPago`, `buscarConsecutivos`, `buscarSucursales`, `buscarEmpleados`, `consultarMarcasActivas`, `consultarMarcaPorId` |
+| Facturas e historiales | `buscarTransacciones`, `buscarProductosComprados`, `buscarDescuentos`, `buscarConsolidado`, `grabarDocumentoSimple` |
 | Cartera | `buscarCartera`, `buscarResumenTerceros` |
 | Comandas | `obtenerComandas`, `platosEliminados` |
 
@@ -85,6 +85,70 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```
 
 **Peticiones habituales:** Por nombre de producto; Por ID y SKU.
+
+### `grabarMovimientoArr`: Registrar conteo de inventario
+
+**Para qué sirve:** Registrar conteo de inventario.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Datos que acepta la acción**
+
+Envía una lista con entre 1 y 1000 elementos.
+
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `nombre` | Sí | texto | Nombre visible del registro. |
+| `nota` | Sí | texto | Observaciones internas sobre el tercero. |
+| `id_concepto` | Sí | `-1`; valor habitual `-1` | Identificador del concepto contable o de inventario aplicado. |
+| `es_entrada` | Sí | `1`; valor habitual `1` | Indica que el movimiento registra una entrada de inventario. |
+| `cantidad` | Sí | número; mínimo `0` | Conteos agregados de registros o transacciones. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal principal o de creación del tercero. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Identificador de la bodega asociada. |
+| `id_producto` | Sí | número entero; mínimo `1` | Identificador maestro del producto. |
+| `fecha_registro` | Sí | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
+| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
+
+- id_bodega debe ser igual a id_sucursal.
+- fecha_registro usa milisegundos desde la época Unix.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": [
+    {
+      "nombre": "Conteo físico",
+      "nota": "",
+      "id_concepto": -1,
+      "es_entrada": 1,
+      "cantidad": 1,
+      "id_sucursal": 1,
+      "id_bodega": 1,
+      "id_producto": 25,
+      "fecha_registro": 1735689600000
+    }
+  ]
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "save",
+  "type": 1,
+  "retorno": ""
+}
+```
+
+**Peticiones habituales:** Conteo de un producto.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
 ## Categorías e impuestos
 
@@ -224,6 +288,44 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
+### `consultarImpuestoCuenti`: Consultar impuesto por ID
+
+**Para qué sirve:** Consultar impuesto por ID.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_impuesto` | Sí | número entero; mínimo `1` |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_impuesto": 3
+}
+```
+
+**Respuesta esperada:** Impuesto[].
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "id_impuesto": 3,
+    "nombre_impuesto": "IVA",
+    "valor_impuesto": 19,
+    "tipo_impuesto": "porcentaje",
+    "clasificacion_tributaria": "gravado"
+  }
+]
+```
+
+**Peticiones habituales:** Impuesto por ID.
+
 ## Terceros
 
 ### `buscarTercero`: Buscar terceros
@@ -360,76 +462,82 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Datos que acepta la acción**
 
-| Dato | Significado |
-| --- | --- |
-| `id_cliente` | Use -1 para crear y un ID positivo para actualizar. |
-| `nombre_cliente` | Nombre completo o razón social del tercero. |
-| `id_tipo_persona` | Clasificación de persona requerida en creación. |
-| `identificacion` | Documento requerido en creación. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de creación del tercero. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `clave_portal` | Contraseña del portal; se cifra antes de persistir y nunca debe exponerse. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_estado_civil` | Identificador del estado civil seleccionado. |
-| `id_estrato_social` | Identificador del estrato social seleccionado. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento de una persona natural. |
-| `sexo` | Clasificación registrada para sexo; validar catálogo legacy. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Fecha de vencimiento del registro de turismo. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Horario asociado al tercero; la estructura depende del dato almacenado. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad legacy de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el error ortográfico legacy. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `id_cliente` | Sí | número entero | Use -1 para crear y un ID positivo para actualizar. |
+| `nombre_cliente` | Sí | texto | Nombre completo o razón social del tercero. |
+| `id_tipo_persona` | Sí | texto | Clasificación de persona requerida en creación. |
+| `identificacion` | Sí | texto | Documento requerido en creación. |
+| `id_empresa_portal` | No | número entero | Empresa del portal vinculada al tercero. |
+| `id_usuario_portal` | No | número entero | Usuario del portal vinculado al tercero. |
+| `primer_nombre` | No | texto | Primer nombre de una persona natural. |
+| `segundo_nombre` | No | texto | Segundo nombre de una persona natural. |
+| `primer_apellido` | No | texto | Primer apellido de una persona natural. |
+| `segundo_apellido` | No | texto | Segundo apellido de una persona natural. |
+| `direccion` | No | texto | Dirección principal del tercero. |
+| `telefono1` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
+| `telefono2` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
+| `telefono3` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
+| `email1` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
+| `email2` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
+| `sitio_web` | No | texto | Sitio web registrado. |
+| `facebook` | No | texto | Perfil o referencia de Facebook. |
+| `twitter` | No | texto | Perfil o referencia de X/Twitter. |
+| `instagram` | No | texto | Perfil o referencia de Instagram. |
+| `snapchat` | No | texto | Perfil o referencia de Snapchat. |
+| `puntos_acumulados` | No | número entero | Puntos acumulados en programas de fidelización. |
+| `nota` | No | texto | Observaciones internas sobre el tercero. |
+| `es_activo` | No | texto | Estado operativo del tercero. |
+| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
+| `id_lista_precios` | No | número entero | Lista de precios asignada al tercero. |
+| `id_ruta_despacho` | No | número entero | Ruta de despacho asociada. |
+| `es_cliente` | No | número entero | Indica que el tercero puede comprar a la empresa. |
+| `es_proveedor` | No | número entero | Indica que el tercero puede suministrar a la empresa. |
+| `ciudad` | No | texto | Ciudad registrada; el formato depende del catálogo geográfico. |
+| `zona` | No | texto | Zona comercial, logística o geográfica asociada. |
+| `contacto` | No | texto | Nombre o referencia del contacto principal. |
+| `clave_portal` | No | texto | Contraseña del portal; se cifra antes de persistir y nunca debe exponerse. |
+| `codigo_interno` | No | texto | Código interno asignado por la empresa. |
+| `numero_matricula` | No | texto | Número de matrícula mercantil u otro registro equivalente. |
+| `id_estado_civil` | No | número entero | Identificador del estado civil seleccionado. |
+| `id_estrato_social` | No | número entero | Identificador del estrato social seleccionado. |
+| `id_clase_cliente` | No | número entero | Clasificación comercial del cliente. |
+| `id_tipo_cliente` | No | número entero | Tipo de cliente dentro de la segmentación configurada. |
+| `fecha_nacimiento` | No | fecha y hora en milisegundos Unix | Fecha de nacimiento de una persona natural. |
+| `sexo` | No | texto | Clasificación registrada para sexo; validar catálogo legacy. |
+| `saldo_bono` | No | número | Saldo disponible en bonos asociado al tercero. |
+| `permite_cartera_vencida` | No | texto | Indica si se permiten operaciones con cartera vencida. |
+| `id_centro_costo` | No | número entero | Centro de costo predeterminado para operaciones del tercero. |
+| `permite_saldo_cartera` | No | texto | Habilita el manejo de saldos de cartera. |
+| `cupo_cartera` | No | número | Límite de crédito autorizado. |
+| `permite_cartera` | No | texto | Habilita operaciones a crédito para el tercero. |
+| `id_tipo_retencion_ventas` | No | número entero | Tipo de retención predeterminado para ventas. |
+| `id_tipo_retencion_compra` | No | número entero | Tipo de retención predeterminado para compras. |
+| `id_sucursal` | No | número entero | Sucursal principal o de creación del tercero. |
+| `id_vendedor` | No | número entero | Vendedor asignado. |
+| `envioSmsCartera` | No | texto | Configura el envío de SMS relacionados con cartera. |
+| `envioSmsProducto` | No | texto | Configura el envío de SMS relacionados con productos. |
+| `pais` | No | texto | País registrado. |
+| `departamento` | No | texto | Departamento, estado o región registrada. |
+| `regimen` | No | número entero | Régimen tributario; validar valores contra el catálogo fiscal. |
+| `id_tipo_identificacion` | No | texto | Identificador del tipo de documento seleccionado. |
+| `medio_pago` | No | número entero | Medio de pago preferido o configurado. |
+| `tipoOperacion` | No | texto | Tipo de operación tributaria o comercial; validar valores. |
+| `cliente_predeterminado` | No | texto | Marca al tercero como genérico o predeterminado. |
+| `legalidad` | No | número entero | Configuración fiscal de legalidad para documentos electrónicos. |
+| `regimenImpuesto` | No | número entero | Régimen de impuestos usado por integraciones tributarias. |
+| `fecha_vencimiento_codigo_turismo` | No | fecha y hora en milisegundos Unix | Fecha de vencimiento del registro de turismo. |
+| `codigo_turismo` | No | número entero | Código del registro de turismo. |
+| `alias` | No | texto | Nombre corto o comercial alternativo. |
+| `horario` | No | fecha y hora en milisegundos Unix | Horario asociado al tercero; la estructura depende del dato almacenado. |
+| `dias_vencimiento_cartera_cliente` | No | número entero | Plazo de cartera predeterminado para el cliente. |
+| `es_consumidor_final` | No | texto | Marca al tercero como consumidor final para reglas tributarias. |
+| `genera_bonos` | No | número entero | Habilita la generación o acumulación de bonos. |
+| `solo_remision2` | No | número entero | Restringe operaciones a una modalidad legacy de remisión. |
+| `telefonos` | Sí | array | Hasta tres teléfonos registrados como arreglo. |
+| `correos` | Sí | array | Hasta dos correos electrónicos registrados como arreglo. |
+| `lstContactoCliente` | No | array | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
+| `id_empleado` | No | número entero | Identificador interno del empleado. |
 
 Para crear: id_cliente=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
 Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
@@ -927,6 +1035,84 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 
 **Peticiones habituales:** Empleados activos.
 
+### `consultarMarcasActivas`: Consultar marcas activas
+
+**Para qué sirve:** Consultar marcas activas.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `es_activo` | Sí | `1`; valor habitual `1` |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_activo": 1
+}
+```
+
+**Respuesta esperada:** Marca[].
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "precio_unidad": -1,
+    "id_marca": 2,
+    "nombre_marca": "Marca de ejemplo",
+    "fecha_registro": 1735689600000,
+    "es_activo": 1,
+    "error": ""
+  }
+]
+```
+
+**Peticiones habituales:** Marcas activas.
+
+### `consultarMarcaPorId`: Consultar marca por ID
+
+**Para qué sirve:** Consultar marca por ID.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_marca` | Sí | número entero; mínimo `1` |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_marca": 2
+}
+```
+
+**Respuesta esperada:** Marca[].
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "precio_unidad": -1,
+    "id_marca": 2,
+    "nombre_marca": "Marca de ejemplo",
+    "fecha_registro": 1735689600000,
+    "es_activo": 1,
+    "error": ""
+  }
+]
+```
+
+**Peticiones habituales:** Marca por ID.
+
 ## Facturas e historiales
 
 ### `buscarTransacciones`: Buscar transacciones
@@ -955,7 +1141,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `es_nula` | No | `0`, `1` |
 | `es_activo` | No | `0`, `1` |
 | `es_devolucion` | No | `0`, `1` |
-| `tipo_documento` | No | lista de números separados por comas; separado por comas |
+| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión); separado por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 
@@ -1017,7 +1203,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_sucursal` | No | número entero |
 | `id_empleado` | No | número entero |
 | `id_vendedor` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
+| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
 | `es_ingreso` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -1079,7 +1265,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_empleado` | No | número entero |
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
+| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
 | `es_ingreso` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
@@ -1142,7 +1328,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_empleado` | No | número entero |
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
+| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
 | `es_ingreso` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
@@ -1185,6 +1371,100 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 
 **Peticiones habituales:** Por cliente; Por empleado; Por vendedor.
 
+### `grabarDocumentoSimple`: Crear factura, compra, gasto o remisión
+
+**Para qué sirve:** Crear factura, compra, gasto o remisión.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Datos que acepta la acción**
+
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `tipoDocumento` | Sí | `1` (factura), `7` (compra o gasto), `9` (remisión o prefactura) | Tipo de documento: factura, compra o gasto, o remisión/prefactura. |
+| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | Define si el producto se identifica por ID, SKU o código de barras. |
+| `id_consecutivo` | Sí | número entero; mínimo `1` | Identificador de la configuración de numeración. |
+| `codigo_unico` | Sí | texto | Identificador numérico de integración; conserva los ceros iniciales. |
+| `nota` | Sí | texto | Observaciones internas sobre el tercero. |
+| `observacion` | Sí | texto | Observación general asociada al documento o movimiento. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal principal o de creación del tercero. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Identificador de la bodega asociada. |
+| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asignado. |
+| `id_empleado` | Sí | número entero; mínimo `1` | Identificador interno del empleado. |
+| `objClienteMini` | Sí | object | Datos mínimos del tercero asociado al documento. |
+| `objDetalle` | Sí | array | Líneas del documento con cantidades y totales de línea. |
+| `lstPagos` | Sí | array | Pagos aplicados al documento; puede ser un arreglo vacío para crédito. |
+
+- Una solicitud contiene un solo documento.
+- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
+- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
+- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
+- Para gasto, tipoDocumento=7 y cada detalle usa id_plan_cuentas.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "tipoDocumento": 1,
+    "type_match_producto": 1,
+    "id_consecutivo": 3,
+    "codigo_unico": "001",
+    "nota": "",
+    "observacion": "",
+    "id_sucursal": 1,
+    "id_bodega": 1,
+    "id_vendedor": 1,
+    "id_empleado": 1,
+    "objClienteMini": {
+      "id_cliente": 1179,
+      "nombre_cliente": "Cliente de ejemplo",
+      "identificacion": "",
+      "telefono1": "",
+      "telefono2": "",
+      "email1": "",
+      "direccion": "",
+      "id_tipo_persona": 1,
+      "es_cliente": 1,
+      "es_proveedor": 0,
+      "departamento": "",
+      "pais": "",
+      "ciudad": "",
+      "zona": ""
+    },
+    "objDetalle": [
+      {
+        "cantidad": 2,
+        "descripcion": "Producto",
+        "total": 20000,
+        "cambiar_precio_compra": false,
+        "id_producto": 25
+      }
+    ],
+    "lstPagos": []
+  }
+}
+```
+
+**Respuesta esperada:** Mensaje { type: integer, message: string, retorno: string, id_transacion: integer, url_interna: string, url_externa: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "save",
+  "retorno": "opaque-value",
+  "id_transacion": 511903,
+  "url_interna": "...",
+  "url_externa": "..."
+}
+```
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
 ## Cartera
 
 ### `buscarCartera`: Buscar cuentas por cobrar y por pagar
@@ -1204,7 +1484,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | Sí | `0` (por pagar), `1` (por cobrar) |
-| `tipo_documento` | No | lista de números separados por comas |
+| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 | `vencida` | No | `0`, `1` |
@@ -1269,7 +1549,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | Sí | `0`, `1` |
-| `tipo_documento` | No | lista de números separados por comas |
+| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 | `vencida` | No | `0`, `1` |
