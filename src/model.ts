@@ -16,9 +16,16 @@ export interface ParameterSpec {
   name: string;
   description: string;
   required: boolean;
+  type?: string;
+  typeLabel?: string;
   defaultValue?: string;
   allowedValues?: string[];
+  allowedValueLabels?: Record<string, string>;
   example?: string;
+  pattern?: string;
+  minimum?: number;
+  maximum?: number;
+  nullable?: boolean;
 }
 
 export interface HeaderSpec extends ParameterSpec {
@@ -29,6 +36,13 @@ export interface FieldGroup {
   name: string;
   fields: string[];
   description?: string;
+}
+
+export interface FieldSpec extends ParameterSpec {
+  path?: string;
+  fields?: FieldSpec[];
+  itemFields?: FieldSpec[];
+  minimumItems?: number;
 }
 
 export interface EndpointPreset {
@@ -67,6 +81,8 @@ export interface EndpointDoc {
   queryParams: ParameterSpec[];
   bodyRequired: boolean;
   bodyDescription?: string;
+  bodyType?: string;
+  bodyFields: FieldSpec[];
   requestExample?: unknown;
   responseContract?: string;
   responseExample?: unknown;

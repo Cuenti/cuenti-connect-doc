@@ -1,6 +1,6 @@
 # Guía de la API Cuenti
 
-Documentación operativa en React para las 19 operaciones verificadas de Cuenti expuestas mediante Envoy. La interfaz usa Cuenti DNA y lee `contracts/j4/endpoints.json` como registro canónico local; no usa Swagger ni duplica el inventario de rutas.
+Documentación operativa en React para las 24 operaciones verificadas de Cuenti expuestas mediante Envoy. La interfaz usa Cuenti DNA y lee `contracts/j4/endpoints.json` como registro canónico local; no usa Swagger ni duplica el inventario de rutas.
 
 El portal también publica la skill `cuenti-mcp` en `/skills/cuenti-mcp/`. El botón **Skill MCP** descarga un único paquete `cuenti-mcp.zip` con `SKILL.md` y `references/endpoints.md`, y muestra comandos que instalan ambos archivos en clientes compatibles con Agent Skills y OpenCode.
 
@@ -102,4 +102,4 @@ pnpm run test:e2e
 | `src/request.ts` | Validación de campos, URL del proxy, normalización de Bearer, generación de curl sin credenciales y preparación de solicitudes. |
 | `src/TryIt.tsx` | Credenciales solo en memoria, tiempo límite, confirmación de mutaciones e inspección de respuestas. |
 
-La compilación falla si el registro canónico no contiene exactamente 19 operaciones únicas. Esto evita divergencias silenciosas entre el comportamiento del proxy y la documentación.
+La compilación falla si el registro canónico no contiene exactamente 24 operaciones únicas. Esto evita divergencias silenciosas entre el comportamiento del proxy y la documentación.

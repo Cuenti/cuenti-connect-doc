@@ -18,7 +18,6 @@ import {
   TooltipTrigger,
 } from '@cuenti-dna/react/tooltip';
 import {
-  Fragment,
   startTransition,
   useDeferredValue,
   useEffect,
@@ -26,12 +25,16 @@ import {
   useState,
 } from 'react';
 import './App.css';
-import { getFieldDescription, getGroupDescription } from './fieldDescriptions';
+import {
+  getFieldDescription,
+  getGroupDescription,
+} from './fieldDescriptions';
 import { JsonCodeBlock } from './JsonCodeBlock';
 import {
   categories,
   type EndpointCategory,
   type EndpointDoc,
+  type FieldSpec,
   type ParameterSpec,
 } from './model';
 import { endpointFromLocation, endpointUrl } from './navigation';
@@ -53,8 +56,9 @@ const serverOrigin =
   (import.meta.env.DEV ? 'http://localhost:8081' : window.location.origin);
 
 const serverApiUrl = (endpoint: EndpointDoc, origin: string) => {
-  const prefix = endpoint.path.split('/com/')[0];
-  return `${origin.replace(/\/+$/, '')}${prefix}`;
+  const baseSegment = endpoint.path.split('/').filter(Boolean)[0];
+  const basePath = baseSegment ? `/${baseSegment}` : '';
+  return `${origin.replace(/\/+$/, '')}${basePath}`;
 };
 
 const categoryPanelId = (category: EndpointCategory) =>
@@ -317,7 +321,6 @@ const CredentialsModal = ({
               </Label>
               <Input
                 id="global-branch"
-                type="password"
                 value={draft.branch}
                 onChange={(event) =>
                   setDraft({ ...draft, branch: event.target.value })
@@ -442,7 +445,7 @@ const SkillInstallModal = ({
         </header>
         <p className="credentials-modal-description">
           Descarga un único paquete con las instrucciones y el catálogo
-          funcional de las 19 herramientas después de configurar la conexión con
+          funcional de las 24 herramientas después de configurar la conexión con
           Cuenti MCP.
         </p>
         <div className="skill-downloads">
@@ -481,7 +484,7 @@ const methodBadge = (method: EndpointDoc['method']) => (
 
 const JsonBlock = ({
   value,
-  fallback = 'No documentado por el backend.',
+  fallback = 'No hay un ejemplo documentado para esta sección.',
 }: {
   value: unknown;
   fallback?: string;
@@ -503,6 +506,7 @@ const ParameterTable = ({
         <thead>
           <tr>
             <th>Nombre</th>
+            <th>Tipo</th>
             <th>Regla</th>
             <th>Requerido</th>
             <th>Predeterminado</th>
@@ -514,10 +518,22 @@ const ParameterTable = ({
               <td>
                 <code>{parameter.name}</code>
               </td>
+              <td>{parameter.typeLabel ?? parameter.type ?? '—'}</td>
               <td>
                 {parameter.description || 'Sin descripción adicional.'}
                 {parameter.allowedValues?.length ? (
-                  <small> Valores: {parameter.allowedValues.join(', ')}</small>
+                  <small>
+                    {' '}
+                    Valores:{' '}
+                    {parameter.allowedValues
+                      .map(
+                        (value) =>
+                          parameter.allowedValueLabels?.[value]
+                            ? `${value} (${parameter.allowedValueLabels[value]})`
+                            : value,
+                      )
+                      .join(', ')}
+                  </small>
                 ) : null}
               </td>
               <td>{parameter.required ? 'Sí' : 'No'}</td>
@@ -529,6 +545,107 @@ const ParameterTable = ({
     </section>
   );
 };
+
+const formatAllowedValues = (field: ParameterSpec) =>
+  field.allowedValues?.length
+    ? `Valores: ${field.allowedValues
+        .map((value) =>
+          field.allowedValueLabels?.[value]
+            ? `${value} (${field.allowedValueLabels[value]})`
+            : value,
+        )
+        .join(', ')}`
+    : undefined;
+
+const formatPattern = (pattern?: string) => {
+  if (!pattern) return undefined;
+  if (pattern === '^[0-9]{1,50}$') {
+    return 'Formato: solo dígitos, entre 1 y 50 caracteres.';
+  }
+  return 'Formato: debe cumplir la regla definida para este campo.';
+};
+
+const formatFieldConstraints = (field: ParameterSpec) =>
+  [
+    formatPattern(field.pattern),
+    field.minimum !== undefined ? `Mínimo: ${field.minimum}` : undefined,
+    field.maximum !== undefined ? `Máximo: ${field.maximum}` : undefined,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
+const flattenFields = (
+  fields: FieldSpec[],
+  prefix = '',
+): Array<{ field: FieldSpec; path: string }> =>
+  fields.flatMap((field) => {
+    const path = prefix ? `${prefix}.${field.name}` : field.name;
+    const children = [
+      ...(field.fields ? flattenFields(field.fields, path) : []),
+      ...(field.itemFields ? flattenFields(field.itemFields, `${path}[]`) : []),
+    ];
+    return [{ field, path }, ...children];
+  });
+
+const BodyFieldsTable = ({ fields }: { fields: FieldSpec[] }) => {
+  const rows = flattenFields(fields);
+  if (!rows.length) return null;
+  return (
+    <section className="body-fields" aria-label="Campos del cuerpo JSON">
+      <h3>Campos del cuerpo</h3>
+      <p className="field-table-intro">
+        Usa estos nombres, tipos y reglas para construir el cuerpo de la
+        solicitud. Los campos anidados conservan la ruta que deben tener en el
+        JSON.
+      </p>
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Tipo</th>
+              <th>Descripción</th>
+              <th>Valores y formato</th>
+              <th>Requerido</th>
+              <th>Predeterminado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(({ field, path }) => {
+              const allowed = formatAllowedValues(field);
+              const constraints = formatFieldConstraints(field);
+              return (
+                <tr key={path}>
+                  <td>
+                    <code>{path}</code>
+                  </td>
+                  <td>{field.typeLabel ?? field.type ?? '—'}</td>
+                  <td>{field.description || 'Sin descripción adicional.'}</td>
+                  <td>
+                    {allowed || constraints ? (
+                      <>
+                        {allowed ? <span>{allowed}</span> : null}
+                        {allowed && constraints ? <br /> : null}
+                        {constraints ? <span>{constraints}</span> : null}
+                      </>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                  <td>{field.required ? 'Sí' : 'No'}</td>
+                  <td>{field.defaultValue ?? '—'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+
+const columnDescription = (endpoint: EndpointDoc, column: string) =>
+  getFieldDescription(endpoint.id, column);
 
 const exampleCurl = (endpoint: EndpointDoc, curlBaseUrl: string) => {
   const draft = defaultDraft(endpoint);
@@ -631,48 +748,37 @@ const EndpointDetail = ({
           </div>
         </div>
         {endpoint.bodyDescription ? <p>{endpoint.bodyDescription}</p> : null}
+        <BodyFieldsTable fields={endpoint.bodyFields} />
         {endpoint.groups.length ? (
           <div className="projection-grid">
             {endpoint.groups.map((group) => (
               <div className="projection-row" key={group.name}>
                 <FieldTooltip
                   label={group.name}
-                  description={getGroupDescription(group.name)}
+                  description={
+                    group.description || getGroupDescription(group.name)
+                  }
                   className="field-tooltip-trigger projection-group-trigger"
                 />
                 <span className="projection-fields">
-                  {group.fields.length
-                    ? group.fields.map((field, index) => (
-                        <Fragment key={field}>
-                          {index ? ', ' : null}
-                          <FieldTooltip
-                            label={field}
-                            description={getFieldDescription(
-                              endpoint.id,
-                              field,
-                            )}
-                          />
-                        </Fragment>
-                      ))
-                    : group.description ||
-                      'Proyección definida por el contrato.'}
+                  {group.description || getGroupDescription(group.name)}
                 </span>
               </div>
             ))}
           </div>
         ) : null}
-        {endpoint.columns.length ? (
-          <section className="token-cloud" aria-label="Columnas permitidas">
-            {endpoint.columns.map((column) => (
-              <FieldTooltip
-                key={column}
-                label={column}
-                description={getFieldDescription(endpoint.id, column)}
-                className="field-tooltip-trigger column-tooltip-trigger"
-              />
-            ))}
-          </section>
-        ) : null}
+         {endpoint.columns.length ? (
+           <section className="token-cloud" aria-label="Columnas permitidas">
+             {endpoint.columns.map((column) => (
+               <FieldTooltip
+                 key={column}
+                 label={column}
+                 description={columnDescription(endpoint, column)}
+                 className="field-tooltip-trigger column-tooltip-trigger"
+               />
+             ))}
+           </section>
+         ) : null}
         {!endpoint.groups.length && !endpoint.columns.length ? (
           <p className="empty-note">
             No utiliza selectores de grupos o columnas.
@@ -767,7 +873,7 @@ const EndpointDetail = ({
               </ul>
             ) : (
               <p className="empty-note">
-                Conserva los códigos y el cuerpo de error del servidor.
+                 Conserva los códigos y el cuerpo de error de la operación.
               </p>
             )}
           </div>
@@ -878,7 +984,7 @@ const App = () => {
         </a>
         <header className="topbar">
           <div className="server-indicator">
-            <span className="server-indicator-label">Servidor API</span>
+            <span className="server-indicator-label">API base</span>
             <code>{serverUrl}</code>
           </div>
           <div className="topbar-actions">
@@ -963,7 +1069,7 @@ const App = () => {
           </div>
           <div className="sidebar-intro">
             <p className="eyebrow">Índice implementado</p>
-            <h2>19 operaciones</h2>
+            <h2>24 operaciones</h2>
           </div>
           <label className="search-label" htmlFor="endpoint-search">
             <span className="sr-only">Buscar operaciones</span>

@@ -86,7 +86,9 @@ const ParameterInputs = ({
                   <SelectContent>
                     {parameter.allowedValues.map((value) => (
                       <SelectItem key={value} value={value}>
-                        {value}
+                        {parameter.allowedValueLabels?.[value]
+                          ? `${value} (${parameter.allowedValueLabels[value]})`
+                          : value}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -169,7 +171,9 @@ export const TryIt = ({
 
   const copyCurl = async () => {
     try {
-      const request = buildRequest(endpoint, draft, curlBaseUrl);
+      const request = buildRequest(endpoint, draft, curlBaseUrl, {
+        includeCredentials: true,
+      });
       await navigator.clipboard.writeText(request.curl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);

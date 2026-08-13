@@ -7,6 +7,7 @@ import {
   type EndpointDoc,
   type EndpointPreset,
   type ErrorSpec,
+  type FieldSpec,
   type FieldGroup,
   type HeaderSpec,
   type HttpMethod,
@@ -27,6 +28,15 @@ const asString = (value: unknown, fallback = '') =>
     : fallback;
 const asBoolean = (value: unknown, fallback = false) =>
   typeof value === 'boolean' ? value : fallback;
+const asNumber = (value: unknown) =>
+  typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+
+const recordStrings = (value: unknown) =>
+  Object.fromEntries(
+    Object.entries(asRecord(value))
+      .map(([key, item]) => [key, asString(item)])
+      .filter(([, item]) => item),
+  );
 
 const first = (record: UnknownRecord, keys: string[]) => {
   for (const key of keys) {
@@ -168,6 +178,9 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
     integer: 'entero',
     number: 'número',
     string: 'texto',
+    boolean: 'booleano',
+    array: 'arreglo',
+    object: 'objeto',
     'integer-list': 'lista de enteros',
     'epoch-milliseconds': 'milisegundos desde epoch',
   };
@@ -185,6 +198,11 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
     'Clamp to 1..1000': 'El valor se limita al intervalo de 1 a 1000.',
   };
   const type = asString(item.type);
+  const nullable = item.nullable === true;
+  const baseTypeLabel = (typeLabels[type] ?? type) || undefined;
+  const typeLabel = baseTypeLabel
+    ? `${baseTypeLabel}${nullable ? ' | null' : ''}`
+    : undefined;
   const rule = asString(first(item, ['match', 'format', 'normalization']));
   const description = [
     asString(
@@ -206,11 +224,20 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
     name: asString(first(item, ['name', 'nombre', 'key'])),
     description,
     required: asBoolean(first(item, ['required', 'obligatorio'])),
+    type: type || undefined,
+    typeLabel,
+    nullable,
     defaultValue:
       asString(first(item, ['defaultValue', 'default', 'predeterminado'])) ||
       undefined,
     allowedValues: strings(allowed).length ? strings(allowed) : undefined,
+    allowedValueLabels: Object.keys(recordStrings(item.values)).length
+      ? recordStrings(item.values)
+      : undefined,
     example: asString(first(item, ['example', 'ejemplo'])) || undefined,
+    pattern: asString(item.pattern) || undefined,
+    minimum: asNumber(item.minimum),
+    maximum: asNumber(item.maximum),
   };
 };
 
@@ -227,6 +254,29 @@ const normalizeFieldNames = (value: unknown) =>
         : asString(first(asRecord(field), ['name', 'nombre', 'key'])),
     )
     .filter(Boolean);
+
+const normalizeField = (value: unknown): FieldSpec => {
+  const item = asRecord(value);
+  const parameter = normalizeParameter(value);
+  const fields = normalizeFields(first(item, ['fields', 'campos']));
+  const items = asRecord(first(item, ['items', 'elementos']));
+  const itemFields = normalizeFields(first(items, ['fields', 'campos']));
+  const minimumItems = asNumber(
+    first(item, ['minimumItems', 'minItems', 'min_items']),
+  );
+  return {
+    ...parameter,
+    path: parameter.name,
+    fields: fields.length ? fields : undefined,
+    itemFields: itemFields.length ? itemFields : undefined,
+    minimumItems,
+  };
+};
+
+const normalizeFields = (value: unknown): FieldSpec[] =>
+  asArray(value)
+    .map(normalizeField)
+    .filter((field) => field.name);
 
 const normalizeHeader = (value: unknown): HeaderSpec => {
   const parameter = normalizeParameter(value);
@@ -313,6 +363,23 @@ const normalizeGroups = (value: unknown): FieldGroup[] => {
     name,
     fields: strings(fields),
   }));
+};
+
+const mergeGroups = (groups: FieldGroup[]) => {
+  const merged = new Map<string, FieldGroup>();
+  for (const group of groups) {
+    const current = merged.get(group.name);
+    if (!current) {
+      merged.set(group.name, { ...group });
+      continue;
+    }
+    const descriptions = [current.description, group.description].filter(
+      Boolean,
+    ) as string[];
+    current.description = [...new Set(descriptions)].join(' ');
+    current.fields = [...new Set([...current.fields, ...group.fields])];
+  }
+  return [...merged.values()];
 };
 
 const normalizePresets = (
@@ -517,16 +584,18 @@ const normalizeBodyGroups = (value: unknown): FieldGroup[] => {
   const normalized: FieldGroup[] = [];
   for (const entry of bodyGroups) {
     const item = asRecord(entry);
-    const key = asString(first(item, ['key', 'name', 'nombre']), 'grupos');
     const condition = asString(first(item, ['when', 'condition']));
     const allowed = asArray(first(item, ['allowed', 'groups', 'grupos']));
     if (allowed.some((allowedItem) => typeof allowedItem === 'object')) {
       normalized.push(...normalizeGroups(allowed));
     } else {
-      normalized.push({
-        name: condition ? `${key} (${condition})` : key,
-        fields: strings(allowed),
-      });
+      normalized.push(
+        ...strings(allowed).map((name) => ({
+          name,
+          fields: [],
+          description: condition ? `${name} (${condition}).` : undefined,
+        })),
+      );
     }
   }
   return normalized;
@@ -613,7 +682,10 @@ const normalizeEndpoint = (
       sensitive: false,
     });
   }
-  const bodyGroups = normalizeBodyGroups(first(body, ['groups', 'grupos']));
+  const bodyGroups = mergeGroups(
+    normalizeBodyGroups(first(body, ['groups', 'grupos'])),
+  );
+  const bodyFields = normalizeFields(first(body, ['fields', 'campos']));
   const retiredKitchenWrite = ['grabar', 'mesas'].join('');
   const retiredTaxFlag = ['impuesto', 'saludable'].join('_');
   const omittedDishField = ['id', 'transacion'].join('_');
@@ -636,7 +708,7 @@ const normalizeEndpoint = (
     notes[0] ||
     `${kind === 'query' ? 'Consulta' : 'Operación'} del contrato Cuenti para ${(
       endpointTitles[endpointId] ?? name
-    ).toLocaleLowerCase('es')} como parte de una integración.`;
+    ).toLocaleLowerCase('es')}.`;
   return {
     id: endpointId,
     name: endpointTitles[endpointId] ?? name,
@@ -663,6 +735,8 @@ const normalizeEndpoint = (
         first(params, ['query', 'consulta']),
     ),
     bodyRequired: asBoolean(first(body, ['required', 'obligatorio'])),
+    bodyType: asString(body.type) || undefined,
+    bodyFields,
     bodyDescription:
       asString(first(item, ['bodyDescription', 'descripcionBody'])) ||
       (asBoolean(first(body, ['required', 'obligatorio']))
@@ -715,15 +789,25 @@ const normalizeEndpoint = (
 
 export const adaptRegistry = (value: unknown): CanonicalRegistry => {
   const root = asRecord(value);
+  const documentation = asRecord(root.documentation);
+  const groupDescriptions = asRecord(documentation.groups);
   const headerDefinitions = asRecord(
     first(root, ['headerDefinitions', 'headers']),
   );
   const endpoints = asArray(first(root, ['endpoints', 'routes', 'rutas'])).map(
     (endpoint) => normalizeEndpoint(endpoint, headerDefinitions),
   );
-  if (endpoints.length !== 19) {
+  for (const endpoint of endpoints) {
+    for (const group of endpoint.groups) {
+      const purpose = asString(groupDescriptions[group.name]);
+      group.description = [purpose, group.description]
+        .filter(Boolean)
+        .join(' ');
+    }
+  }
+  if (endpoints.length !== 24) {
     throw new Error(
-      `El registro canónico debe contener 19 operaciones; contiene ${endpoints.length}.`,
+      `El registro canónico debe contener 24 operaciones; contiene ${endpoints.length}.`,
     );
   }
   if (

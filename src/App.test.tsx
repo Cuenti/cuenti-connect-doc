@@ -78,7 +78,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '19 operaciones' }),
+      screen.getByRole('heading', { name: '24 operaciones' }),
     ).toBeVisible();
   });
 
@@ -130,6 +130,9 @@ describe('documentation application', () => {
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
       'Identificador único de la categoría.',
     );
+    expect(await screen.findByRole('tooltip')).not.toHaveTextContent(
+      'Tipo: entero.',
+    );
 
     await openCategory(user, 'Comandas');
     await user.click(screen.getByRole('button', { name: /Obtener comandas/i }));
@@ -138,6 +141,39 @@ describe('documentation application', () => {
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
       'Identificación, descripción y presentación del producto.',
     );
+  });
+
+  it('keeps the API base at the service root for /api routes', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await openCategory(user, 'Facturas e historiales');
+    await user.click(
+      screen.getByRole('button', {
+        name: /Crear factura, compra, gasto o remisión/i,
+      }),
+    );
+
+    const apiBase = document.querySelector('.server-indicator code');
+    expect(apiBase).toHaveTextContent(/\/jServerj4ErpPro$/);
+    expect(apiBase).not.toHaveTextContent('/api/token/grabarDocumentoSimple');
+  });
+
+  it('shows human-readable body formats instead of regular expressions', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await openCategory(user, 'Facturas e historiales');
+    await user.click(
+      screen.getByRole('button', {
+        name: /Crear factura, compra, gasto o remisión/i,
+      }),
+    );
+
+    expect(
+      screen.getByText('Formato: solo dígitos, entre 1 y 50 caracteres.'),
+    ).toBeVisible();
+    expect(document.body).not.toHaveTextContent('^[0-9]{1,50}$');
   });
 
   it('updates selection in the URL and responds to browser history', async () => {
@@ -202,6 +238,10 @@ describe('documentation application', () => {
       'border-neutral-500',
       'h-12',
       'rounded-md',
+    );
+    expect(within(dialog).getByLabelText('Sucursal *')).not.toHaveAttribute(
+      'type',
+      'password',
     );
     await user.type(within(dialog).getByLabelText('Empresa *'), 'empresa-1');
     await user.type(within(dialog).getByLabelText('Token *'), 'token-1');
@@ -313,7 +353,7 @@ describe('documentation application', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText('ERP_PROXY_TARGET')).not.toBeInTheDocument();
     expect(
-      screen.queryByText('17 consultas con caché · 2 mutaciones sin caché'),
+      screen.queryByText('20 consultas con caché · 4 mutaciones sin caché'),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('Try It')).not.toBeInTheDocument();
     expect(screen.queryByText('Query params')).not.toBeInTheDocument();

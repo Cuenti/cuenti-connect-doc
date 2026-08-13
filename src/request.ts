@@ -21,6 +21,10 @@ export interface BuiltRequest {
   curl: string;
 }
 
+export interface CurlOptions {
+  includeCredentials?: boolean;
+}
+
 export const DEFAULT_TIMEZONE = 'GMT-0500';
 
 const bearerToken = (token: string) =>
@@ -104,6 +108,7 @@ export const buildRequest = (
   endpoint: EndpointDoc,
   draft: RequestDraft,
   proxyBaseUrl = '',
+  curlOptions: CurlOptions = {},
 ): BuiltRequest => {
   const errors: string[] = [];
   validateRequired(endpoint.pathParams, draft.path, errors);
@@ -182,9 +187,15 @@ export const buildRequest = (
   };
 
   const curlHeaders = endpoint.headers.map((header) => {
-    const placeholder =
-      headerPlaceholders[header.name] ?? `<${header.name.toLocaleLowerCase()}>`;
-    return `-H ${shellQuote(`${header.name}: ${placeholder}`)}`;
+    const value = curlOptions.includeCredentials
+      ? (requestHeaderValues[header.name as keyof typeof requestHeaderValues] ??
+        '')
+      : '';
+    const headerValue =
+      value ||
+      headerPlaceholders[header.name] ||
+      `<${header.name.toLocaleLowerCase()}>`;
+    return `-H ${shellQuote(`${header.name}: ${headerValue}`)}`;
   });
   if (
     parsedBody !== undefined &&

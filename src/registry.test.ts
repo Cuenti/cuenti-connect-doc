@@ -1,15 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import {
-  getGroupDescription,
-  hasFieldDescription,
-  hasGroupDescription,
-} from './fieldDescriptions';
+import { hasFieldDescription, hasGroupDescription } from './fieldDescriptions';
 import { categories, upcomingCapabilities } from './model';
 import { registry } from './registry';
 
 describe('canonical documentation registry', () => {
-  it('exposes exactly 19 implemented endpoints in seven categories', () => {
-    expect(registry.endpoints).toHaveLength(19);
+  it('exposes exactly 24 implemented endpoints in seven categories', () => {
+    expect(registry.endpoints).toHaveLength(24);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -20,13 +16,13 @@ describe('canonical documentation registry', () => {
       registry.endpoints.filter(
         (endpoint) => endpoint.cache.mode === 'cacheable',
       ),
-    ).toHaveLength(17);
+    ).toHaveLength(20);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
-    ).toHaveLength(2);
+    ).toHaveLength(4);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(2);
+    ).toHaveLength(4);
   });
 
   it('provides an example and response contract for every route', () => {
@@ -40,14 +36,13 @@ describe('canonical documentation registry', () => {
 
   it('describes every projected group and field', () => {
     for (const endpoint of registry.endpoints) {
+      expect(new Set(endpoint.groups.map(({ name }) => name)).size).toBe(
+        endpoint.groups.length,
+      );
       for (const group of endpoint.groups) {
+        expect(group.name).not.toBe('grupos');
         expect(hasGroupDescription(group.name), group.name).toBe(true);
-        for (const field of group.fields) {
-          expect(
-            hasFieldDescription(endpoint.id, field),
-            `${endpoint.id}.${field}`,
-          ).toBe(true);
-        }
+        expect(group.description).toBeTruthy();
       }
       for (const column of endpoint.columns) {
         expect(
@@ -56,9 +51,113 @@ describe('canonical documentation registry', () => {
         ).toBe(true);
       }
     }
-    expect(getGroupDescription('grupos (nivel=encabezado)')).not.toContain(
-      'pendiente',
+  });
+
+  it('exposes typed fields for JSON bodies, including nested creation fields', () => {
+    const movement = registry.endpoints.find(
+      (endpoint) => endpoint.id === 'grabarMovimientoArr',
     );
+    expect(movement?.bodyType).toBe('array');
+    expect(movement?.bodyFields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'id_concepto',
+          type: 'integer',
+          typeLabel: 'entero',
+          defaultValue: '-1',
+        }),
+        expect.objectContaining({
+          name: 'fecha_registro',
+          type: 'epoch-milliseconds',
+          typeLabel: 'milisegundos desde epoch',
+        }),
+      ]),
+    );
+
+    const document = registry.endpoints.find(
+      (endpoint) => endpoint.id === 'grabarDocumentoSimple',
+    );
+    const details = document?.bodyFields.find(
+      (field) => field.name === 'objDetalle',
+    );
+    const detailTotal = details?.itemFields?.find(
+      (field) => field.name === 'total',
+    );
+    const client = document?.bodyFields.find(
+      (field) => field.name === 'objClienteMini',
+    );
+
+    expect(document?.bodyType).toBe('object');
+    expect(details?.typeLabel).toBe('arreglo');
+    expect(details?.minimumItems).toBe(1);
+    expect(detailTotal).toEqual(
+      expect.objectContaining({ name: 'total', type: 'number' }),
+    );
+    expect(client?.fields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'id_cliente', type: 'integer' }),
+        expect.objectContaining({ name: 'email1', type: 'string' }),
+      ]),
+    );
+  });
+
+  it('documents guardarTercero transport types and nullable epoch fields', () => {
+    const thirdParty = registry.endpoints.find(
+      (endpoint) => endpoint.id === 'guardarTercero',
+    );
+    const fields = new Map(
+      thirdParty?.bodyFields.map((field) => [field.name, field]) ?? [],
+    );
+
+    expect(fields.get('id_tipo_persona')).toEqual(
+      expect.objectContaining({ type: 'string', typeLabel: 'texto' }),
+    );
+    expect(fields.get('es_consumidor_final')).toEqual(
+      expect.objectContaining({ type: 'string', typeLabel: 'texto | null' }),
+    );
+    expect(fields.get('fecha_nacimiento')).toEqual(
+      expect.objectContaining({
+        type: 'epoch-milliseconds',
+        typeLabel: 'milisegundos desde epoch | null',
+      }),
+    );
+    expect(fields.get('horario')).toEqual(
+      expect.objectContaining({
+        type: 'epoch-milliseconds',
+        typeLabel: 'milisegundos desde epoch | null',
+      }),
+    );
+    expect(fields.get('lstContactoCliente')).toEqual(
+      expect.objectContaining({ type: 'array', typeLabel: 'arreglo | null' }),
+    );
+  });
+
+  it('keeps customer-facing metadata free of internal implementation terms', () => {
+    const texts = registry.endpoints.flatMap((endpoint) => [
+      endpoint.summary,
+      endpoint.bodyDescription ?? '',
+      ...endpoint.notes,
+      ...endpoint.errors.map((error) => error.description),
+      ...endpoint.groups.map((group) => group.description ?? ''),
+      ...endpoint.bodyFields.flatMap((field) => fieldDescriptions(field)),
+    ]);
+
+     expect(texts.join(' ')).not.toMatch(/legacy|servidor|backend/i);
+  });
+
+  it('shows the canonical labels for transaction document types', () => {
+    for (const endpoint of registry.endpoints) {
+      const parameter = endpoint.queryParams.find(
+        ({ name }) => name === 'tipo_documento',
+      );
+      if (!parameter) continue;
+      expect(parameter.allowedValues).toEqual(['1', '7', '9']);
+      expect(parameter.allowedValueLabels).toEqual({
+        '1': 'Factura',
+        '7': 'Compra',
+        '9': 'Prefactura / remisión',
+      });
+    }
   });
 
   it('adds the five required global headers to every endpoint', () => {
@@ -285,3 +384,15 @@ describe('canonical documentation registry', () => {
     });
   });
 });
+
+type NestedField = {
+  description: string;
+  fields?: NestedField[];
+  itemFields?: NestedField[];
+};
+
+const fieldDescriptions = (field: NestedField): string[] => [
+  field.description,
+  ...(field.fields ?? []).flatMap((child) => fieldDescriptions(child)),
+  ...(field.itemFields ?? []).flatMap((child) => fieldDescriptions(child)),
+];

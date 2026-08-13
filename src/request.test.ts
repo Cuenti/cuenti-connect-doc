@@ -43,7 +43,7 @@ describe('request builder', () => {
     expect(hasRequiredCredentials(credentials)).toBe(true);
   });
 
-  it('builds a GET with global headers and a credential-safe curl', () => {
+  it('builds a GET with global headers and a placeholder curl by default', () => {
     const endpoint = registry.endpoints.find(
       (item) => item.id === 'consultaProductoPaginadaMCP',
     );
@@ -75,6 +75,29 @@ describe('request builder', () => {
     expect(request.curl).not.toContain('\n+');
     expect(request.curl).not.toContain(credentials.company);
     expect(request.curl).not.toContain('bearer-secret');
+  });
+
+  it('includes configured credentials only when explicitly requested for curl', () => {
+    const endpoint = registry.endpoints.find(
+      (item) => item.id === 'consultaProductoPaginadaMCP',
+    );
+    if (!endpoint) throw new Error('Product endpoint was not found.');
+    const draft = defaultDraft(endpoint);
+    draft.path = { id_sucursal: '3', pagina: '0' };
+    draft.credentials = credentials;
+
+    const request = buildRequest(endpoint, draft, 'https://proxy.example.test', {
+      includeCredentials: true,
+    });
+
+    expect(request.curl).toContain(
+      `X-Auth-Token-empresa: ${credentials.company}`,
+    );
+    expect(request.curl).toContain(
+      `X-Auth-Token-sucursal: ${credentials.branch}`,
+    );
+    expect(request.curl).toContain(`X-Id-Empleado: ${credentials.employee}`);
+    expect(request.curl).toContain('Authorization: Bearer bearer-secret');
   });
 
   it('builds a POST with global headers and exactly one Bearer prefix', () => {

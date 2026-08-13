@@ -139,6 +139,21 @@ const commonFieldDescriptions: Record<string, string> = {
   total_neto: 'Total neto del documento después de ajustes aplicables.',
   unidad: 'Unidad usada para expresar la medida o cantidad.',
   url_imagen: 'Dirección para consultar la imagen del producto.',
+  id_concepto: 'Concepto contable del movimiento; el conteo usa -1.',
+  es_entrada: 'Indica el sentido del movimiento; el conteo usa 1.',
+  cantidad: 'Cantidad registrada en el movimiento o detalle.',
+  code: 'SKU o código de barras según type_match_producto.',
+  cambiar_precio_compra:
+    'Indica si Cuenti actualiza el costo unitario de compra.',
+  tipoDocumento: 'Tipo de documento: factura, compra/gasto o remisión.',
+  type_match_producto:
+    'Define si el producto se identifica por ID, SKU o código de barras.',
+  codigo_unico: 'Código numérico único que conserva los ceros iniciales.',
+  objClienteMini: 'Datos mínimos del tercero asociado al documento.',
+  objDetalle: 'Líneas del documento con cantidades y totales.',
+  lstPagos: 'Pagos aplicados; vacío representa una operación a crédito.',
+  precio_unidad: 'Valor numérico devuelto por el catálogo de marcas.',
+  error: 'Mensaje de error devuelto por el catálogo, si aplica.',
 };
 
 const endpointFieldDescriptions: Record<string, Record<string, string>> = {
@@ -207,7 +222,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     id_clase_cliente: 'Clasificación comercial del cliente.',
     id_tipo_cliente: 'Tipo de cliente dentro de la segmentación configurada.',
     fecha_nacimiento: 'Fecha de nacimiento de una persona natural.',
-    sexo: 'Clasificación registrada para sexo; validar catálogo legacy.',
+    sexo: 'Clasificación registrada para sexo; validar el catálogo aplicable.',
     saldo_bono: 'Saldo disponible en bonos asociado al tercero.',
     permite_cartera_vencida:
       'Indica si se permiten operaciones con cartera vencida.',
@@ -243,9 +258,9 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     es_consumidor_final:
       'Marca al tercero como consumidor final para reglas tributarias.',
     genera_bonos: 'Habilita la generación o acumulación de bonos.',
-    solo_remision2: 'Restringe operaciones a una modalidad legacy de remisión.',
+    solo_remision2: 'Restringe operaciones a una modalidad específica de remisión.',
     tiene_documentos_asocisados:
-      'Indica si existen documentos asociados; conserva el error ortográfico legacy.',
+      'Indica si existen documentos asociados; conserva el nombre del campo del contrato.',
     telefonos: 'Hasta tres teléfonos registrados como arreglo.',
     correos: 'Hasta dos correos electrónicos registrados como arreglo.',
     tipo_identificacion: 'Datos relacionados del tipo de identificación.',
@@ -258,6 +273,21 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     nombre_cliente: 'Nombre completo o razón social del tercero.',
     id_tipo_persona: 'Clasificación de persona requerida en creación.',
     identificacion: 'Documento requerido en creación.',
+    fecha_registro:
+      'Fecha de registro enviada como entero en milisegundos desde epoch.',
+    fecha_nacimiento:
+      'Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null.',
+    fecha_vencimiento_codigo_turismo:
+      'Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null.',
+    horario:
+      'Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null.',
+    telefono1: 'Primer número telefónico como texto; puede estar vacío o ser null.',
+    telefono2: 'Segundo número telefónico como texto; puede estar vacío o ser null.',
+    telefono3: 'Tercer número telefónico como texto; puede estar vacío o ser null.',
+    email1: 'Primer correo electrónico como texto; puede estar vacío o ser null.',
+    email2: 'Segundo correo electrónico como texto; puede estar vacío o ser null.',
+    lstContactoCliente:
+      'Arreglo opcional con los contactos adicionales del tercero.',
     clave_portal:
       'Contraseña del portal; se cifra antes de persistir y nunca debe exponerse.',
     id_estado_civil: 'Identificador del estado civil seleccionado.',
@@ -306,7 +336,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     id_plan_cuenta_imp_venta_devolucion:
       'Cuenta para impuestos en devoluciones de ventas.',
     id_plan_cuenta_imp_compa_devolucion:
-      'Cuenta para impuestos en devoluciones de compra; conserva el nombre legacy.',
+      'Cuenta para impuestos en devoluciones de compra.',
     id_plan_cuenta_imp_gasto_devolucion:
       'Cuenta para impuestos en devoluciones de gastos.',
     id_plan_cuentas_gasto: 'Cuenta de gasto asociada al impuesto.',
@@ -360,11 +390,11 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     numero_mesas: 'Número de mesas configuradas para restaurante.',
     digitos_decimales: 'Precisión decimal usada en cálculos o presentación.',
     reondeoTotales:
-      'Control de redondeo de totales; conserva el nombre legacy.',
+      'Control de redondeo de totales.',
     modificicar_precio_minimos_otras_sucursales:
-      'Controla cambios de precios mínimos de otras sucursales; conserva la ortografía legacy.',
+      'Controla cambios de precios mínimos de otras sucursales.',
     modificicar_descuento_maximo_otras_sucursales:
-      'Controla cambios de descuentos máximos de otras sucursales; conserva la ortografía legacy.',
+      'Controla cambios de descuentos máximos de otras sucursales.',
     actualizarPrecioVentaSucursales:
       'Controla la propagación de precios de venta entre sucursales.',
     activar_venta_compra_licores:
@@ -384,12 +414,12 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     id_sucursal: 'Sucursal principal.',
     id_consecutivo: 'Consecutivo predeterminado.',
     sincroniazar_datos:
-      'Control de sincronización; conserva el error ortográfico legacy.',
+      'Control de sincronización.',
     tipo_usuario: 'Rol o tipo de usuario; validar catálogo de seguridad.',
     comision: 'Comisión asignada al empleado.',
     id_bodega: 'Bodega predeterminada.',
     tipo_comision: 'Forma de cálculo de la comisión.',
-    modePosDefecto: 'Modo POS predeterminado; conserva el nombre legacy.',
+    modePosDefecto: 'Modo POS predeterminado.',
     comision_antes_iva: 'Indica si la comisión se calcula antes del IVA.',
     identificacion: 'Documento de identificación del empleado.',
     mostrar_mesa: 'Habilita la visualización o selección de mesas.',
@@ -397,7 +427,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     solo_bodegas_sucursal: 'Restringe las bodegas a las de su sucursal.',
     obligar_apertura_caja: 'Exige apertura de caja antes de operar.',
     cerrar_session_cierre:
-      'Controla el cierre de sesión durante un cierre; conserva session legacy.',
+      'Controla el cierre de sesión durante un cierre.',
     es_tienda: 'Clasifica al usuario para operación de tienda.',
     codigo_empleado: 'Código interno del empleado.',
     sucursal_adicional: 'Sucursales y bodegas adicionales permitidas.',
@@ -434,7 +464,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     es_pedido_linea: 'Indica si proviene de un pedido en línea.',
     id_pedido_linea: 'Identificador del pedido en línea.',
     numero_orden: 'Número de orden principal.',
-    numero_orden2: 'Segunda referencia de orden legacy.',
+    numero_orden2: 'Segunda referencia de orden.',
     impreso: 'Indica si la comanda fue impresa.',
     imprimio_prefactura: 'Indica si se imprimió prefactura.',
     marca:
@@ -454,6 +484,177 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     nombre_mesa: 'Nombre visible de la mesa.',
     nota: 'Motivo u observación de la eliminación.',
   },
+  grabarMovimientoArr: {
+    nombre: 'Nombre o concepto visible del conteo.',
+    nota: 'Observación asociada al conteo.',
+    id_concepto: 'Concepto del movimiento; debe ser -1.',
+    es_entrada: 'Sentido del movimiento; debe ser 1.',
+    cantidad: 'Cantidad contada para el producto.',
+    id_sucursal: 'Sucursal donde se registra el conteo.',
+    id_bodega: 'Bodega del conteo; debe coincidir con la sucursal.',
+    id_producto: 'Producto contado.',
+    fecha_registro: 'Fecha del conteo en milisegundos desde epoch.',
+    id_centro_costo: 'Centro de costo opcional del movimiento.',
+  },
+  grabarDocumentoSimple: {
+    tipoDocumento: '1 factura, 7 compra/gasto, 9 remisión/prefactura.',
+    type_match_producto: '1 ID de producto, 2 SKU, 3 código de barras.',
+    id_consecutivo: 'Consecutivo con el que se registra el documento.',
+    codigo_unico: 'Código numérico de 1 a 50 dígitos, sin normalizar.',
+    nota: 'Nota general del documento.',
+    observacion: 'Observación general del documento.',
+    id_sucursal: 'Sucursal del documento.',
+    id_bodega: 'Bodega; debe coincidir con id_sucursal.',
+    id_vendedor: 'Vendedor asociado al documento.',
+    id_empleado: 'Empleado que registra el documento.',
+    id_cliente: 'Tercero asociado al documento.',
+    nombre_cliente: 'Nombre o razón social del tercero.',
+    objClienteMini: 'Datos mínimos obligatorios del tercero.',
+    objDetalle: 'Líneas del documento; total es el total de cada línea.',
+    cantidad: 'Cantidad de la línea.',
+    descripcion: 'Descripción de la línea.',
+    total: 'Total de la línea; Cuenti registra internamente el unitario.',
+    cambiar_precio_compra: 'True actualiza el costo; false lo conserva.',
+    id_producto: 'Producto cuando type_match_producto es 1.',
+    code: 'SKU o código de barras cuando type_match_producto es 2 o 3.',
+    id_plan_cuentas: 'Cuenta contable requerida en un detalle de gasto.',
+    lstPagos: 'Pagos del documento; arreglo vacío indica crédito.',
+    id_medio_pago: 'Medio de pago aplicado.',
+    id_banco: 'Banco o cuenta asociada al pago.',
+    valor: 'Valor del pago.',
+    boucher: 'Referencia o comprobante del pago.',
+    digitos: 'Dígitos de referencia del pago.',
+    devuelta: 'Valor devuelto al cliente.',
+    dinero_entregado: 'Dinero recibido del cliente.',
+    impuestos: 'Impuestos de la línea; si se incluye debe ser completo.',
+    id_impuesto: 'Impuesto asociado.',
+    total_impuesto_agregado_1: 'Primer total de impuesto agregado.',
+    total_impuesto_agregado_2: 'Segundo total de impuesto agregado.',
+  },
+  consultarImpuestoCuenti: {
+    id_impuesto: 'Identificador del impuesto consultado.',
+  },
+  consultarMarcasActivas: {
+    es_activo: 'Debe ser 1 para consultar marcas activas.',
+    precio_unidad: 'Valor numérico devuelto por el catálogo.',
+    id_marca: 'Identificador de la marca.',
+    nombre_marca: 'Nombre visible de la marca.',
+    fecha_registro: 'Fecha de registro de la marca.',
+    error: 'Mensaje de error si el ERP lo devuelve.',
+  },
+  consultarMarcaPorId: {
+    id_marca: 'Identificador positivo de la marca.',
+    precio_unidad: 'Valor numérico devuelto por el catálogo.',
+    nombre_marca: 'Nombre visible de la marca.',
+    fecha_registro: 'Fecha de registro de la marca.',
+    es_activo: 'Indicador de marca activa.',
+    error: 'Mensaje de error si el ERP lo devuelve.',
+  },
+};
+
+const commonFieldTypes: Record<string, string> = {
+  alias: 'texto',
+  cantidad: 'número',
+  codigo: 'texto',
+  codigo_barras: 'texto',
+  codigo_empleado: 'texto',
+  codigo_sucursal: 'texto',
+  comision: 'número',
+  config: 'objeto o texto',
+  correos: 'arreglo',
+  departamento: 'texto',
+  descripcion: 'texto',
+  direccion: 'texto',
+  es_activo: 'entero',
+  es_bodega: 'entero',
+  es_cliente: 'entero',
+  es_contingencia: 'entero',
+  es_devolucion: 'entero',
+  es_factura: 'entero',
+  es_factura_electronica: 'entero',
+  es_ingreso: 'entero',
+  es_nula: 'entero',
+  es_proveedor: 'entero',
+  estado: 'entero',
+  fecha_actualizacion: 'milisegundos desde epoch',
+  fecha_nacimiento: 'milisegundos desde epoch',
+  fecha_registro: 'milisegundos desde epoch',
+  fecha_vencimiento: 'milisegundos desde epoch',
+  identificacion: 'texto',
+  id_banco: 'entero',
+  id_centro_costo: 'entero',
+  id_cliente: 'entero',
+  id_consecutivo: 'entero',
+  id_empleado: 'entero',
+  id_empresa_portal: 'entero',
+  id_imagen: 'entero',
+  id_impuesto: 'entero',
+  id_medio_pago: 'entero',
+  id_plan_cuenta: 'entero',
+  id_producto: 'entero',
+  id_sucursal: 'entero',
+  metadata: 'objeto o texto',
+  nombre: 'texto',
+  nombre_categoria: 'texto',
+  nombre_cliente: 'texto',
+  nombre_empleado: 'texto',
+  nombre_marca: 'texto',
+  nombre_producto: 'texto',
+  nombre_sucursal: 'texto',
+  nota: 'texto',
+  numero_cuenta: 'texto',
+  pais: 'texto',
+  precio: 'número',
+  precio_unidad: 'número',
+  saldo: 'número',
+  sucursales: 'arreglo, objeto o texto',
+  telefonos: 'arreglo',
+  tipo_impuesto: 'texto',
+  tipo_persona: 'entero',
+  total: 'número',
+  total_estampilla: 'número',
+  total_impoconsumo: 'número',
+  total_impuestos: 'número',
+  total_neto: 'número',
+  url_imagen: 'texto',
+  valor: 'número',
+  valor_impuesto: 'número',
+};
+
+const endpointFieldTypes: Record<string, Record<string, string>> = {
+  consultarImpuestoCuenti: {
+    clasificacion_tributaria: 'texto',
+    nombre_impuesto: 'texto',
+  },
+  consultarMarcasActivas: {
+    error: 'texto',
+    es_activo: 'entero',
+    fecha_registro: 'milisegundos desde epoch',
+    id_marca: 'entero',
+    nombre_marca: 'texto',
+    precio_unidad: 'número',
+  },
+  consultarMarcaPorId: {
+    error: 'texto',
+    es_activo: 'entero',
+    fecha_registro: 'milisegundos desde epoch',
+    id_marca: 'entero',
+    nombre_marca: 'texto',
+    precio_unidad: 'número',
+  },
+};
+
+const inferredFieldType = (field: string) => {
+  if (/^id_|^numero_|^n_/.test(field)) return 'entero';
+  if (/^es_|^(mostrar|permitir|permite|genera|actualizar|activar|vender|cerrar|obligar|cierra|solo_|tiene_|envio)/.test(field)) {
+    return 'entero';
+  }
+  if (/^fecha_|_fecha$/.test(field)) return 'milisegundos desde epoch';
+  if (/^(total|valor|saldo|precio|cantidad|cupo|puntos)/.test(field)) {
+    return 'número';
+  }
+  if (/^(telefonos|correos|items|detalles)$/.test(field)) return 'arreglo';
+  return undefined;
 };
 
 export const getGroupDescription = (group: string) =>
@@ -467,6 +668,11 @@ export const getFieldDescription = (endpointId: string, field: string) =>
   commonFieldDescriptions[field] ??
   groupDescriptions[field] ??
   pendingDescription;
+
+export const getFieldType = (endpointId: string, field: string) =>
+  endpointFieldTypes[endpointId]?.[field] ??
+  commonFieldTypes[field] ??
+  inferredFieldType(field);
 
 export const hasGroupDescription = (group: string) =>
   getGroupDescription(group) !== pendingDescription;

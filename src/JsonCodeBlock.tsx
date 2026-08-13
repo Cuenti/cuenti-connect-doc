@@ -73,7 +73,7 @@ interface JsonCodeBlockProps {
 
 export const JsonCodeBlock = ({
   value,
-  fallback = 'No documentado por el backend.',
+  fallback = 'No hay un ejemplo documentado para esta sección.',
   parseText = false,
 }: JsonCodeBlockProps) => {
   if (value === undefined || value === null || value === '') {
