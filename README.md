@@ -2,7 +2,7 @@
 
 Documentación operativa en React para las 24 operaciones verificadas de Cuenti expuestas mediante Envoy. La interfaz usa Cuenti DNA y lee `contracts/j4/endpoints.json` como registro canónico local; no usa Swagger ni duplica el inventario de rutas.
 
-El portal también publica la skill `cuenti-mcp` en `/skills/cuenti-mcp/`. El botón **Skill MCP** descarga un único paquete `cuenti-mcp.zip` con `SKILL.md` y `references/endpoints.md`, y muestra comandos que instalan ambos archivos en clientes compatibles con Agent Skills y OpenCode.
+El portal también publica la skill `cuenti-mcp` en `/skills/cuenti-mcp/`. El botón **Skill MCP** descarga un único paquete `cuenti-mcp.zip` con `SKILL.md`, `references/mcp-guide.md` y `references/endpoints.md`, y muestra comandos que instalan los tres archivos en clientes compatibles con Agent Skills y OpenCode.
 
 ## Inicio rápido
 

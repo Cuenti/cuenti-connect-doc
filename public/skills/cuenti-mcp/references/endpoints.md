@@ -1403,6 +1403,65 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 - type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
 - Para gasto, tipoDocumento=7 y cada detalle usa id_plan_cuentas.
 
+**Elegir type_match_producto**
+
+En grabarDocumentoSimple, elige un solo modo para todas las líneas del documento. El modo determina si cada producto se busca por ID, SKU o código de barras.
+
+| Valor | Campo en `objDetalle` | Úsalo cuando... | Regla |
+| --- | --- | --- | --- |
+| `1` | `objDetalle[].id_producto` | Cuando conoces el ID interno positivo del producto. | No envíes code. |
+| `2` | `objDetalle[].code` | Cuando conoces el SKU del producto. | code contiene el SKU. No envíes id_producto. |
+| `3` | `objDetalle[].code` | Cuando conoces el código de barras del producto. | code contiene el código de barras. No envíes id_producto. |
+
+- Si no sabes qué identificador usar: consulta primero consultaProductoPaginadaMCP y usa el ID, SKU o código de barras que devuelva.
+- Nunca envíes id_producto y code juntos en la misma línea.
+- Para gastos, usa tipoDocumento=7, identifica la cuenta con id_plan_cuentas, omite los identificadores de producto y conserva type_match_producto=1.
+
+### Modo 1: ID interno
+
+```json
+{
+  "type_match_producto": 1,
+  "objDetalle": [
+    {
+      "cantidad": 2,
+      "id_producto": 25,
+      "total": 30000
+    }
+  ]
+}
+```
+
+### Modo 2: SKU
+
+```json
+{
+  "type_match_producto": 2,
+  "objDetalle": [
+    {
+      "cantidad": 2,
+      "code": "SKU-25",
+      "total": 30000
+    }
+  ]
+}
+```
+
+### Modo 3: código de barras
+
+```json
+{
+  "type_match_producto": 3,
+  "objDetalle": [
+    {
+      "cantidad": 2,
+      "code": "7701234567890",
+      "total": 30000
+    }
+  ]
+}
+```
+
 **Ejemplo de argumentos:**
 
 ```json

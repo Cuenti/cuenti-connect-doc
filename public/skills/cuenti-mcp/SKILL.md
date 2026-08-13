@@ -14,6 +14,10 @@ version: "1.1"
 
 Usa esta skill cuando una persona necesite consultar o modificar información de Cuenti mediante el MCP.
 
+## Conexión MCP
+
+Consulta `references/mcp-guide.md` para la conexión rápida por Streamable HTTP. Las reglas para elegir `type_match_producto` al usar `grabarDocumentoSimple` están en la sección de esa herramienta dentro de `references/endpoints.md`.
+
 ## Hard Rules
 
 - Empieza por la necesidad de negocio: productos, terceros, maestros, facturas, cartera o comandas.
@@ -54,4 +58,5 @@ Indica la herramienta utilizada, los filtros aplicados, un resumen claro del res
 ## References
 
 - `references/endpoints.md` — catálogo funcional navegable por herramienta; cada sección contiene filtros, valores, columnas, grupos, ejemplos y respuesta esperada.
+- `references/mcp-guide.md` — conexión rápida por Streamable HTTP.
 - Los esquemas publicados por el servidor MCP prevalecen si difieren del catálogo instalado.

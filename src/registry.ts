@@ -5,6 +5,7 @@ import {
   categories,
   type EndpointCategory,
   type EndpointDoc,
+  type EndpointGuidance,
   type EndpointPreset,
   type ErrorSpec,
   type FieldSpec,
@@ -30,6 +31,33 @@ const asBoolean = (value: unknown, fallback = false) =>
   typeof value === 'boolean' ? value : fallback;
 const asNumber = (value: unknown) =>
   typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+
+const normalizeGuidance = (value: unknown): EndpointGuidance | undefined => {
+  const guidance = asRecord(value);
+  const rows = asArray(guidance.rows).flatMap((row) => {
+    const item = asRecord(row);
+    const normalized = {
+      value: asString(item.value),
+      field: asString(item.field),
+      use: asString(item.use),
+      rule: asString(item.rule),
+    };
+    return normalized.value && normalized.field ? [normalized] : [];
+  });
+  if (!rows.length) return undefined;
+  return {
+    title: asString(guidance.title),
+    intro: asString(guidance.intro),
+    rows,
+    notes: strings(guidance.notes),
+    examples: asArray(guidance.examples).flatMap((example) => {
+      const item = asRecord(example);
+      return item.title && item.value !== undefined
+        ? [{ title: asString(item.title), value: item.value }]
+        : [];
+    }),
+  };
+};
 
 const recordStrings = (value: unknown) =>
   Object.fromEntries(
@@ -759,6 +787,7 @@ const normalizeEndpoint = (
         ? strings(first(body, ['columns', 'columnas']))
         : normalizeFieldNames(first(body, ['fields', 'campos'])),
     presets: explicitPresets.length ? explicitPresets : fallbackPresets(path),
+    guidance: normalizeGuidance(first(item, ['guidance', 'documentation'])),
     errors: normalizeErrors(
       first(item, ['errors', 'errores', 'validations', 'validaciones']),
     ),

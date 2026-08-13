@@ -205,6 +205,51 @@ describe('documentation application', () => {
     ).toBeVisible();
   });
 
+  it('opens the independent MCP guide and keeps endpoint guidance separate', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Guía de conexión MCP' }),
+    );
+
+    expect(new URLSearchParams(window.location.search).get('section')).toBe(
+      'mcp',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Conectar y usar Cuenti MCP' }),
+    ).toBeVisible();
+    expect(screen.getByText('https://mcp-api.cuenti.co/mcp')).toBeVisible();
+    expect(
+      screen.queryByRole('heading', { name: 'Elegir type_match_producto' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('objDetalle[].id_producto')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Encabezados' })).not.toBeInTheDocument();
+  });
+
+  it('shows invoice product matching guidance inside the endpoint documentation', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await openCategory(user, 'Facturas e historiales');
+    await user.click(
+      screen.getByRole('button', {
+        name: /Crear factura, compra, gasto o remisión/i,
+      }),
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Elegir type_match_producto' }),
+    ).toBeVisible();
+    const guidance = screen
+      .getByRole('heading', { name: 'Elegir type_match_producto' })
+      .closest('section');
+    expect(guidance).not.toBeNull();
+    expect(within(guidance as HTMLElement).getAllByText('objDetalle[].id_producto')).toHaveLength(1);
+    expect(within(guidance as HTMLElement).getAllByText('objDetalle[].code')).toHaveLength(2);
+    expect(screen.getByText('Modo 1: ID interno')).toBeVisible();
+  });
+
   it('does not render capabilities pending implementation', () => {
     render(<App />);
     expect(
@@ -279,6 +324,7 @@ describe('documentation application', () => {
     expect(
       within(dialog).getAllByText(/references\/endpoints\.md/),
     ).toHaveLength(2);
+    expect(within(dialog).getAllByText(/references\/mcp-guide\.md/)).toHaveLength(2);
     expect(within(dialog).getByText(/\.agents\/skills/)).toBeVisible();
     expect(
       within(dialog).getByText(/\.config\/opencode\/skills/),

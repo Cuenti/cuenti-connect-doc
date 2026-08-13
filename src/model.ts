@@ -54,6 +54,21 @@ export interface EndpointPreset {
   body?: unknown;
 }
 
+export interface EndpointGuidanceRow {
+  value: string;
+  field: string;
+  use: string;
+  rule: string;
+}
+
+export interface EndpointGuidance {
+  title: string;
+  intro: string;
+  rows: EndpointGuidanceRow[];
+  notes: string[];
+  examples: Array<{ title: string; value: unknown }>;
+}
+
 export interface ErrorSpec {
   status: string;
   description: string;
@@ -89,6 +104,7 @@ export interface EndpointDoc {
   groups: FieldGroup[];
   columns: string[];
   presets: EndpointPreset[];
+  guidance?: EndpointGuidance;
   errors: ErrorSpec[];
   notes: string[];
   rateLimit?: string;

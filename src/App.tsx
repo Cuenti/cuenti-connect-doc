@@ -25,6 +25,7 @@ import {
   useState,
 } from 'react';
 import './App.css';
+import { McpGuide } from './McpGuide';
 import {
   getFieldDescription,
   getGroupDescription,
@@ -37,7 +38,12 @@ import {
   type FieldSpec,
   type ParameterSpec,
 } from './model';
-import { endpointFromLocation, endpointUrl } from './navigation';
+import {
+  endpointFromLocation,
+  endpointUrl,
+  mcpGuideFromLocation,
+  mcpGuideUrl,
+} from './navigation';
 import { registry } from './registry';
 import {
   buildRequest,
@@ -371,6 +377,10 @@ const SkillInstallModal = ({
     'skills/cuenti-mcp/references/endpoints.md',
     document.baseURI,
   ).href;
+  const guideUrl = new URL(
+    'skills/cuenti-mcp/references/mcp-guide.md',
+    document.baseURI,
+  ).href;
   const packageUrl = new URL('skills/cuenti-mcp.zip', document.baseURI).href;
 
   useEffect(() => {
@@ -407,7 +417,7 @@ const SkillInstallModal = ({
   if (!open) return null;
 
   const installCommand = (directory: string) =>
-    `mkdir -p ${directory}/references && curl -fsSL '${skillUrl}' -o ${directory}/SKILL.md && curl -fsSL '${catalogUrl}' -o ${directory}/references/endpoints.md`;
+    `mkdir -p ${directory}/references && curl -fsSL '${skillUrl}' -o ${directory}/SKILL.md && curl -fsSL '${catalogUrl}' -o ${directory}/references/endpoints.md && curl -fsSL '${guideUrl}' -o ${directory}/references/mcp-guide.md`;
   const sharedInstall = installCommand('~/.agents/skills/cuenti-mcp');
   const openCodeInstall = installCommand(
     '~/.config/opencode/skills/cuenti-mcp',
@@ -444,9 +454,8 @@ const SkillInstallModal = ({
           </button>
         </header>
         <p className="credentials-modal-description">
-          Descarga un único paquete con las instrucciones y el catálogo
-          funcional de las 24 herramientas después de configurar la conexión con
-          Cuenti MCP.
+          Descarga un único paquete con las instrucciones, la guía de conexión y
+          el catálogo funcional de las 24 herramientas.
         </p>
         <div className="skill-downloads">
           <a
@@ -644,6 +653,58 @@ const BodyFieldsTable = ({ fields }: { fields: FieldSpec[] }) => {
   );
 };
 
+const EndpointGuidance = ({ guidance }: { guidance: EndpointDoc['guidance'] }) => {
+  if (!guidance) return null;
+  return (
+    <section className="endpoint-guidance" aria-labelledby="guidance-title">
+      <h3 id="guidance-title">{guidance.title}</h3>
+      <p>{guidance.intro}</p>
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Valor</th>
+              <th>Campo en objDetalle</th>
+              <th>Úsalo cuando...</th>
+              <th>Regla</th>
+            </tr>
+          </thead>
+          <tbody>
+            {guidance.rows.map((row) => (
+              <tr key={`${row.value}-${row.field}`}>
+                <td><code>{row.value}</code></td>
+                <td><code>{row.field}</code></td>
+                <td>{row.use}</td>
+                <td>{row.rule}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <ul className="endpoint-guidance-notes">
+        {guidance.notes.map((note) => <li key={note}>{note}</li>)}
+      </ul>
+      {guidance.examples.length ? (
+        <div className="endpoint-guidance-examples">
+          <h4>Ejemplos</h4>
+          <div className="example-grid">
+            {guidance.examples.map((example) => (
+              <Card as="section" className="example-card" key={example.title}>
+                <CardHeader className="example-card-header">
+                  <CardTitle>{example.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="example-card-content">
+                  <JsonBlock value={example.value} />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+};
+
 const columnDescription = (endpoint: EndpointDoc, column: string) =>
   getFieldDescription(endpoint.id, column);
 
@@ -749,6 +810,7 @@ const EndpointDetail = ({
         </div>
         {endpoint.bodyDescription ? <p>{endpoint.bodyDescription}</p> : null}
         <BodyFieldsTable fields={endpoint.bodyFields} />
+        <EndpointGuidance guidance={endpoint.guidance} />
         {endpoint.groups.length ? (
           <div className="projection-grid">
             {endpoint.groups.map((group) => (
@@ -901,6 +963,7 @@ const EndpointDetail = ({
 
 const App = () => {
   const initialId = endpointFromLocation(window.location);
+  const initialMcpGuide = mcpGuideFromLocation(window.location);
   const [selectedId, setSelectedId] = useState(
     registry.endpoints.some((endpoint) => endpoint.id === initialId)
       ? initialId
@@ -919,6 +982,7 @@ const App = () => {
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [credentialsOpen, setCredentialsOpen] = useState(false);
   const [skillInstallOpen, setSkillInstallOpen] = useState(false);
+  const [showMcpGuide, setShowMcpGuide] = useState(initialMcpGuide);
   const [credentials, setCredentials] = useState<Credentials>(emptyCredentials);
   const [theme, setTheme] = useState(readTheme);
   const deferredSearch = useDeferredValue(search);
@@ -930,6 +994,8 @@ const App = () => {
   useEffect(() => {
     const onPopState = () => {
       const locationId = endpointFromLocation(window.location);
+      const showGuide = mcpGuideFromLocation(window.location);
+      setShowMcpGuide(showGuide);
       if (registry.endpoints.some((endpoint) => endpoint.id === locationId)) {
         startTransition(() => setSelectedId(locationId));
       }
@@ -953,7 +1019,17 @@ const App = () => {
       return new Set(current).add(endpoint.category);
     });
     startTransition(() => {
+      setShowMcpGuide(false);
       setSelectedId(endpoint.id);
+      setNavigationOpen(false);
+    });
+    document.getElementById('main-content')?.focus();
+  };
+
+  const selectMcpGuide = () => {
+    window.history.pushState({}, '', mcpGuideUrl(window.location));
+    startTransition(() => {
+      setShowMcpGuide(true);
       setNavigationOpen(false);
     });
     document.getElementById('main-content')?.focus();
@@ -1086,6 +1162,15 @@ const App = () => {
             {filteredEndpoints.length} resultados
           </p>
           <nav aria-label="Operaciones implementadas">
+            <button
+              type="button"
+              className={`guide-link${showMcpGuide ? ' active' : ''}`}
+              aria-current={showMcpGuide ? 'page' : undefined}
+              onClick={selectMcpGuide}
+            >
+              <span className="guide-link-mark" aria-hidden="true">MCP</span>
+              <span>Guía de conexión MCP</span>
+            </button>
             {categories.map((category) => {
               const endpoints = filteredEndpoints.filter(
                 (endpoint) => endpoint.category === category,
@@ -1148,12 +1233,16 @@ const App = () => {
         </aside>
 
         <main id="main-content" tabIndex={-1}>
-          <EndpointDetail
-            endpoint={selectedEndpoint}
-            curlBaseUrl={serverOrigin}
-            credentials={credentials}
-            onCredentialsChange={setCredentials}
-          />
+          {showMcpGuide ? (
+            <McpGuide />
+          ) : (
+            <EndpointDetail
+              endpoint={selectedEndpoint}
+              curlBaseUrl={serverOrigin}
+              credentials={credentials}
+              onCredentialsChange={setCredentials}
+            />
+          )}
         </main>
       </div>
     </TooltipProvider>
