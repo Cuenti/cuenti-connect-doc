@@ -934,6 +934,97 @@ main:focus {
   line-height: 1.55;
 }
 
+.catalog-guide-hero {
+  padding: 3rem clamp(1.25rem, 4vw, 4.25rem) 2.5rem;
+  color: var(--text-strong);
+  background:
+    radial-gradient(circle at 85% 15%, rgb(244 191 36 / 16%), transparent 32%),
+    var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.catalog-guide-hero h1 {
+  max-width: 48rem;
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 1.03;
+  letter-spacing: -0.04em;
+}
+
+.catalog-guide-hero > p:not(.eyebrow) {
+  max-width: 48rem;
+  margin: 1rem 0 0;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.catalog-guide-content {
+  width: min(100% - 2.5rem, 76rem);
+  margin: 0 auto;
+}
+
+.catalog-guide-section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.catalog-guide-section h2 {
+  margin: 0 0 1rem;
+  color: var(--text-strong);
+  font-size: 1.55rem;
+  letter-spacing: -0.025em;
+}
+
+.catalog-guide-section h3 {
+  margin: 2rem 0 0.85rem;
+  color: var(--text-strong);
+}
+
+.catalog-guide-section > p:not(.section-index) {
+  max-width: 58rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.catalog-steps {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 60rem;
+  padding-left: 1.5rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.catalog-callout {
+  max-width: 60rem;
+  padding: 1rem 1.1rem;
+  margin-top: 1.5rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  border-left: 4px solid var(--brand-yellow);
+  background: var(--surface-muted);
+}
+
+.catalog-callout strong {
+  color: var(--text-strong);
+}
+
+.catalog-table-scroll {
+  margin-top: 1.25rem;
+}
+
+.catalog-value-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.catalog-value-grid .catalog-table-scroll {
+  min-width: 0;
+  margin-top: 0;
+}
+
 .endpoint-hero {
   padding: 2.75rem clamp(1.25rem, 4vw, 4.25rem) 0;
   background: var(--surface);
@@ -1963,7 +2054,8 @@ html[data-theme="dark"] .credentials-modal input:read-only {
 
   .example-grid,
   .behavior-grid,
-  .mcp-example-grid {
+  .mcp-example-grid,
+  .catalog-value-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -227,6 +227,25 @@ describe('documentation application', () => {
     expect(screen.queryByRole('heading', { name: 'Encabezados' })).not.toBeInTheDocument();
   });
 
+  it('opens the independent catalog guide with dynamic ID rules and base values', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: 'Catálogos y valores' }));
+
+    expect(new URLSearchParams(window.location.search).get('section')).toBe(
+      'catalogos',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Catálogos y valores base' }),
+    ).toBeVisible();
+    expect(screen.getByText('id_centro_costo')).toBeVisible();
+    expect(screen.getByText('Gran contribuyente')).toBeVisible();
+    expect(screen.getByText('No responsable de IVA')).toBeVisible();
+    expect(screen.queryByText(/cómo obtenerlo/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/pregunta al usuario/i)).not.toBeInTheDocument();
+  });
+
   it('shows invoice product matching guidance inside the endpoint documentation', async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -325,6 +344,7 @@ describe('documentation application', () => {
       within(dialog).getAllByText(/references\/endpoints\.md/),
     ).toHaveLength(2);
     expect(within(dialog).getAllByText(/references\/mcp-guide\.md/)).toHaveLength(2);
+    expect(within(dialog).getAllByText(/references\/catalogos\.md/)).toHaveLength(2);
     expect(within(dialog).getByText(/\.agents\/skills/)).toBeVisible();
     expect(
       within(dialog).getByText(/\.config\/opencode\/skills/),

@@ -25,6 +25,7 @@ import {
   useState,
 } from 'react';
 import './App.css';
+import { CatalogGuide } from './CatalogGuide';
 import { McpGuide } from './McpGuide';
 import {
   getFieldDescription,
@@ -41,6 +42,8 @@ import {
 import {
   endpointFromLocation,
   endpointUrl,
+  catalogGuideFromLocation,
+  catalogGuideUrl,
   mcpGuideFromLocation,
   mcpGuideUrl,
 } from './navigation';
@@ -381,6 +384,10 @@ const SkillInstallModal = ({
     'skills/cuenti-mcp/references/mcp-guide.md',
     document.baseURI,
   ).href;
+  const catalogsUrl = new URL(
+    'skills/cuenti-mcp/references/catalogos.md',
+    document.baseURI,
+  ).href;
   const packageUrl = new URL('skills/cuenti-mcp.zip', document.baseURI).href;
 
   useEffect(() => {
@@ -417,7 +424,7 @@ const SkillInstallModal = ({
   if (!open) return null;
 
   const installCommand = (directory: string) =>
-    `mkdir -p ${directory}/references && curl -fsSL '${skillUrl}' -o ${directory}/SKILL.md && curl -fsSL '${catalogUrl}' -o ${directory}/references/endpoints.md && curl -fsSL '${guideUrl}' -o ${directory}/references/mcp-guide.md`;
+    `mkdir -p ${directory}/references && curl -fsSL '${skillUrl}' -o ${directory}/SKILL.md && curl -fsSL '${catalogUrl}' -o ${directory}/references/endpoints.md && curl -fsSL '${guideUrl}' -o ${directory}/references/mcp-guide.md && curl -fsSL '${catalogsUrl}' -o ${directory}/references/catalogos.md`;
   const sharedInstall = installCommand('~/.agents/skills/cuenti-mcp');
   const openCodeInstall = installCommand(
     '~/.config/opencode/skills/cuenti-mcp',
@@ -454,8 +461,8 @@ const SkillInstallModal = ({
           </button>
         </header>
         <p className="credentials-modal-description">
-          Descarga un único paquete con las instrucciones, la guía de conexión y
-          el catálogo funcional de las 24 herramientas.
+          Descarga un único paquete con las instrucciones, la guía de conexión,
+          los catálogos y el catálogo funcional de las 24 herramientas.
         </p>
         <div className="skill-downloads">
           <a
@@ -964,6 +971,7 @@ const EndpointDetail = ({
 const App = () => {
   const initialId = endpointFromLocation(window.location);
   const initialMcpGuide = mcpGuideFromLocation(window.location);
+  const initialCatalogGuide = catalogGuideFromLocation(window.location);
   const [selectedId, setSelectedId] = useState(
     registry.endpoints.some((endpoint) => endpoint.id === initialId)
       ? initialId
@@ -983,6 +991,7 @@ const App = () => {
   const [credentialsOpen, setCredentialsOpen] = useState(false);
   const [skillInstallOpen, setSkillInstallOpen] = useState(false);
   const [showMcpGuide, setShowMcpGuide] = useState(initialMcpGuide);
+  const [showCatalogGuide, setShowCatalogGuide] = useState(initialCatalogGuide);
   const [credentials, setCredentials] = useState<Credentials>(emptyCredentials);
   const [theme, setTheme] = useState(readTheme);
   const deferredSearch = useDeferredValue(search);
@@ -995,7 +1004,9 @@ const App = () => {
     const onPopState = () => {
       const locationId = endpointFromLocation(window.location);
       const showGuide = mcpGuideFromLocation(window.location);
+      const showCatalog = catalogGuideFromLocation(window.location);
       setShowMcpGuide(showGuide);
+      setShowCatalogGuide(showCatalog);
       if (registry.endpoints.some((endpoint) => endpoint.id === locationId)) {
         startTransition(() => setSelectedId(locationId));
       }
@@ -1020,6 +1031,7 @@ const App = () => {
     });
     startTransition(() => {
       setShowMcpGuide(false);
+      setShowCatalogGuide(false);
       setSelectedId(endpoint.id);
       setNavigationOpen(false);
     });
@@ -1030,6 +1042,17 @@ const App = () => {
     window.history.pushState({}, '', mcpGuideUrl(window.location));
     startTransition(() => {
       setShowMcpGuide(true);
+      setShowCatalogGuide(false);
+      setNavigationOpen(false);
+    });
+    document.getElementById('main-content')?.focus();
+  };
+
+  const selectCatalogGuide = () => {
+    window.history.pushState({}, '', catalogGuideUrl(window.location));
+    startTransition(() => {
+      setShowCatalogGuide(true);
+      setShowMcpGuide(false);
       setNavigationOpen(false);
     });
     document.getElementById('main-content')?.focus();
@@ -1171,6 +1194,15 @@ const App = () => {
               <span className="guide-link-mark" aria-hidden="true">MCP</span>
               <span>Guía de conexión MCP</span>
             </button>
+            <button
+              type="button"
+              className={`guide-link${showCatalogGuide ? ' active' : ''}`}
+              aria-current={showCatalogGuide ? 'page' : undefined}
+              onClick={selectCatalogGuide}
+            >
+              <span className="guide-link-mark" aria-hidden="true">IDs</span>
+              <span>Catálogos y valores</span>
+            </button>
             {categories.map((category) => {
               const endpoints = filteredEndpoints.filter(
                 (endpoint) => endpoint.category === category,
@@ -1233,7 +1265,9 @@ const App = () => {
         </aside>
 
         <main id="main-content" tabIndex={-1}>
-          {showMcpGuide ? (
+          {showCatalogGuide ? (
+            <CatalogGuide />
+          ) : showMcpGuide ? (
             <McpGuide />
           ) : (
             <EndpointDetail

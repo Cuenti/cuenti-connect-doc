@@ -16,7 +16,7 @@ Usa esta skill cuando una persona necesite consultar o modificar información de
 
 ## Conexión MCP
 
-Consulta `references/mcp-guide.md` para la conexión rápida por Streamable HTTP. Las reglas para elegir `type_match_producto` al usar `grabarDocumentoSimple` están en la sección de esa herramienta dentro de `references/endpoints.md`.
+Consulta `references/mcp-guide.md` para la conexión rápida por Streamable HTTP y `references/catalogos.md` antes de enviar IDs o enumeraciones. Las reglas para elegir `type_match_producto` al usar `grabarDocumentoSimple` están en la sección de esa herramienta dentro de `references/endpoints.md`.
 
 ## Hard Rules
 
@@ -25,6 +25,8 @@ Consulta `references/mcp-guide.md` para la conexión rápida por Streamable HTTP
 - Lee únicamente esa sección, desde su encabezado hasta el siguiente encabezado `###`; no recorras todo el catálogo si no es necesario.
 - Usa el ejemplo de argumentos de esa sección y adapta solo los valores requeridos por la solicitud.
 - Contrasta siempre los nombres, tipos y campos con el `inputSchema` que devuelve `tools/list` antes de llamar.
+- No inventes IDs: consulta el catálogo MCP correspondiente; si no existe, si falta el ID o si la respuesta no es coherente con el registro esperado, pregunta al usuario antes de continuar.
+- Para IDs dependientes de la empresa, confirma con el usuario el nombre y el ID seleccionado antes de una operación que modifique datos.
 - Pide solo las columnas o grupos necesarios y usa paginación pequeña.
 - Mantén las credenciales en la conexión MCP; nunca las incluyas en argumentos o respuestas.
 - Antes de modificar datos, consulta el estado actual, explica el cambio y solicita confirmación.
@@ -59,4 +61,5 @@ Indica la herramienta utilizada, los filtros aplicados, un resumen claro del res
 
 - `references/endpoints.md` — catálogo funcional navegable por herramienta; cada sección contiene filtros, valores, columnas, grupos, ejemplos y respuesta esperada.
 - `references/mcp-guide.md` — conexión rápida por Streamable HTTP.
+- `references/catalogos.md` — IDs dinámicos, catálogos disponibles y valores base de las enumeraciones.
 - Los esquemas publicados por el servidor MCP prevalecen si difieren del catálogo instalado.
