@@ -83,7 +83,9 @@ test('mantiene el inicio rápido después del título entre 1100 y 1250 px', asy
 
   const firstPreset = page.locator('.preset-docs details').first();
   await firstPreset.locator('summary').click();
-  await expect(firstPreset.getByRole('heading', { name: 'Filtros' })).toBeVisible();
+  await expect(
+    firstPreset.getByRole('heading', { name: 'Filtros' }),
+  ).toBeVisible();
   await expect(firstPreset.locator('.preset-value-list')).toHaveCount(2);
   await expect(firstPreset.locator('.json-code')).toHaveCount(0);
 });
@@ -153,12 +155,16 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(
     page.getByRole('columnheader', { name: 'Predeterminado' }).first(),
   ).toHaveCSS('color', 'rgb(9, 21, 44)');
-  const firstSectionIndex = page.locator('.detail-sections .section-index').first();
+  const firstSectionIndex = page
+    .locator('.detail-sections .section-index')
+    .first();
   await expect(firstSectionIndex).toHaveText('01');
   await expect(firstSectionIndex).toHaveCSS('font-size', '16px');
   await expect(firstSectionIndex).toHaveCSS('line-height', '20px');
   await expect(firstSectionIndex).toHaveCSS('color', 'rgb(128, 99, 0)');
-  await expect(page.getByRole('heading', { name: 'Ejecuta esta operación' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Ejecuta esta operación' }),
+  ).toBeVisible();
   await expect(page.getByText('Con variables Postman')).toHaveCount(0);
   await expect(page.locator('.form-error').first()).toHaveCSS(
     'background-color',
@@ -168,11 +174,15 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
     'color',
     'rgb(164, 20, 20)',
   );
-  await expect(page.locator('.quick-start-code .curl-command')).toHaveText('curl');
-  await expect(page.locator('.quick-start-code .curl-method')).toHaveText('GET');
-  await expect(page.locator('.quick-start-code .curl-variable').first()).toHaveText(
-    '{{id_empresa}}',
+  await expect(page.locator('.quick-start-code .curl-command')).toHaveText(
+    'curl',
   );
+  await expect(page.locator('.quick-start-code .curl-method')).toHaveText(
+    'GET',
+  );
+  await expect(
+    page.locator('.quick-start-code .curl-variable').first(),
+  ).toHaveText('{{id_empresa}}');
   await expect(page.locator('.quick-start')).toContainText('{{id_empresa}}');
   await expect(page.locator('.quick-start')).toContainText('Bearer {{token}}');
   await page.getByLabel('id_sucursal *').fill('');
@@ -341,10 +351,9 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
     'color',
     'rgb(218, 229, 248)',
   );
-  await expect(page.locator('.detail-sections .section-index').first()).toHaveCSS(
-    'color',
-    'rgb(255, 198, 0)',
-  );
+  await expect(
+    page.locator('.detail-sections .section-index').first(),
+  ).toHaveCSS('color', 'rgb(255, 198, 0)');
   await expect(page.locator('.form-error').first()).toHaveCSS(
     'background-color',
     'rgb(82, 10, 10)',
@@ -392,9 +401,7 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await credentialsDialog.getByLabel('Token *').fill('Bearer Bearer token-e2e');
   await credentialsDialog.getByLabel('Sucursal *').fill('1');
   await credentialsDialog.getByLabel('Empleado *').fill('7');
-  await credentialsDialog
-    .getByRole('button', { name: 'Aceptar' })
-    .click();
+  await credentialsDialog.getByRole('button', { name: 'Aceptar' }).click();
   await expect(page.getByText('Con credenciales activas')).toHaveCount(0);
   await expect(page.locator('.quick-start')).toContainText('empresa-e2e');
   await expect(page.locator('.quick-start')).not.toContainText('{{token}}');
@@ -415,9 +422,7 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   );
   await expect(credentialsDialog.getByLabel('Sucursal *')).toHaveValue('1');
   await expect(credentialsDialog.getByLabel('Empleado *')).toHaveValue('7');
-  await credentialsDialog
-    .getByRole('button', { name: 'Aceptar' })
-    .click();
+  await credentialsDialog.getByRole('button', { name: 'Aceptar' }).click();
   await page.getByRole('button', { name: 'Enviar solicitud' }).click();
 
   const postBadge = page.locator('.method-post').first();

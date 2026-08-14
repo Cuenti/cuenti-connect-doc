@@ -156,7 +156,7 @@ describe('canonical documentation registry', () => {
       ...endpoint.bodyFields.flatMap((field) => fieldDescriptions(field)),
     ]);
 
-     expect(texts.join(' ')).not.toMatch(/legacy|servidor|backend/i);
+    expect(texts.join(' ')).not.toMatch(/legacy|servidor|backend/i);
   });
 
   it('shows the canonical labels for transaction document types', () => {

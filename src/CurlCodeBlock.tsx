@@ -47,7 +47,9 @@ export const CurlCodeBlock = ({ curl }: { curl: string }) => {
   return (
     <code className="curl-code">
       {highlightShell(curl.slice(0, prefixEnd))}
-      <span className="curl-json">{highlightJson(curl.slice(prefixEnd, bodyEnd))}</span>
+      <span className="curl-json">
+        {highlightJson(curl.slice(prefixEnd, bodyEnd))}
+      </span>
       {curl.slice(bodyEnd)}
     </code>
   );

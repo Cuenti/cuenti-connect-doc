@@ -258,7 +258,8 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     es_consumidor_final:
       'Marca al tercero como consumidor final para reglas tributarias.',
     genera_bonos: 'Habilita la generación o acumulación de bonos.',
-    solo_remision2: 'Restringe operaciones a una modalidad específica de remisión.',
+    solo_remision2:
+      'Restringe operaciones a una modalidad específica de remisión.',
     tiene_documentos_asocisados:
       'Indica si existen documentos asociados; conserva el nombre del campo del contrato.',
     telefonos: 'Hasta tres teléfonos registrados como arreglo.',
@@ -281,11 +282,16 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
       'Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null.',
     horario:
       'Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null.',
-    telefono1: 'Primer número telefónico como texto; puede estar vacío o ser null.',
-    telefono2: 'Segundo número telefónico como texto; puede estar vacío o ser null.',
-    telefono3: 'Tercer número telefónico como texto; puede estar vacío o ser null.',
-    email1: 'Primer correo electrónico como texto; puede estar vacío o ser null.',
-    email2: 'Segundo correo electrónico como texto; puede estar vacío o ser null.',
+    telefono1:
+      'Primer número telefónico como texto; puede estar vacío o ser null.',
+    telefono2:
+      'Segundo número telefónico como texto; puede estar vacío o ser null.',
+    telefono3:
+      'Tercer número telefónico como texto; puede estar vacío o ser null.',
+    email1:
+      'Primer correo electrónico como texto; puede estar vacío o ser null.',
+    email2:
+      'Segundo correo electrónico como texto; puede estar vacío o ser null.',
     lstContactoCliente:
       'Arreglo opcional con los contactos adicionales del tercero.',
     clave_portal:
@@ -389,8 +395,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     vender_con_impuestos: 'Indica si la venta opera incluyendo impuestos.',
     numero_mesas: 'Número de mesas configuradas para restaurante.',
     digitos_decimales: 'Precisión decimal usada en cálculos o presentación.',
-    reondeoTotales:
-      'Control de redondeo de totales.',
+    reondeoTotales: 'Control de redondeo de totales.',
     modificicar_precio_minimos_otras_sucursales:
       'Controla cambios de precios mínimos de otras sucursales.',
     modificicar_descuento_maximo_otras_sucursales:
@@ -413,8 +418,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     id_lista_precios: 'Lista de precios predeterminada.',
     id_sucursal: 'Sucursal principal.',
     id_consecutivo: 'Consecutivo predeterminado.',
-    sincroniazar_datos:
-      'Control de sincronización.',
+    sincroniazar_datos: 'Control de sincronización.',
     tipo_usuario: 'Rol o tipo de usuario; validar catálogo de seguridad.',
     comision: 'Comisión asignada al empleado.',
     id_bodega: 'Bodega predeterminada.',
@@ -426,8 +430,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     es_contador: 'Marca al empleado como contador.',
     solo_bodegas_sucursal: 'Restringe las bodegas a las de su sucursal.',
     obligar_apertura_caja: 'Exige apertura de caja antes de operar.',
-    cerrar_session_cierre:
-      'Controla el cierre de sesión durante un cierre.',
+    cerrar_session_cierre: 'Controla el cierre de sesión durante un cierre.',
     es_tienda: 'Clasifica al usuario para operación de tienda.',
     codigo_empleado: 'Código interno del empleado.',
     sucursal_adicional: 'Sucursales y bodegas adicionales permitidas.',
@@ -646,7 +649,11 @@ const endpointFieldTypes: Record<string, Record<string, string>> = {
 
 const inferredFieldType = (field: string) => {
   if (/^id_|^numero_|^n_/.test(field)) return 'entero';
-  if (/^es_|^(mostrar|permitir|permite|genera|actualizar|activar|vender|cerrar|obligar|cierra|solo_|tiene_|envio)/.test(field)) {
+  if (
+    /^es_|^(mostrar|permitir|permite|genera|actualizar|activar|vender|cerrar|obligar|cierra|solo_|tiene_|envio)/.test(
+      field,
+    )
+  ) {
     return 'entero';
   }
   if (/^fecha_|_fecha$/.test(field)) return 'milisegundos desde epoch';

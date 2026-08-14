@@ -44,11 +44,12 @@ describe('documentation application', () => {
   it('renders the Cuenti logo in the sidebar', () => {
     render(<App />);
 
-    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).toBeVisible();
-    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).toHaveAttribute(
-      'aria-hidden',
-      'true',
-    );
+    expect(
+      document.querySelector('.sidebar-brand-control .sidebar-logo'),
+    ).toBeVisible();
+    expect(
+      document.querySelector('.sidebar-brand-control .sidebar-logo'),
+    ).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('collapses and expands the desktop sidebar accessibly', async () => {
@@ -63,11 +64,12 @@ describe('documentation application', () => {
       'sidebar-collapsed',
     );
     expect(document.querySelector('.sidebar-isotype')).toBeVisible();
-    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Expandir barra lateral' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(
+      document.querySelector('.sidebar-brand-control .sidebar-logo'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Expandir barra lateral' }),
+    ).toHaveAttribute('aria-expanded', 'false');
 
     await user.click(
       screen.getByRole('button', { name: 'Expandir barra lateral' }),
@@ -76,7 +78,9 @@ describe('documentation application', () => {
     expect(document.querySelector('.app-shell')).not.toHaveClass(
       'sidebar-collapsed',
     );
-    expect(document.querySelector('.sidebar-brand-control .sidebar-logo')).toBeVisible();
+    expect(
+      document.querySelector('.sidebar-brand-control .sidebar-logo'),
+    ).toBeVisible();
   });
 
   it('renders a collapsed index and opens endpoint groups on demand', async () => {
@@ -251,15 +255,21 @@ describe('documentation application', () => {
     expect(
       screen.queryByRole('heading', { name: 'Elegir type_match_producto' }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText('objDetalle[].id_producto')).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Encabezados' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('objDetalle[].id_producto'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Encabezados' }),
+    ).not.toBeInTheDocument();
   });
 
   it('opens the independent catalog guide with dynamic ID rules and base values', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByRole('button', { name: 'Catálogos y valores' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Catálogos y valores' }),
+    );
 
     expect(new URLSearchParams(window.location.search).get('section')).toBe(
       'catalogos',
@@ -292,8 +302,12 @@ describe('documentation application', () => {
       .getByRole('heading', { name: 'Elegir type_match_producto' })
       .closest('section');
     expect(guidance).not.toBeNull();
-    expect(within(guidance as HTMLElement).getAllByText('objDetalle[].id_producto')).toHaveLength(1);
-    expect(within(guidance as HTMLElement).getAllByText('objDetalle[].code')).toHaveLength(2);
+    expect(
+      within(guidance as HTMLElement).getAllByText('objDetalle[].id_producto'),
+    ).toHaveLength(1);
+    expect(
+      within(guidance as HTMLElement).getAllByText('objDetalle[].code'),
+    ).toHaveLength(2);
     expect(screen.getByText('Modo 1: ID interno')).toBeVisible();
   });
 
@@ -340,9 +354,7 @@ describe('documentation application', () => {
     expect(within(dialog).getByLabelText('Zona horaria *')).toHaveValue(
       'GMT-0500',
     );
-    await user.click(
-      within(dialog).getByRole('button', { name: 'Aceptar' }),
-    );
+    await user.click(within(dialog).getByRole('button', { name: 'Aceptar' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /Credenciales/i }));
@@ -358,9 +370,13 @@ describe('documentation application', () => {
       .getByRole('heading', { name: 'Ejecuta esta operación' })
       .closest('section');
     expect(quickStart).not.toBeNull();
-    expect(within(quickStart as HTMLElement).getByText(/\{\{id_empresa\}\}/)).toBeVisible();
+    expect(
+      within(quickStart as HTMLElement).getByText(/\{\{id_empresa\}\}/),
+    ).toBeVisible();
     expect(quickStart).toHaveTextContent('Bearer {{token}}');
-    expect(within(quickStart as HTMLElement).getByText(/GMT-0500/)).toBeVisible();
+    expect(
+      within(quickStart as HTMLElement).getByText(/GMT-0500/),
+    ).toBeVisible();
 
     await user.click(
       within(quickStart as HTMLElement).getByRole('button', {
@@ -379,9 +395,7 @@ describe('documentation application', () => {
     await user.type(within(dialog).getByLabelText('Token *'), 'token-ui');
     await user.type(within(dialog).getByLabelText('Sucursal *'), '3');
     await user.type(within(dialog).getByLabelText('Empleado *'), '9');
-    await user.click(
-      within(dialog).getByRole('button', { name: 'Aceptar' }),
-    );
+    await user.click(within(dialog).getByRole('button', { name: 'Aceptar' }));
 
     expect(
       within(quickStart as HTMLElement).getByText(
@@ -426,8 +440,12 @@ describe('documentation application', () => {
     expect(
       within(dialog).getAllByText(/references\/endpoints\.md/),
     ).toHaveLength(2);
-    expect(within(dialog).getAllByText(/references\/mcp-guide\.md/)).toHaveLength(2);
-    expect(within(dialog).getAllByText(/references\/catalogos\.md/)).toHaveLength(2);
+    expect(
+      within(dialog).getAllByText(/references\/mcp-guide\.md/),
+    ).toHaveLength(2);
+    expect(
+      within(dialog).getAllByText(/references\/catalogos\.md/),
+    ).toHaveLength(2);
     expect(within(dialog).getByText(/\.agents\/skills/)).toBeVisible();
     expect(
       within(dialog).getByText(/\.config\/opencode\/skills/),
@@ -462,9 +480,7 @@ describe('documentation application', () => {
     await user.type(within(dialog).getByLabelText('Token *'), 'token-1');
     await user.type(within(dialog).getByLabelText('Sucursal *'), '1');
     await user.type(within(dialog).getByLabelText('Empleado *'), '7');
-    await user.click(
-      within(dialog).getByRole('button', { name: 'Aceptar' }),
-    );
+    await user.click(within(dialog).getByRole('button', { name: 'Aceptar' }));
 
     expect(sendButton).toBeEnabled();
     expect(
@@ -478,9 +494,7 @@ describe('documentation application', () => {
     render(<App />);
     expect(
       screen.getAllByText('Documentación Cuenti Connect').length,
-    ).toBeGreaterThan(
-      0,
-    );
+    ).toBeGreaterThan(0);
     expect(screen.queryByText('Documentación API ERP')).not.toBeInTheDocument();
     expect(screen.queryByText('Vía proxy')).not.toBeInTheDocument();
     expect(screen.queryByText('Caché e invalidación')).not.toBeInTheDocument();
@@ -524,8 +538,12 @@ describe('documentation application', () => {
 
     expect(screen.getAllByText('Valores de la ruta').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Filtros').length).toBeGreaterThan(0);
-    expect(document.querySelector('.preset-docs .json-code')).not.toBeInTheDocument();
-    expect(document.querySelector('.preset-docs .preset-value-list')).toBeInTheDocument();
+    expect(
+      document.querySelector('.preset-docs .json-code'),
+    ).not.toBeInTheDocument();
+    expect(
+      document.querySelector('.preset-docs .preset-value-list'),
+    ).toBeInTheDocument();
   });
 
   it('enables interactive requests by default only in development', () => {

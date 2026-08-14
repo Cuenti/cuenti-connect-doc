@@ -19,8 +19,14 @@ describe('CurlCodeBlock', () => {
     expect(container.querySelector('.curl-url')).toHaveTextContent(
       'https://example.test/resource',
     );
-    expect(container.querySelector('.curl-variable')).toHaveTextContent('{{token}}');
-    expect(container.querySelector('.curl-json .json-boolean')).toHaveTextContent('true');
-    expect(container.querySelector('.curl-json .json-number')).toHaveTextContent('2');
+    expect(container.querySelector('.curl-variable')).toHaveTextContent(
+      '{{token}}',
+    );
+    expect(
+      container.querySelector('.curl-json .json-boolean'),
+    ).toHaveTextContent('true');
+    expect(
+      container.querySelector('.curl-json .json-number'),
+    ).toHaveTextContent('2');
   });
 });

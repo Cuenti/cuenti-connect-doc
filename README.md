@@ -86,14 +86,28 @@ No guardes tokens, contraseñas, credenciales de empresa ni datos personales en 
 ## Verificación
 
 ```bash
-pnpm run lint
-pnpm run typecheck
-pnpm run test
+pnpm run verify
 pnpm run build
 pnpm run test:e2e
 ```
 
-`test:e2e` cubre escritorio y móvil con Playwright Chromium. Las pruebas interceptan las solicitudes y no necesitan credenciales reales ni acceso al backend.
+`verify` ejecuta el lint enfocado de código de aplicación, ambos typechecks, las pruebas unitarias y la paridad de los artefactos públicos. `test:e2e` cubre escritorio y móvil con Playwright Chromium. Las pruebas interceptan las solicitudes y no necesitan credenciales reales ni acceso al backend.
+
+## Arquitectura
+
+La aplicación se organiza alrededor de límites explícitos:
+
+| Área | Responsabilidad |
+| --- | --- |
+| `src/components/portal` | Composición de la aplicación, navegación, shell, tema y estado global en memoria. |
+| `src/components/endpoint-documentation` | Presentación de contratos, ejemplos, curl y tablas de cada operación. |
+| `src/components/try-it` | Estado y controles de ejecución interactiva por endpoint. |
+| `src/components/modals` | Flujos de credenciales e instalación de skills. |
+| `src/app` | Configuración del runtime y estado de página derivado de la URL. |
+| `src/request` | Construcción pura de solicitudes y comandos curl, detrás de `src/request.ts`. |
+| `src/registry` | Adaptación del registro canónico, detrás de `src/registry.ts`. |
+
+El dominio no depende de React ni de APIs del navegador. Los componentes reciben datos y callbacks desde la composición; no importan estado de otras features. Las fachadas `src/request.ts` y `src/registry.ts` conservan los límites de consumo mientras sus implementaciones evolucionan.
 
 ## Límites de responsabilidad
 

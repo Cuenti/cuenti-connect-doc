@@ -1,10 +1,34 @@
 const dynamicIds = [
-  ['id_plan_cuentas / id_plan_cuenta', 'Cuenta contable del ERP', 'Preguntar el ID; no hay catálogo MCP dedicado.'],
-  ['id_centro_costo', 'Centro de costos', 'Preguntar el ID; no hay catálogo MCP dedicado.'],
-  ['id_bodega', 'Bodega del movimiento o empleado', 'Preguntar el ID; no hay catálogo MCP dedicado.'],
-  ['id_lista_precios', 'Lista de precios', 'Preguntar el ID; no hay catálogo MCP dedicado.'],
-  ['id_ruta_despacho', 'Ruta de despacho', 'Preguntar el ID; no hay catálogo MCP dedicado.'],
-  ['id_cocina', 'Cocina que prepara una comanda', 'Preguntar el ID; no hay catálogo MCP dedicado.'],
+  [
+    'id_plan_cuentas / id_plan_cuenta',
+    'Cuenta contable del ERP',
+    'Preguntar el ID; no hay catálogo MCP dedicado.',
+  ],
+  [
+    'id_centro_costo',
+    'Centro de costos',
+    'Preguntar el ID; no hay catálogo MCP dedicado.',
+  ],
+  [
+    'id_bodega',
+    'Bodega del movimiento o empleado',
+    'Preguntar el ID; no hay catálogo MCP dedicado.',
+  ],
+  [
+    'id_lista_precios',
+    'Lista de precios',
+    'Preguntar el ID; no hay catálogo MCP dedicado.',
+  ],
+  [
+    'id_ruta_despacho',
+    'Ruta de despacho',
+    'Preguntar el ID; no hay catálogo MCP dedicado.',
+  ],
+  [
+    'id_cocina',
+    'Cocina que prepara una comanda',
+    'Preguntar el ID; no hay catálogo MCP dedicado.',
+  ],
 ];
 
 const CatalogTable = ({
@@ -27,7 +51,7 @@ const CatalogTable = ({
         {rows.map((row) => (
           <tr key={row.join('-')}>
             {row.map((cell, index) => (
-              <td key={`${row[0]}-${index}`}>
+              <td key={`${row[0]}-${cell}`}>
                 {index === 0 ? <code>{cell}</code> : cell}
               </td>
             ))}
@@ -50,7 +74,10 @@ export const CatalogGuide = () => (
     </header>
 
     <div className="catalog-guide-content">
-      <section className="catalog-guide-section" aria-labelledby="dynamic-ids-title">
+      <section
+        className="catalog-guide-section"
+        aria-labelledby="dynamic-ids-title"
+      >
         <p className="section-index">01 / IDs por empresa</p>
         <h2 id="dynamic-ids-title">IDs de configuración</h2>
         <CatalogTable
@@ -59,7 +86,10 @@ export const CatalogGuide = () => (
         />
       </section>
 
-      <section className="catalog-guide-section" aria-labelledby="base-values-title">
+      <section
+        className="catalog-guide-section"
+        aria-labelledby="base-values-title"
+      >
         <p className="section-index">02 / Enumeraciones</p>
         <h2 id="base-values-title">Valores base confirmados</h2>
         <div className="catalog-value-grid">

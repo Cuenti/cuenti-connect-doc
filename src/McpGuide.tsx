@@ -25,7 +25,10 @@ export const McpGuide = () => (
     </header>
 
     <div className="mcp-guide-content">
-      <section className="mcp-guide-section" aria-labelledby="mcp-connect-title">
+      <section
+        className="mcp-guide-section"
+        aria-labelledby="mcp-connect-title"
+      >
         <p className="section-index">01 / Conexión</p>
         <h2 id="mcp-connect-title">Conexión rápida</h2>
         <ol className="mcp-steps">
@@ -38,10 +41,12 @@ export const McpGuide = () => (
             zona horaria y autorización.
           </li>
           <li>
-            Ejecuta <code>initialize</code> y después <code>tools/list</code> para
-            conocer las herramientas disponibles y sus esquemas.
+            Ejecuta <code>initialize</code> y después <code>tools/list</code>{' '}
+            para conocer las herramientas disponibles y sus esquemas.
           </li>
-          <li>Elige una herramienta, valida sus argumentos y realiza la llamada.</li>
+          <li>
+            Elige una herramienta, valida sus argumentos y realiza la llamada.
+          </li>
         </ol>
         <div className="mcp-callout">
           <strong>No pongas credenciales en los argumentos.</strong> El cliente
@@ -58,7 +63,9 @@ export const McpGuide = () => (
             <tbody>
               {connectionHeaders.map(([name, description]) => (
                 <tr key={name}>
-                  <td><code>{name}</code></td>
+                  <td>
+                    <code>{name}</code>
+                  </td>
                   <td>{description}</td>
                 </tr>
               ))}
@@ -67,13 +74,21 @@ export const McpGuide = () => (
         </div>
       </section>
 
-      <section className="mcp-guide-section mcp-checklist" aria-labelledby="mcp-check-title">
+      <section
+        className="mcp-guide-section mcp-checklist"
+        aria-labelledby="mcp-check-title"
+      >
         <p className="section-index">02 / Antes de enviar</p>
         <h2 id="mcp-check-title">Lista de verificación</h2>
         <ul>
-          <li>El cliente está conectado y recibió el esquema con <code>tools/list</code>.</li>
+          <li>
+            El cliente está conectado y recibió el esquema con{' '}
+            <code>tools/list</code>.
+          </li>
           <li>La herramienta corresponde a la necesidad.</li>
-          <li>Los argumentos coinciden con el esquema de <code>tools/list</code>.</li>
+          <li>
+            Los argumentos coinciden con el esquema de <code>tools/list</code>.
+          </li>
           <li>La solicitud no contiene credenciales.</li>
           <li>Para una mutación, explica el cambio y solicita confirmación.</li>
         </ul>

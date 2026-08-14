@@ -91,9 +91,14 @@ describe('request builder', () => {
     draft.path = { id_sucursal: '3', pagina: '0' };
     draft.credentials = credentials;
 
-    const request = buildRequest(endpoint, draft, 'https://proxy.example.test', {
-      includeCredentials: true,
-    });
+    const request = buildRequest(
+      endpoint,
+      draft,
+      'https://proxy.example.test',
+      {
+        includeCredentials: true,
+      },
+    );
 
     expect(request.curl).toContain(
       `X-Auth-Token-empresa: ${credentials.company}`,

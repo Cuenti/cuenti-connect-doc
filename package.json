@@ -3,16 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.3.0",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "rsbuild build",
-    "check": "biome check --write",
+    "check": "biome check --write src e2e tools",
     "dev": "rsbuild --open",
-    "format": "biome format --write",
-    "lint": "biome check .",
+    "format": "biome format --write src e2e tools",
+    "lint": "biome check src e2e tools",
+    "lint:focused": "pnpm run lint",
     "preview": "rsbuild preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
+    "artifacts:check": "node tools/verify-public-artifacts.mjs",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run typecheck:e2e && pnpm run test && pnpm run artifacts:check"
   },
   "dependencies": {
     "@cuenti-dna/react": "0.1.1-beta.23",

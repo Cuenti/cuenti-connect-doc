@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strictNullChecks": false
+  },
+  "include": [
+    "e2e",
+    "playwright.config.ts",
+    "rsbuild.config.ts",
+    "vitest.config.ts"
+  ]
+}
