@@ -6,6 +6,7 @@ export const categories = [
   'Facturas e historiales',
   'Cartera',
   'Comandas',
+  'Documentos comerciales',
 ] as const;
 
 export type EndpointCategory = (typeof categories)[number];
@@ -36,6 +37,10 @@ export interface FieldGroup {
   name: string;
   fields: string[];
   description?: string;
+}
+
+export interface CompatibilityMetadata {
+  columns: string[];
 }
 
 export interface FieldSpec extends ParameterSpec {
@@ -103,6 +108,7 @@ export interface EndpointDoc {
   responseExample?: unknown;
   groups: FieldGroup[];
   columns: string[];
+  compatibility?: CompatibilityMetadata;
   presets: EndpointPreset[];
   guidance?: EndpointGuidance;
   errors: ErrorSpec[];

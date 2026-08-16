@@ -51,6 +51,41 @@ test('adapta el valor del Select al cambiar de tema', async ({ page }) => {
   await expect(selectValue).toHaveCSS('transition-property', 'color');
 });
 
+test('muestra cURL y distingue grupos de columnas en catálogos', async ({
+  page,
+}) => {
+  await page.goto('/?endpoint=buscarCategorias');
+
+  await expect(page.locator('.projection-note')).toContainText(
+    'La proyección recomendada usa grupos',
+  );
+  await expect(page.getByRole('heading', { name: 'cURL' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Grupos', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Columnas', exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('.quick-start')).toContainText('"grupos"');
+  await expect(page.locator('.quick-start')).not.toContainText('"columnas"');
+
+  const body = page.locator('#request-body');
+  await body.fill('{}');
+  await expect(body).toHaveValue('{}');
+  await body.fill('{"columnas":["id_categoria"]}');
+  await expect(body).toHaveValue('{"columnas":["id_categoria"]}');
+
+  await page.goto('/?endpoint=buscarTransacciones');
+  await expect(page.locator('.projection-note')).toHaveCount(0);
+
+  await page.goto('/?endpoint=buscarEmpleados');
+  await expect(
+    page.getByRole('heading', { name: 'Grupos', exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('.projection-grid')).toContainText('empleado');
+  await expect(page.locator('.projection-grid')).toContainText('ventas_ext');
+});
+
 test('mantiene el inicio rápido después del título entre 1100 y 1250 px', async ({
   page,
 }) => {
@@ -107,6 +142,13 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   });
 
   await page.goto('/');
+  await openIndexOnMobile(page);
+  await page
+    .getByRole('button', { name: /^Categorías e impuestos/ })
+    .evaluate((button) => (button as HTMLButtonElement).click());
+  await page
+    .getByRole('button', { name: /Consultar impuesto por ID/i })
+    .click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page.locator('.topbar')).toHaveCSS(
     'background-color',
@@ -141,9 +183,19 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
     'rgb(19, 50, 103)',
   );
   const copyCurlButton = page.locator('.quick-start-footer button');
+  const curlCopyButtons = page.locator('.curl-copy-button');
+  await expect(curlCopyButtons).toHaveCount(2);
+  await expect(curlCopyButtons.first()).toHaveCSS(
+    'background-color',
+    'rgb(255, 198, 0)',
+  );
   await copyCurlButton.click();
   await expect(copyCurlButton).toHaveCSS('outline-style', 'none');
   await expect(copyCurlButton).toHaveCSS('box-shadow', 'none');
+  await expect(curlCopyButtons.last()).toHaveCSS(
+    'background-color',
+    'rgb(255, 198, 0)',
+  );
   await expect(page.locator('.code-block').first()).toHaveCSS(
     'background-color',
     'rgb(238, 241, 247)',
@@ -185,11 +237,8 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   ).toHaveText('{{id_empresa}}');
   await expect(page.locator('.quick-start')).toContainText('{{id_empresa}}');
   await expect(page.locator('.quick-start')).toContainText('Bearer {{token}}');
-  await page.getByLabel('id_sucursal *').fill('');
-  await page.getByLabel('pagina *').fill('');
-  await expect(page.locator('.quick-start')).toContainText(
-    '/{{id_sucursal}}/{{pagina}}',
-  );
+  await page.getByLabel('id_impuesto *').fill('');
+  await expect(page.locator('.quick-start')).toContainText('/{{id_impuesto}}');
   await expect(page.locator('.quick-start')).not.toContainText(/%3C|%3E/i);
   await page.evaluate(() => window.scrollTo(0, 0));
 
@@ -335,11 +384,11 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
     'border-top-color',
     'rgb(255, 198, 0)',
   );
-  await expect(page.locator('.quick-start-code')).toHaveCSS(
+  await expect(page.locator('.quick-start-code').first()).toHaveCSS(
     'background-color',
     'rgb(24, 25, 28)',
   );
-  await expect(page.locator('.quick-start-code')).toHaveCSS(
+  await expect(page.locator('.quick-start-code').first()).toHaveCSS(
     'scrollbar-color',
     'rgb(80, 83, 93) rgba(0, 0, 0, 0)',
   );
@@ -370,18 +419,16 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page).toHaveTitle('Guía de integración de Cuenti');
   await expect(
-    page.getByRole('heading', { name: '24 operaciones' }),
+    page.getByRole('heading', { name: '28 operaciones' }),
   ).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Probar consulta' }),
   ).toBeVisible();
   await expect(page.locator('.quick-start')).toContainText(
-    'https://cuenti-connect.cuenti.co/jServerj4ErpPro',
+    'http://localhost:8081/jServerj4ErpPro',
   );
   await expect(
-    page
-      .getByText(/todos deben cumplirse simultáneamente mediante AND/)
-      .first(),
+    page.getByText(/id_impuesto debe ser mayor que cero/).first(),
   ).toBeVisible();
   await expect(page.getByText('PUBLIC_TRY_IT_ENABLED=true')).toHaveCount(0);
   await expect(page.getByText('ERP_PROXY_TARGET')).toHaveCount(0);
@@ -404,13 +451,13 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await credentialsDialog.getByRole('button', { name: 'Aceptar' }).click();
   await expect(page.getByText('Con credenciales activas')).toHaveCount(0);
   await expect(page.locator('.quick-start')).toContainText('empresa-e2e');
-  await expect(page.locator('.quick-start')).not.toContainText('{{token}}');
-  await page.getByLabel('id_sucursal *').fill('1');
-  await page.getByLabel('pagina *').fill('0');
+  await expect(page.locator('.quick-start .curl-code')).not.toContainText(
+    '{{token}}',
+  );
+  await page.getByLabel('id_impuesto *').fill('3');
   await page.getByRole('button', { name: 'Enviar solicitud' }).click();
 
   await openIndexOnMobile(page);
-  await page.getByRole('button', { name: /^Categorías e impuestos/ }).click();
   await page.getByRole('button', { name: /Buscar categorías/i }).click();
   await expect(page).toHaveURL(/endpoint=buscarCategorias/);
   await topbar.getByRole('button', { name: /Credenciales/i }).click();

@@ -20,19 +20,20 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Productos e inventario | `consultaProductoPaginadaMCP`, `grabarMovimientoArr` |
+| Productos e inventario | `buscarProductosCatalogo`, `grabarMovimientoArr` |
 | Categorías e impuestos | `buscarCategorias`, `actualizarImpuestosLicores`, `consultarImpuestoCuenti` |
 | Terceros | `buscarTercero`, `guardarTercero` |
 | Maestros | `buscarImpuestos`, `buscarBancos`, `buscarMediosPago`, `buscarConsecutivos`, `buscarSucursales`, `buscarEmpleados`, `consultarMarcasActivas`, `consultarMarcaPorId` |
 | Facturas e historiales | `buscarTransacciones`, `buscarProductosComprados`, `buscarDescuentos`, `buscarConsolidado`, `grabarDocumentoSimple` |
 | Cartera | `buscarCartera`, `buscarResumenTerceros` |
 | Comandas | `obtenerComandas`, `platosEliminados` |
+| Documentos comerciales | `buscarDocumentosComerciales`, `buscarProductosDocumentosComerciales`, `buscarDescuentosDocumentosComerciales`, `buscarConsolidadoDocumentosComerciales` |
 
 ## Productos e inventario
 
-### `consultaProductoPaginadaMCP`: Buscar productos paginados
+### `buscarProductosCatalogo`: Buscar productos del catálogo
 
-**Para qué sirve:** Buscar productos paginados. Su resultado principal es `productos`.
+**Para qué sirve:** Buscar productos del catálogo. Su resultado principal es `productos`.
 
 **Tipo:** Consulta.
 
@@ -40,27 +41,109 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 | Dato | Obligatorio | Valores que acepta |
 | --- | --- | --- |
-| `id_sucursal` | Sí | número entero; mínimo `1` |
-| `pagina` | Sí | número entero; mínimo `0` |
-| `total` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_ingrediente` | No | `0`, `1`; valor habitual `0`; Solo el valor 1 incluye resultados de ingredientes. |
-| `nombre_producto` | No | texto; coincidencia parcial |
-| `id_producto` | No | número entero; mínimo `1`; coincidencia exacta; Debe ser mayor que cero cuando se proporciona. |
-| `sku` | No | texto; coincidencia exacta; Los valores vacíos se ignoran. |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `id_producto` | No | número entero; mínimo `1` |
+| `sku` | No | texto; coincidencia exacta |
 | `codigo_barras` | No | texto; coincidencia exacta |
-| `id_categoria` | No | número entero; coincidencia exacta |
+| `nombre_producto` | No | texto; coincidencia parcial |
+| `id_categoria` | No | número entero; mínimo `1` |
 | `nombre_categoria` | No | texto; coincidencia parcial |
-| `id_marca` | No | número entero; coincidencia exacta |
+| `id_marca` | No | número entero; mínimo `1` |
 | `nombre_marca` | No | texto; coincidencia parcial |
+| `es_ingrediente` | No | `0`, `1` |
+| `es_servicio` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `mostrar_tienda` | No | `0`, `1` |
+| `con_existencias` | No | `0`, `1` |
+
+**Información que puedes pedir en `columnas`**
+
+| Columna | Significado |
+| --- | --- |
+| `id_producto` | Identificador maestro del producto. |
+| `nombre` | Nombre visible del registro. |
+| `sku` | Código interno o SKU usado para identificar el producto. |
+| `codigo_barras` | Código de barras principal o de la presentación consultada. |
+| `nota` | Observaciones internas sobre el tercero. |
+| `es_servicio` | Campo `es_servicio`; confirma su significado funcional antes de interpretarlo. |
+| `es_ingrediente` | Campo `es_ingrediente`; confirma su significado funcional antes de interpretarlo. |
+| `mostrar_tienda` | Campo `mostrar_tienda`; confirma su significado funcional antes de interpretarlo. |
+| `vende_sin_existencia` | Campo `vende_sin_existencia`; confirma su significado funcional antes de interpretarlo. |
+| `maneja_lote` | Campo `maneja_lote`; confirma su significado funcional antes de interpretarlo. |
+| `maneja_seriales` | Campo `maneja_seriales`; confirma su significado funcional antes de interpretarlo. |
+| `alias` | Nombre corto o comercial alternativo. |
+| `metadata` | Información adicional de la categoría; su estructura depende de los datos históricos. |
+| `id_producto_sucursal` | Campo `id_producto_sucursal`; confirma su significado funcional antes de interpretarlo. |
+| `id_sucursal` | Sucursal principal o de creación del tercero. |
+| `nombre_sucursal` | Nombre visible de la sucursal. |
+| `ubicacion` | Campo `ubicacion`; confirma su significado funcional antes de interpretarlo. |
+| `es_activo` | Estado operativo del tercero. |
+| `precio_venta` | Campo `precio_venta`; confirma su significado funcional antes de interpretarlo. |
+| `precio_compra` | Campo `precio_compra`; confirma su significado funcional antes de interpretarlo. |
+| `costo` | Costo registrado para la línea del documento. |
+| `costo_fijo` | Campo `costo_fijo`; confirma su significado funcional antes de interpretarlo. |
+| `precio_venta_minimo` | Campo `precio_venta_minimo`; confirma su significado funcional antes de interpretarlo. |
+| `precio_venta_online` | Campo `precio_venta_online`; confirma su significado funcional antes de interpretarlo. |
+| `precio_promocion_sito` | Campo `precio_promocion_sito`; confirma su significado funcional antes de interpretarlo. |
+| `precio_promocion_online` | Campo `precio_promocion_online`; confirma su significado funcional antes de interpretarlo. |
+| `descuento_maximo` | Campo `descuento_maximo`; confirma su significado funcional antes de interpretarlo. |
+| `existencias` | Campo `existencias`; confirma su significado funcional antes de interpretarlo. |
+| `stock_minimo` | Campo `stock_minimo`; confirma su significado funcional antes de interpretarlo. |
+| `id_categoria` | Campo `id_categoria`; confirma su significado funcional antes de interpretarlo. |
+| `nombre_categoria` | Campo `nombre_categoria`; confirma su significado funcional antes de interpretarlo. |
+| `id_marca` | Campo `id_marca`; confirma su significado funcional antes de interpretarlo. |
+| `nombre_marca` | Campo `nombre_marca`; confirma su significado funcional antes de interpretarlo. |
+| `id_impuesto` | Campo `id_impuesto`; confirma su significado funcional antes de interpretarlo. |
+| `nombre_impuesto` | Campo `nombre_impuesto`; confirma su significado funcional antes de interpretarlo. |
+| `valor_impuesto` | Campo `valor_impuesto`; confirma su significado funcional antes de interpretarlo. |
+| `tipo_impuesto` | Clasificación funcional del impuesto; validar códigos tributarios. |
+| `clasificacion_tributaria` | Campo `clasificacion_tributaria`; confirma su significado funcional antes de interpretarlo. |
+| `total_estampilla` | Valor de estampilla asociado al producto o documento. |
+| `total_impoconsumo` | Valor del impuesto al consumo asociado al producto o documento. |
+| `id_tipo_medida` | Campo `id_tipo_medida`; confirma su significado funcional antes de interpretarlo. |
+| `nombre_medida` | Campo `nombre_medida`; confirma su significado funcional antes de interpretarlo. |
+| `tipo_medida` | Campo `tipo_medida`; confirma su significado funcional antes de interpretarlo. |
+| `id_imagen` | Identificador del recurso de imagen. |
+| `ext1` | Campo `ext1`; confirma su significado funcional antes de interpretarlo. |
+| `ext2` | Campo `ext2`; confirma su significado funcional antes de interpretarlo. |
+| `url_imagen` | Dirección para consultar la imagen del producto. |
+| `url_imagen_400` | Campo `url_imagen_400`; confirma su significado funcional antes de interpretarlo. |
+| `invima` | Campo `invima`; confirma su significado funcional antes de interpretarlo. |
+| `cum` | Campo `cum`; confirma su significado funcional antes de interpretarlo. |
+| `cups` | Campo `cups`; confirma su significado funcional antes de interpretarlo. |
+| `codigo_producto_dian` | Campo `codigo_producto_dian`; confirma su significado funcional antes de interpretarlo. |
+| `tiempo_preparacion` | Campo `tiempo_preparacion`; confirma su significado funcional antes de interpretarlo. |
+| `ncm` | Campo `ncm`; confirma su significado funcional antes de interpretarlo. |
+| `fecha_registro` | Fecha de creación del tercero. |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `sucursal`, `precios`, `inventario`, `categoria`, `marca`, `impuestos`, `medida`, `imagen`, `configuracion`.
 
 **Ejemplo de argumentos:**
 
 ```json
 {
-  "id_sucursal": 1,
   "pagina": 0,
-  "total": 30,
-  "nombre_producto": "Producto"
+  "cantidad_registros": 30,
+  "es_activo": 1,
+  "con_existencias": 1,
+  "body": {
+    "grupos": [
+      "producto",
+      "sucursal",
+      "precios",
+      "inventario",
+      "categoria",
+      "marca",
+      "impuestos",
+      "medida",
+      "imagen",
+      "configuracion"
+    ]
+  }
 }
 ```
 
@@ -74,17 +157,25 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
   "cantidad": 1,
   "productos": [
     {
-      "id_producto": 25,
-      "nombre": "Producto",
-      "sku": "SKU-25",
-      "existencias": 10,
-      "precio_venta": 15000
+      "producto": {
+        "id_producto": 25,
+        "nombre": "Producto",
+        "sku": "SKU-25"
+      },
+      "inventario": {
+        "existencias": 10
+      }
     }
   ]
 }
 ```
 
-**Peticiones habituales:** Por nombre de producto; Por ID y SKU.
+- El body acepta columnas o grupos de catálogo; el orden solicitado se conserva.
+- Los valores vacíos de filtros de texto se ignoran.
+- Los filtros y columnas desconocidos se rechazan.
+- Los valores de paginación deben permanecer entre 0 y 1000 registros por página.
+
+**Peticiones habituales:** Productos activos con inventario.
 
 ### `grabarMovimientoArr`: Registrar conteo de inventario
 
@@ -100,18 +191,20 @@ Envía una lista con entre 1 y 1000 elementos.
 
 | Dato | Obligatorio | Valores que acepta | Significado |
 | --- | --- | --- | --- |
-| `nombre` | Sí | texto | Nombre visible del registro. |
-| `nota` | Sí | texto | Observaciones internas sobre el tercero. |
-| `id_concepto` | Sí | `-1`; valor habitual `-1` | Identificador del concepto contable o de inventario aplicado. |
-| `es_entrada` | Sí | `1`; valor habitual `1` | Indica que el movimiento registra una entrada de inventario. |
-| `cantidad` | Sí | número; mínimo `0` | Conteos agregados de registros o transacciones. |
-| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal principal o de creación del tercero. |
-| `id_bodega` | Sí | número entero; mínimo `1` | Identificador de la bodega asociada. |
-| `id_producto` | Sí | número entero; mínimo `1` | Identificador maestro del producto. |
-| `fecha_registro` | Sí | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
-| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
+| `nombre` | Sí | texto | Nombre o concepto visible del conteo. |
+| `nota` | Sí | texto | Observación asociada al conteo. |
+| `id_concepto` | Sí | `-1`; valor habitual `-1` | Concepto del movimiento; debe ser -1. |
+| `es_entrada` | Sí | `1`; valor habitual `1` | Sentido del movimiento; debe ser 1. |
+| `cantidad` | Sí | número; mínimo `0` | Cantidad contada para el producto. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal donde se registra el conteo. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Bodega del conteo; debe coincidir con la sucursal. |
+| `id_producto` | Sí | número entero; mínimo `1` | Producto contado. |
+| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el conteo. |
+| `fecha_registro` | Sí | fecha y hora en milisegundos Unix | Fecha del conteo en milisegundos desde epoch. |
+| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo opcional del movimiento. |
 
 - id_bodega debe ser igual a id_sucursal.
+- id_concepto debe ser -1 y es_entrada debe ser 1.
 - fecha_registro usa milisegundos desde la época Unix.
 
 **Ejemplo de argumentos:**
@@ -128,6 +221,7 @@ Envía una lista con entre 1 y 1000 elementos.
       "id_sucursal": 1,
       "id_bodega": 1,
       "id_producto": 25,
+      "id_empleado": 1,
       "fecha_registro": 1735689600000
     }
   ]
@@ -135,6 +229,8 @@ Envía una lista con entre 1 y 1000 elementos.
 ```
 
 **Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Éxito semántico:** la respuesta debe contener `type` = `1` y `message` = `"save"`.
 
 **Ejemplo de respuesta:**
 
@@ -145,6 +241,15 @@ Envía una lista con entre 1 y 1000 elementos.
   "retorno": ""
 }
 ```
+
+- Registra un conteo de inventario por producto y sucursal.
+- El header X-Id-Empleado no sustituye el campo id_empleado dentro de cada elemento del body.
+- La operación no se almacena en caché y solo invalida productos e inventario cuando la respuesta contiene type=1 y message=save.
+- El cuerpo debe ser un arreglo no vacío.
+- Cada movimiento debe incluir id_empleado con un valor entero mayor o igual a 1.
+- id_bodega debe coincidir con id_sucursal.
+- La respuesta type=0 indica que el ERP rechazó el movimiento y no invalida la caché.
+- No se reintentan automáticamente escrituras sin idempotencia comprobada.
 
 **Peticiones habituales:** Conteo de un producto.
 
@@ -164,7 +269,12 @@ Envía una lista con entre 1 y 1000 elementos.
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_activo` | Sí | `0`, `1` |
+| `id_categoria` | No | número entero; mínimo `1` |
+| `nombre_categoria` | No | texto; coincidencia parcial |
+| `id_categoria_padre` | No | número entero; mínimo `1` |
+| `es_visible_tienda` | No | `0`, `1` |
+| `mostrar_tienda_linea` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
 
 **Información que puedes pedir en `columnas`**
 
@@ -172,19 +282,25 @@ Envía una lista con entre 1 y 1000 elementos.
 | --- | --- |
 | `id_categoria` | Identificador único de la categoría. |
 | `nombre_categoria` | Nombre visible de la categoría. |
+| `alias` | Nombre alternativo o slug funcional de la categoría. |
+| `codigo_dian` | Código de clasificación usado por la integración DIAN. |
+| `id_categoria_padre` | Identificador de la categoría superior; vacío ubica el nodo como raíz. |
 | `es_activo` | Estado operativo de la categoría. |
 | `fecha_registro` | Momento de creación de la categoría. |
-| `id_imagen` | Identificador de la imagen asociada. |
-| `es_visible_tienda` | Indica si la categoría puede mostrarse en la tienda. |
-| `codigo_producto_dian` | Código de producto o clasificación usado por la integración DIAN. |
+| `visible_tienda` | Controla la visibilidad de la categoría en la tienda. |
 | `mostrar_tienda_linea` | Controla la visualización en la tienda en línea. |
-| `id_categoria_padre` | Identificador de la categoría superior; vacío ubica el nodo como raíz. |
-| `metadata` | Información adicional de la categoría según los datos históricos. |
-| `alias` | Nombre alternativo o slug funcional de la categoría. |
 | `mostrar_catalogo_linea` | Controla la visualización en el catálogo en línea. |
+| `metadata` | Información adicional de la categoría según los datos históricos. |
+| `id_imagen` | Identificador de la imagen asociada. |
+| `formato` | Formato de presentación de la imagen o categoría. |
+| `url` | Dirección del recurso asociado a la categoría. |
 | `sucursales` | Sucursales asociadas; puede ser arreglo, objeto, string histórico o null. |
 | `alerta_vencimiento_lotes` | Controla alertas de vencimiento de lotes de la categoría. |
-| `es_visible_produccion` | Indica si la categoría aparece en procesos de producción. |
+| `visible_produccion` | Indica si la categoría aparece en procesos de producción. |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `categoria`, `tienda`, `imagen`, `sucursales`.
 
 **Ejemplo de argumentos:**
 
@@ -192,11 +308,11 @@ Envía una lista con entre 1 y 1000 elementos.
 {
   "pagina": 0,
   "cantidad_registros": 30,
-  "es_activo": 1,
   "body": {
-    "columnas": [
-      "id_categoria",
-      "nombre_categoria",
+    "grupos": [
+      "categoria",
+      "tienda",
+      "imagen",
       "sucursales"
     ]
   }
@@ -235,6 +351,12 @@ Envía una lista con entre 1 y 1000 elementos.
   ]
 }
 ```
+
+- Las categorías raíz se paginan y subcategorias siempre conserva su estructura recursiva.
+- sucursales se devuelve como arreglo u objeto cuando contiene JSON válido, tanto en categorías raíz como en cada nivel de subcategorias; un valor histórico vacío o malformado se conserva como string y null permanece null.
+- Una categoría cuyo padre no está disponible con el filtro de estado se devuelve como raíz.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
 
 **Peticiones habituales:** Árbol de categorías activas.
 
@@ -284,6 +406,12 @@ Envía una lista con entre 1 y 1000 elementos.
 }
 ```
 
+- La actualización es transaccional y habilita la configuración de venta y compra de licores de la sucursal.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+- Los ID de producto deben ser positivos y únicos dentro de la solicitud.
+- Deben existir la sucursal, los productos, las relaciones entre sucursal y producto, y los ID de impuestos.
+- Los valores monetarios no pueden ser negativos.
+
 **Peticiones habituales:** Actualización parcial de impuestos.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
@@ -323,6 +451,9 @@ Envía una lista con entre 1 y 1000 elementos.
   }
 ]
 ```
+
+- Consulta de datos maestros por identificador; la respuesta es un arreglo.
+- id_impuesto debe ser mayor que cero.
 
 **Peticiones habituales:** Impuesto por ID.
 
@@ -382,7 +513,7 @@ Envía una lista con entre 1 y 1000 elementos.
 | `id_clase_cliente` | Clasificación comercial del cliente. |
 | `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
 | `fecha_nacimiento` | Fecha de nacimiento de una persona natural. |
-| `sexo` | Clasificación registrada para sexo; validar catálogo legacy. |
+| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
 | `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
 | `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
 | `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
@@ -410,8 +541,8 @@ Envía una lista con entre 1 y 1000 elementos.
 | `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
 | `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
 | `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad legacy de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el error ortográfico legacy. |
+| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
+| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
 | `telefonos` | Hasta tres teléfonos registrados como arreglo. |
 | `correos` | Hasta dos correos electrónicos registrados como arreglo. |
 | `tipo_identificacion` | Datos relacionados del tipo de identificación. |
@@ -450,6 +581,12 @@ Envía una lista con entre 1 y 1000 elementos.
 }
 ```
 
+- telefonos y correos se proyectan como arreglos; las columnas de relaciones se proyectan como objetos.
+- No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché.
+- cantidad_registros es obligatorio según el contrato actual del servidor.
+- El cuerpo debe contener únicamente un arreglo columnas no vacío y sin duplicados.
+- Se rechazan las columnas desconocidas.
+
 **Peticiones habituales:** Clientes.
 
 ### `guardarTercero`: Guardar tercero
@@ -462,82 +599,75 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Datos que acepta la acción**
 
-| Dato | Obligatorio | Valores que acepta | Significado |
-| --- | --- | --- | --- |
-| `id_cliente` | Sí | número entero | Use -1 para crear y un ID positivo para actualizar. |
-| `nombre_cliente` | Sí | texto | Nombre completo o razón social del tercero. |
-| `id_tipo_persona` | Sí | texto | Clasificación de persona requerida en creación. |
-| `identificacion` | Sí | texto | Documento requerido en creación. |
-| `id_empresa_portal` | No | número entero | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | No | número entero | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | No | texto | Primer nombre de una persona natural. |
-| `segundo_nombre` | No | texto | Segundo nombre de una persona natural. |
-| `primer_apellido` | No | texto | Primer apellido de una persona natural. |
-| `segundo_apellido` | No | texto | Segundo apellido de una persona natural. |
-| `direccion` | No | texto | Dirección principal del tercero. |
-| `telefono1` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
-| `telefono2` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
-| `telefono3` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
-| `email1` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
-| `email2` | No | texto | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
-| `sitio_web` | No | texto | Sitio web registrado. |
-| `facebook` | No | texto | Perfil o referencia de Facebook. |
-| `twitter` | No | texto | Perfil o referencia de X/Twitter. |
-| `instagram` | No | texto | Perfil o referencia de Instagram. |
-| `snapchat` | No | texto | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | No | número entero | Puntos acumulados en programas de fidelización. |
-| `nota` | No | texto | Observaciones internas sobre el tercero. |
-| `es_activo` | No | texto | Estado operativo del tercero. |
-| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
-| `id_lista_precios` | No | número entero | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | No | número entero | Ruta de despacho asociada. |
-| `es_cliente` | No | número entero | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | No | número entero | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | No | texto | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | No | texto | Zona comercial, logística o geográfica asociada. |
-| `contacto` | No | texto | Nombre o referencia del contacto principal. |
-| `clave_portal` | No | texto | Contraseña del portal; se cifra antes de persistir y nunca debe exponerse. |
-| `codigo_interno` | No | texto | Código interno asignado por la empresa. |
-| `numero_matricula` | No | texto | Número de matrícula mercantil u otro registro equivalente. |
-| `id_estado_civil` | No | número entero | Identificador del estado civil seleccionado. |
-| `id_estrato_social` | No | número entero | Identificador del estrato social seleccionado. |
-| `id_clase_cliente` | No | número entero | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | No | número entero | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | No | fecha y hora en milisegundos Unix | Fecha de nacimiento de una persona natural. |
-| `sexo` | No | texto | Clasificación registrada para sexo; validar catálogo legacy. |
-| `saldo_bono` | No | número | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | No | texto | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | No | número entero | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | No | texto | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | No | número | Límite de crédito autorizado. |
-| `permite_cartera` | No | texto | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | No | número entero | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | No | número entero | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | No | número entero | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | No | número entero | Vendedor asignado. |
-| `envioSmsCartera` | No | texto | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | No | texto | Configura el envío de SMS relacionados con productos. |
-| `pais` | No | texto | País registrado. |
-| `departamento` | No | texto | Departamento, estado o región registrada. |
-| `regimen` | No | número entero | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `id_tipo_identificacion` | No | texto | Identificador del tipo de documento seleccionado. |
-| `medio_pago` | No | número entero | Medio de pago preferido o configurado. |
-| `tipoOperacion` | No | texto | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | No | texto | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | No | número entero | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | No | número entero | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | No | fecha y hora en milisegundos Unix | Fecha de vencimiento del registro de turismo. |
-| `codigo_turismo` | No | número entero | Código del registro de turismo. |
-| `alias` | No | texto | Nombre corto o comercial alternativo. |
-| `horario` | No | fecha y hora en milisegundos Unix | Horario asociado al tercero; la estructura depende del dato almacenado. |
-| `dias_vencimiento_cartera_cliente` | No | número entero | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | No | texto | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | No | número entero | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | No | número entero | Restringe operaciones a una modalidad legacy de remisión. |
-| `telefonos` | Sí | array | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Sí | array | Hasta dos correos electrónicos registrados como arreglo. |
-| `lstContactoCliente` | No | array | Información disponible en la respuesta; confirma su significado antes de interpretarla. |
-| `id_empleado` | No | número entero | Identificador interno del empleado. |
+| Dato | Significado |
+| --- | --- |
+| `id_cliente` | Use -1 para crear y un ID positivo para actualizar. |
+| `nombre_cliente` | Nombre completo o razón social del tercero. |
+| `id_tipo_persona` | Clasificación de persona requerida en creación. |
+| `identificacion` | Documento requerido en creación. |
+| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
+| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
+| `primer_nombre` | Primer nombre de una persona natural. |
+| `segundo_nombre` | Segundo nombre de una persona natural. |
+| `primer_apellido` | Primer apellido de una persona natural. |
+| `segundo_apellido` | Segundo apellido de una persona natural. |
+| `direccion` | Dirección principal del tercero. |
+| `sitio_web` | Sitio web registrado. |
+| `facebook` | Perfil o referencia de Facebook. |
+| `twitter` | Perfil o referencia de X/Twitter. |
+| `instagram` | Perfil o referencia de Instagram. |
+| `snapchat` | Perfil o referencia de Snapchat. |
+| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
+| `nota` | Observaciones internas sobre el tercero. |
+| `es_activo` | Estado operativo del tercero. |
+| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
+| `id_lista_precios` | Lista de precios asignada al tercero. |
+| `id_ruta_despacho` | Ruta de despacho asociada. |
+| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
+| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
+| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
+| `zona` | Zona comercial, logística o geográfica asociada. |
+| `contacto` | Nombre o referencia del contacto principal. |
+| `codigo_interno` | Código interno asignado por la empresa. |
+| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
+| `id_estado_civil` | Identificador del estado civil seleccionado. |
+| `id_estrato_social` | Identificador del estrato social seleccionado. |
+| `id_clase_cliente` | Clasificación comercial del cliente. |
+| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
+| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
+| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
+| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
+| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
+| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
+| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
+| `cupo_cartera` | Límite de crédito autorizado. |
+| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
+| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
+| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
+| `id_sucursal` | Sucursal principal o de creación del tercero. |
+| `id_vendedor` | Vendedor asignado. |
+| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
+| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
+| `pais` | País registrado. |
+| `departamento` | Departamento, estado o región registrada. |
+| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
+| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
+| `medio_pago` | Medio de pago preferido o configurado. |
+| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
+| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
+| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
+| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
+| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
+| `codigo_turismo` | Código del registro de turismo. |
+| `alias` | Nombre corto o comercial alternativo. |
+| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
+| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
+| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
+| `genera_bonos` | Habilita la generación o acumulación de bonos. |
+| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
+| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
+| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
+| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
 
 Para crear: id_cliente=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
 Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
@@ -574,6 +704,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
+- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir id_cliente no crea; id_cliente=-1 crea.
+- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+- id_cliente es obligatorio: -1 crea y un valor positivo actualiza.
+- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
+- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
+
 **Peticiones habituales:** Crear; Actualización parcial.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
@@ -592,7 +729,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_activo` | Sí | `0`, `1` |
+| `id_impuesto` | No | número entero; mínimo `1` |
+| `nombre_impuesto` | No | texto; coincidencia parcial |
+| `tipo_impuesto` | No | número entero |
+| `clasificacion_tributaria` | No | número entero |
+| `codigo` | No | texto; coincidencia exacta |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
 
 **Información que puedes pedir en `columnas`**
 
@@ -610,7 +752,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_plan_cuentas_activo` | Cuenta de activo asociada al impuesto. |
 | `id_plan_cuentas_compra` | Cuenta contable usada para impuestos en compras. |
 | `id_plan_cuenta_imp_venta_devolucion` | Cuenta para impuestos en devoluciones de ventas. |
-| `id_plan_cuenta_imp_compa_devolucion` | Cuenta para impuestos en devoluciones de compra; conserva el nombre legacy. |
+| `id_plan_cuenta_imp_compa_devolucion` | Cuenta para impuestos en devoluciones de compra. |
 | `id_plan_cuenta_imp_gasto_devolucion` | Cuenta para impuestos en devoluciones de gastos. |
 | `id_plan_cuentas_gasto` | Cuenta de gasto asociada al impuesto. |
 | `id_plan_cuenta_compra_item` | Cuenta aplicada al ítem de compra. |
@@ -620,18 +762,20 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `nombre_codigo_impuesto` | Nombre descriptivo del código fiscal asociado. |
 | `pais` | País al que aplica la configuración tributaria. |
 
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `impuesto`, `contabilidad`.
+
 **Ejemplo de argumentos:**
 
 ```json
 {
   "pagina": 0,
   "cantidad_registros": 30,
-  "es_activo": 1,
   "body": {
-    "columnas": [
-      "id_impuesto",
-      "nombre_impuesto",
-      "valor_impuesto"
+    "grupos": [
+      "impuesto",
+      "contabilidad"
     ]
   }
 }
@@ -649,6 +793,11 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
+- Consulta de datos maestros; no se devuelve un total global de páginas.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
+
 **Peticiones habituales:** Impuestos activos.
 
 ### `buscarBancos`: Buscar bancos
@@ -663,7 +812,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_activo` | Sí | `0`, `1` |
+| `id_banco` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `nombre` | No | texto; coincidencia parcial |
+| `numero_cuenta` | No | texto; coincidencia parcial |
+| `codigo` | No | texto; coincidencia exacta |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
 
 **Información que puedes pedir en `columnas`**
 
@@ -678,7 +832,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_plan_cuenta` | Cuenta contable relacionada. |
 | `codigo` | Código interno del banco o caja. |
 | `id_sucursal` | Sucursal propietaria o asociada. |
+| `nombre_sucursal` | Nombre visible de la sucursal. |
 | `config` | Configuración adicional, por ejemplo empleados autorizados. |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `banco`, `sucursal`, `contabilidad`, `configuracion`.
 
 **Ejemplo de argumentos:**
 
@@ -686,14 +845,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 {
   "pagina": 0,
   "cantidad_registros": 30,
-  "es_activo": 1,
   "body": {
-    "columnas": [
-      "id_banco",
-      "nombre",
-      "numero_cuenta",
-      "saldo",
-      "config"
+    "grupos": [
+      "banco",
+      "sucursal",
+      "contabilidad",
+      "configuracion"
     ]
   }
 }
@@ -729,6 +886,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
+- config se devuelve como arreglo u objeto cuando contiene JSON valido; un valor historico vacio o malformado se conserva como string y null permanece null.
+- numero_cuenta y saldo pueden ser datos empresariales sensibles; evite incluirlos en registros y etiquetas de metricas.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
+
 **Peticiones habituales:** Bancos activos.
 
 ### `buscarMediosPago`: Buscar medios de pago
@@ -743,7 +906,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_activo` | Sí | `0`, `1` |
+| `id_medio_pago` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `nombre_medio_pago` | No | texto; coincidencia parcial |
+| `codigo` | No | texto; coincidencia exacta |
+| `codigo_pago_fisco` | No | texto; coincidencia exacta |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
 
 **Información que puedes pedir en `columnas`**
 
@@ -755,9 +923,14 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `es_activo` | Estado operativo del medio de pago. |
 | `codigo` | Código interno del medio de pago. |
 | `id_sucursal` | Sucursal a la que pertenece o aplica. |
+| `nombre_sucursal` | Nombre visible de la sucursal. |
 | `comision` | Comisión configurada; validar si se expresa como porcentaje o importe. |
 | `codigo_pago_fisco` | Código fiscal equivalente del medio de pago. |
 | `config` | Configuración adicional, por ejemplo bancos permitidos. |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `medio_pago`, `sucursal`, `configuracion`.
 
 **Ejemplo de argumentos:**
 
@@ -765,12 +938,11 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 {
   "pagina": 0,
   "cantidad_registros": 30,
-  "es_activo": 1,
   "body": {
-    "columnas": [
-      "id_medio_pago",
-      "nombre_medio_pago",
-      "config"
+    "grupos": [
+      "medio_pago",
+      "sucursal",
+      "configuracion"
     ]
   }
 }
@@ -796,7 +968,14 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
-**Peticiones habituales:** Medios de pago activos con configuración.
+- config se devuelve como arreglo u objeto cuando contiene JSON valido; un valor historico vacio o malformado se conserva como string y null permanece null.
+- No se asumen propiedades internas adicionales para config.
+- Consulta de datos maestros; la cache esta aislada por empresa.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
+
+**Peticiones habituales:** Medios de pago activos con configuracion.
 
 ### `buscarConsecutivos`: Buscar consecutivos de documentos
 
@@ -810,7 +989,14 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_activo` | Sí | `0`, `1` |
+| `id_consecutivo` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `nombre_consecutivo` | No | texto; coincidencia parcial |
+| `prefijo` | No | texto; coincidencia exacta |
+| `resolucion` | No | texto; coincidencia parcial |
+| `tipo_consecutivo` | No | número entero |
+| `es_factura_electronica` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
 
 **Información que puedes pedir en `columnas`**
 
@@ -826,6 +1012,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `fecha_registro` | Momento de creación. |
 | `resolucion` | Resolución que autoriza la numeración. |
 | `id_sucursal` | Sucursal a la que pertenece. |
+| `nombre_sucursal` | Nombre visible de la sucursal. |
 | `inicia` | Primer número autorizado del rango. |
 | `finaliza` | Último número autorizado del rango. |
 | `es_factura_electronica` | Indica uso para factura electrónica. |
@@ -837,19 +1024,23 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `multi_moneda` | Permite documentos con configuración multimoneda. |
 | `tipo_consecutivo` | Tipo documental asociado al consecutivo. |
 
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `consecutivo`, `factura_electronica`, `rangos`, `sucursal`, `configuracion`.
+
 **Ejemplo de argumentos:**
 
 ```json
 {
   "pagina": 0,
   "cantidad_registros": 30,
-  "es_activo": 1,
   "body": {
-    "columnas": [
-      "id_consecutivo",
-      "nombre_consecutivo",
-      "prefijo",
-      "numero"
+    "grupos": [
+      "consecutivo",
+      "factura_electronica",
+      "rangos",
+      "sucursal",
+      "configuracion"
     ]
   }
 }
@@ -867,6 +1058,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
+- Este punto de acceso consulta la configuracion de consecutivos; no reserva ni incrementa numeros.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+- technicalKey2, registrarEmpleados e id_empleado se omiten porque la auditoria del ERP los marco como columnas no disponibles; los grupos factura_electronica y configuracion del backend actual requieren validacion antes de usarse.
+- segunda_clave y clave_caja estan deshabilitados en el backend y no son columnas consultables.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
+
 **Peticiones habituales:** Consecutivos activos.
 
 ### `buscarSucursales`: Buscar sucursales
@@ -881,7 +1079,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_activo` | Sí | `0`, `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `nombre_sucursal` | No | texto; coincidencia parcial |
+| `codigo_sucursal` | No | texto; coincidencia exacta |
+| `es_bodega` | No | `0`, `1` |
+| `id_padre` | No | número entero; mínimo `1` |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
 
 **Información que puedes pedir en `columnas`**
 
@@ -900,13 +1103,17 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `vender_con_impuestos` | Indica si la venta opera incluyendo impuestos. |
 | `numero_mesas` | Número de mesas configuradas para restaurante. |
 | `digitos_decimales` | Precisión decimal usada en cálculos o presentación. |
-| `reondeoTotales` | Control de redondeo de totales; conserva el nombre legacy. |
-| `modificicar_precio_minimos_otras_sucursales` | Controla cambios de precios mínimos de otras sucursales; conserva la ortografía legacy. |
-| `modificicar_descuento_maximo_otras_sucursales` | Controla cambios de descuentos máximos de otras sucursales; conserva la ortografía legacy. |
+| `reondeoTotales` | Control de redondeo de totales. |
+| `modificicar_precio_minimos_otras_sucursales` | Controla cambios de precios mínimos de otras sucursales. |
+| `modificicar_descuento_maximo_otras_sucursales` | Controla cambios de descuentos máximos de otras sucursales. |
 | `actualizarPrecioVentaSucursales` | Controla la propagación de precios de venta entre sucursales. |
 | `activar_venta_compra_licores` | Habilita reglas especiales de compra y venta de licores. |
 | `actualizarPrecioCostoSucursales` | Controla la propagación de precios de costo entre sucursales. |
 | `vender_ip_estampilla` | Control relacionado con venta y estampilla; validar la sigla IP. |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `sucursal`, `pos`, `politicas_precios`, `licores`, `moneda`.
 
 **Ejemplo de argumentos:**
 
@@ -914,21 +1121,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 {
   "pagina": 0,
   "cantidad_registros": 30,
-  "es_activo": 1,
   "body": {
-    "columnas": [
-      "id_sucursal",
-      "nombre_sucursal",
-      "nota",
-      "simbolo_moneda",
-      "digitos_decimales",
-      "reondeoTotales",
-      "modificicar_precio_minimos_otras_sucursales",
-      "modificicar_descuento_maximo_otras_sucursales",
-      "actualizarPrecioVentaSucursales",
-      "activar_venta_compra_licores",
-      "actualizarPrecioCostoSucursales",
-      "vender_ip_estampilla"
+    "grupos": [
+      "sucursal",
+      "pos",
+      "politicas_precios",
+      "licores",
+      "moneda"
     ]
   }
 }
@@ -946,7 +1145,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
-**Peticiones habituales:** Sucursales activas con configuración comercial.
+- Los nombres reondeoTotales, modificicar_precio_minimos_otras_sucursales y modificicar_descuento_maximo_otras_sucursales se conservan literalmente por compatibilidad con la base de datos.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+- Los resultados de sucursales permanecen aislados por empresa.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
+
+**Peticiones habituales:** Sucursales activas con configuracion comercial.
 
 ### `buscarEmpleados`: Buscar empleados
 
@@ -960,7 +1165,12 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `es_activo` | Sí | `0`, `1` |
+| `id_empleado` | No | número entero; mínimo `1` |
+| `identificacion` | No | texto |
+| `nombre` | No | texto; coincidencia parcial |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `tipo_usuario` | No | número entero |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
 
 **Información que puedes pedir en `columnas`**
 
@@ -974,25 +1184,80 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_lista_precios` | Lista de precios predeterminada. |
 | `id_sucursal` | Sucursal principal. |
 | `id_consecutivo` | Consecutivo predeterminado. |
-| `sincroniazar_datos` | Control de sincronización; conserva el error ortográfico legacy. |
+| `sincroniazar_datos` | Control de sincronización. |
 | `tipo_usuario` | Rol o tipo de usuario; validar catálogo de seguridad. |
 | `comision` | Comisión asignada al empleado. |
 | `id_bodega` | Bodega predeterminada. |
 | `tipo_comision` | Forma de cálculo de la comisión. |
-| `modePosDefecto` | Modo POS predeterminado; conserva el nombre legacy. |
+| `modePosDefecto` | Modo POS predeterminado. |
 | `comision_antes_iva` | Indica si la comisión se calcula antes del IVA. |
 | `identificacion` | Documento de identificación del empleado. |
 | `mostrar_mesa` | Habilita la visualización o selección de mesas. |
 | `es_contador` | Marca al empleado como contador. |
 | `solo_bodegas_sucursal` | Restringe las bodegas a las de su sucursal. |
 | `obligar_apertura_caja` | Exige apertura de caja antes de operar. |
-| `cerrar_session_cierre` | Controla el cierre de sesión durante un cierre; conserva session legacy. |
+| `cerrar_session_cierre` | Controla el cierre de sesión durante un cierre. |
 | `es_tienda` | Clasifica al usuario para operación de tienda. |
 | `codigo_empleado` | Código interno del empleado. |
 | `sucursal_adicional` | Sucursales y bodegas adicionales permitidas. |
 | `cierra_caja` | Autoriza o configura el cierre de caja. |
 | `ventas_solo_credito` | Restringe ventas a modalidad crédito. |
 | `vendedor_multi_sucursal` | Habilita operación comercial en varias sucursales. |
+
+**Bloques de información que puedes pedir**
+
+Para `grupos`:
+- `empleado`: Empleado que registró o gestionó la operación. Incluye `id_empleado`, `identificacion`, `nombre_completo`, `codigo_empleado`, `tipo_usuario`, `es_activo`, `fecha_registro`, `id_usuario_portal`.
+  - `id_empleado`: Identificador interno del empleado.
+  - `identificacion`: Documento de identificación del empleado.
+  - `nombre_completo`: Nombre completo para visualización.
+  - `codigo_empleado`: Código interno del empleado.
+  - `tipo_usuario`: Rol o tipo de usuario; validar catálogo de seguridad.
+  - `es_activo`: Estado operativo.
+  - `fecha_registro`: Momento de creación.
+  - `id_usuario_portal`: Usuario de portal vinculado.
+- `sucursal`: Sucursal donde se originó o aplica la operación. Incluye `id_sucursal`, `nombre_sucursal`, `id_bodega`, `nombre_bodega`, `sucursales_adicionales`, `vendedor_multi_sucursal`, `solo_bodegas_sucursal`.
+  - `id_sucursal`: Sucursal principal.
+  - `nombre_sucursal`: Nombre visible de la sucursal.
+  - `id_bodega`: Bodega predeterminada.
+  - `nombre_bodega`: Campo `nombre_bodega`; confirma su significado funcional antes de interpretarlo.
+  - `sucursales_adicionales`: Campo `sucursales_adicionales`; confirma su significado funcional antes de interpretarlo.
+  - `vendedor_multi_sucursal`: Habilita operación comercial en varias sucursales.
+  - `solo_bodegas_sucursal`: Restringe las bodegas a las de su sucursal.
+- `consecutivo`: Configuración de numeración usada por el documento. Incluye `id_consecutivo`, `nombre_consecutivo`, `prefijo_consecutivo`.
+  - `id_consecutivo`: Consecutivo predeterminado.
+  - `nombre_consecutivo`: Campo `nombre_consecutivo`; confirma su significado funcional antes de interpretarlo.
+  - `prefijo_consecutivo`: Campo `prefijo_consecutivo`; confirma su significado funcional antes de interpretarlo.
+- `precios`: Precios base, de venta y ajustes comerciales. Incluye `id_lista_precios`, `nombre_lista_precios`.
+  - `id_lista_precios`: Lista de precios predeterminada.
+  - `nombre_lista_precios`: Campo `nombre_lista_precios`; confirma su significado funcional antes de interpretarlo.
+- `comision`: Comisión asignada al empleado. Incluye `comision`, `tipo_comision`, `comision_antes_iva`.
+  - `comision`: Comisión asignada al empleado.
+  - `tipo_comision`: Forma de cálculo de la comisión.
+  - `comision_antes_iva`: Indica si la comisión se calcula antes del IVA.
+- `permisos_caja`: Reglas de apertura, cierre y operación de la caja del empleado. Incluye `modePosDefecto`, `cierra_caja`, `obligar_apertura_caja`, `cerrar_session_cierre`, `ventas_solo_credito`.
+  - `modePosDefecto`: Modo POS predeterminado.
+  - `cierra_caja`: Autoriza o configura el cierre de caja.
+  - `obligar_apertura_caja`: Exige apertura de caja antes de operar.
+  - `cerrar_session_cierre`: Controla el cierre de sesión durante un cierre.
+  - `ventas_solo_credito`: Restringe ventas a modalidad crédito.
+- `restaurante`: Permisos y configuración del empleado para mesas. Incluye `mostrar_mesa`.
+  - `mostrar_mesa`: Habilita la visualización o selección de mesas.
+- `roles`: Indicadores de rol y capacidades operativas del empleado. Incluye `es_contador`, `es_tienda`, `sincroniazar_datos`.
+  - `es_contador`: Marca al empleado como contador.
+  - `es_tienda`: Clasifica al usuario para operación de tienda.
+  - `sincroniazar_datos`: Control de sincronización.
+- `horario`: Horario asociado al tercero; la estructura depende del dato almacenado. Incluye `horario_ingreso_cuenti`, `horario_salida_cuenti`, `config_horario`.
+  - `horario_ingreso_cuenti`: Campo `horario_ingreso_cuenti`; confirma su significado funcional antes de interpretarlo.
+  - `horario_salida_cuenti`: Campo `horario_salida_cuenti`; confirma su significado funcional antes de interpretarlo.
+  - `config_horario`: Campo `config_horario`; confirma su significado funcional antes de interpretarlo.
+- `app_movil`: Permisos de acceso del empleado a las aplicaciones móviles. Incluye `puede_ingresar_app_nube`, `pueden_ingresar_app_local`.
+  - `puede_ingresar_app_nube`: Campo `puede_ingresar_app_nube`; confirma su significado funcional antes de interpretarlo.
+  - `pueden_ingresar_app_local`: Campo `pueden_ingresar_app_local`; confirma su significado funcional antes de interpretarlo.
+- `ventas_ext`: Configuración extendida para la operación de ventas. Incluye `mostrar_vendedor_ventas`, `vendedor_multi_sucursal_ext`, `impresora_factura`.
+  - `mostrar_vendedor_ventas`: Campo `mostrar_vendedor_ventas`; confirma su significado funcional antes de interpretarlo.
+  - `vendedor_multi_sucursal_ext`: Campo `vendedor_multi_sucursal_ext`; confirma su significado funcional antes de interpretarlo.
+  - `impresora_factura`: Campo `impresora_factura`; confirma su significado funcional antes de interpretarlo.
 
 **Ejemplo de argumentos:**
 
@@ -1002,10 +1267,18 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
   "cantidad_registros": 30,
   "es_activo": 1,
   "body": {
-    "columnas": [
-      "id_empleado",
-      "nombre_completo",
-      "sucursal_adicional"
+    "grupos": [
+      "empleado",
+      "sucursal",
+      "consecutivo",
+      "precios",
+      "comision",
+      "permisos_caja",
+      "restaurante",
+      "roles",
+      "horario",
+      "app_movil",
+      "ventas_ext"
     ]
   }
 }
@@ -1032,6 +1305,15 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
   ]
 }
 ```
+
+- nombre aplica una búsqueda parcial (LIKE %...%).
+- id_sucursal es opcional; si se omite, se usa X-Auth-Token-sucursal.
+- sucursal_adicional se devuelve como arreglo u objeto cuando contiene JSON válido; un valor histórico vacío o malformado se conserva como string y null permanece null.
+- No se asumen propiedades internas adicionales para este campo.
+- Los nombres y valores de identificación de empleados no deben convertirse en etiquetas de métricas ni aparecer como texto sin procesar en claves de caché.
+- segunda_clave y clave_caja están deshabilitados en el backend y no son columnas consultables.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
 
 **Peticiones habituales:** Empleados activos.
 
@@ -1072,6 +1354,9 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 ]
 ```
 
+- precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
+- es_activo debe ser 1.
+
 **Peticiones habituales:** Marcas activas.
 
 ### `consultarMarcaPorId`: Consultar marca por ID
@@ -1111,6 +1396,9 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 ]
 ```
 
+- precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
+- id_marca debe ser mayor que cero.
+
 **Peticiones habituales:** Marca por ID.
 
 ## Facturas e historiales
@@ -1141,7 +1429,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `es_nula` | No | `0`, `1` |
 | `es_activo` | No | `0`, `1` |
 | `es_devolucion` | No | `0`, `1` |
-| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión); separado por comas |
+| `tipo_documento` | No | lista de números separados por comas; separado por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 
@@ -1163,10 +1451,44 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
     "grupos": [
       "codigos",
       "fechas",
+      "sucursal",
       "cliente",
+      "empleado",
+      "vendedor",
       "totales",
       "impuestos",
-      "estado"
+      "estado",
+      "qr",
+      "nota",
+      "documento",
+      "moneda",
+      "estado_electronico",
+      "pagos",
+      "retenciones",
+      "notas_credito",
+      "facturacion_electronica",
+      "consecutivo",
+      "impresion",
+      "cartera_cliente",
+      "empresa",
+      "sucursal_configuracion",
+      "taller",
+      "acta_entrega"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "costo",
+      "nota",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado",
+      "seriales"
     ]
   }
 }
@@ -1184,6 +1506,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
   "resultados": []
 }
 ```
+
+- Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- detalle.codigos contiene id_detalle_transacion, no id_transacion.
+- El grupo impresion devuelve configuración y no genera un PDF.
+- Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
+- La paginación está limitada a 1..1000 registros.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
 **Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
 
@@ -1203,7 +1532,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_sucursal` | No | número entero |
 | `id_empleado` | No | número entero |
 | `id_vendedor` | No | número entero |
-| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
+| `tipo_documento` | No | lista de números separados por comas |
 | `es_ingreso` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -1227,6 +1556,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
       "cantidades",
       "totales",
       "impuestos",
+      "costos",
       "fechas"
     ]
   }
@@ -1245,6 +1575,11 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
   "resultados": []
 }
 ```
+
+- Los resultados se consolidan por id_producto.
+- Las transacciones anuladas se excluyen de forma predeterminada.
+- id_cliente es obligatorio.
+- grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo.
 
 **Peticiones habituales:** Productos comprados por cliente.
 
@@ -1265,7 +1600,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_empleado` | No | número entero |
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
-| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
+| `tipo_documento` | No | lista de números separados por comas |
 | `es_ingreso` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
@@ -1309,6 +1644,11 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
+- Las transacciones anuladas se excluyen de forma predeterminada.
+- Los dos niveles son configuraciones predefinidas de un solo punto de acceso, no rutas independientes.
+- nivel debe ser encabezado o detalle.
+- Los grupos seleccionados deben pertenecer al nivel seleccionado.
+
 **Peticiones habituales:** Descuentos de factura; Descuentos de producto.
 
 ### `buscarConsolidado`: Buscar historial consolidado
@@ -1328,7 +1668,7 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 | `id_empleado` | No | número entero |
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
-| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
+| `tipo_documento` | No | lista de números separados por comas |
 | `es_ingreso` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
@@ -1369,6 +1709,10 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 }
 ```
 
+- Las transacciones anuladas se excluyen de forma predeterminada, salvo que se proporcione es_nula=1.
+- agrupar_por debe ser cliente, empleado o vendedor.
+- grupos no debe estar vacío y debe contener valores únicos.
+
 **Peticiones habituales:** Por cliente; Por empleado; Por vendedor.
 
 ### `grabarDocumentoSimple`: Crear factura, compra, gasto o remisión
@@ -1383,84 +1727,30 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 
 | Dato | Obligatorio | Valores que acepta | Significado |
 | --- | --- | --- | --- |
-| `tipoDocumento` | Sí | `1` (factura), `7` (compra o gasto), `9` (remisión o prefactura) | Tipo de documento: factura, compra o gasto, o remisión/prefactura. |
-| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | Define si el producto se identifica por ID, SKU o código de barras. |
-| `id_consecutivo` | Sí | número entero; mínimo `1` | Identificador de la configuración de numeración. |
-| `codigo_unico` | Sí | texto | Identificador numérico de integración; conserva los ceros iniciales. |
-| `nota` | Sí | texto | Observaciones internas sobre el tercero. |
-| `observacion` | Sí | texto | Observación general asociada al documento o movimiento. |
-| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal principal o de creación del tercero. |
-| `id_bodega` | Sí | número entero; mínimo `1` | Identificador de la bodega asociada. |
-| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asignado. |
-| `id_empleado` | Sí | número entero; mínimo `1` | Identificador interno del empleado. |
-| `objClienteMini` | Sí | object | Datos mínimos del tercero asociado al documento. |
-| `objDetalle` | Sí | array | Líneas del documento con cantidades y totales de línea. |
-| `lstPagos` | Sí | array | Pagos aplicados al documento; puede ser un arreglo vacío para crédito. |
+| `tipoDocumento` | Sí | `1` (factura), `7` (compra o gasto), `9` (remisión o prefactura) | 1 factura, 7 compra/gasto, 9 remisión/prefactura. |
+| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
+| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
+| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
+| `nota` | Sí | texto | Nota general del documento. |
+| `observacion` | Sí | texto | Observación general del documento. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
+| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
+| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
+| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
+| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
+| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
+| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
+| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
+| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
+| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
 
 - Una solicitud contiene un solo documento.
+- tipoDocumento 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
 - objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
 - cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
 - type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
-- Para gasto, tipoDocumento=7 y cada detalle usa id_plan_cuentas.
-
-**Elegir type_match_producto**
-
-En grabarDocumentoSimple, elige un solo modo para todas las líneas del documento. El modo determina si cada producto se busca por ID, SKU o código de barras.
-
-| Valor | Campo en `objDetalle` | Úsalo cuando... | Regla |
-| --- | --- | --- | --- |
-| `1` | `objDetalle[].id_producto` | Cuando conoces el ID interno positivo del producto. | No envíes code. |
-| `2` | `objDetalle[].code` | Cuando conoces el SKU del producto. | code contiene el SKU. No envíes id_producto. |
-| `3` | `objDetalle[].code` | Cuando conoces el código de barras del producto. | code contiene el código de barras. No envíes id_producto. |
-
-- Si no sabes qué identificador usar: consulta primero consultaProductoPaginadaMCP y usa el ID, SKU o código de barras que devuelva.
-- Nunca envíes id_producto y code juntos en la misma línea.
-- Para gastos, usa tipoDocumento=7, identifica la cuenta con id_plan_cuentas, omite los identificadores de producto y conserva type_match_producto=1.
-
-### Modo 1: ID interno
-
-```json
-{
-  "type_match_producto": 1,
-  "objDetalle": [
-    {
-      "cantidad": 2,
-      "id_producto": 25,
-      "total": 30000
-    }
-  ]
-}
-```
-
-### Modo 2: SKU
-
-```json
-{
-  "type_match_producto": 2,
-  "objDetalle": [
-    {
-      "cantidad": 2,
-      "code": "SKU-25",
-      "total": 30000
-    }
-  ]
-}
-```
-
-### Modo 3: código de barras
-
-```json
-{
-  "type_match_producto": 3,
-  "objDetalle": [
-    {
-      "cantidad": 2,
-      "code": "7701234567890",
-      "total": 30000
-    }
-  ]
-}
-```
+- Para gasto, tipoDocumento=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
 
 **Ejemplo de argumentos:**
 
@@ -1495,9 +1785,9 @@ En grabarDocumentoSimple, elige un solo modo para todas las líneas del document
     },
     "objDetalle": [
       {
-        "cantidad": 2,
+        "cantidad": 1,
         "descripcion": "Producto",
-        "total": 20000,
+        "total": 10000,
         "cambiar_precio_compra": false,
         "id_producto": 25
       }
@@ -1522,6 +1812,16 @@ En grabarDocumentoSimple, elige un solo modo para todas las líneas del document
 }
 ```
 
+- lstPagos vacío representa una operación a crédito.
+- Los campos sin información de objClienteMini se envían como string vacío.
+- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
+- codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
+- No mezcle detalles de inventario y gasto en el mismo documento.
+- retorno es opaco y no debe analizarse.
+- No se reintentan automáticamente documentos sin idempotencia comprobada.
+
+**Peticiones habituales:** Factura de inventario.
+
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
 ## Cartera
@@ -1543,7 +1843,7 @@ En grabarDocumentoSimple, elige un solo modo para todas las líneas del document
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | Sí | `0` (por pagar), `1` (por cobrar) |
-| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
+| `tipo_documento` | No | lista de números separados por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 | `vencida` | No | `0`, `1` |
@@ -1563,7 +1863,9 @@ En grabarDocumentoSimple, elige un solo modo para todas las líneas del document
     "grupos": [
       "transaccion",
       "fechas",
+      "sucursal",
       "tercero",
+      "vendedor",
       "saldo",
       "estado"
     ]
@@ -1589,6 +1891,12 @@ En grabarDocumentoSimple, elige un solo modo para todas las líneas del document
 }
 ```
 
+- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
+- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
+- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
+- es_ingreso es obligatorio y debe ser 0 o 1.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
 **Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
 
 ### `buscarResumenTerceros`: Resumir saldos por tercero
@@ -1608,7 +1916,7 @@ En grabarDocumentoSimple, elige un solo modo para todas las líneas del document
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | Sí | `0`, `1` |
-| `tipo_documento` | No | `1` (Factura), `7` (Compra), `9` (Prefactura / remisión) |
+| `tipo_documento` | No | lista de números separados por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 | `vencida` | No | `0`, `1` |
@@ -1646,6 +1954,11 @@ En grabarDocumentoSimple, elige un solo modo para todas las líneas del document
   "resultados": []
 }
 ```
+
+- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
+- Las cuentas por cobrar y por pagar nunca se mezclan.
+- es_ingreso es obligatorio y debe ser 0 o 1.
+- grupos no debe estar vacío y debe contener valores únicos.
 
 **Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
 
@@ -1710,7 +2023,7 @@ Para `grupos`:
   - `es_pedido_linea`: Indica si proviene de un pedido en línea.
   - `id_pedido_linea`: Identificador del pedido en línea.
   - `numero_orden`: Número de orden principal.
-  - `numero_orden2`: Segunda referencia de orden legacy.
+  - `numero_orden2`: Segunda referencia de orden.
 - `impresion`: Configuración de plantillas, contenido y opciones de impresión. Incluye `impreso`, `imprimio_prefactura`, `marca`, `observacion`.
   - `impreso`: Indica si la comanda fue impresa.
   - `imprimio_prefactura`: Indica si se imprimió prefactura.
@@ -1727,11 +2040,15 @@ Para `grupos`:
   "body": {
     "grupos": [
       "codigos",
+      "sucursal",
       "mesa",
       "producto",
       "empleado",
       "fecha",
-      "estado"
+      "estado",
+      "preparacion",
+      "pedido",
+      "impresion"
     ]
   }
 }
@@ -1749,6 +2066,10 @@ Para `grupos`:
   "resultados": []
 }
 ```
+
+- Solo se devuelven comandas de cocina activas cuyo estado sea diferente de 4.
+- id_sucursal es obligatorio.
+- grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo.
 
 **Peticiones habituales:** Comandas activas de la sucursal.
 
@@ -1803,6 +2124,7 @@ Para `grupos`:
     "grupos": [
       "codigos",
       "fecha",
+      "sucursal",
       "empleado",
       "producto",
       "mesa",
@@ -1825,4 +2147,289 @@ Para `grupos`:
 }
 ```
 
+- El punto de acceso expone únicamente campos respaldados por la tabla de auditoría de eliminación de platos.
+- id_sucursal es obligatorio.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+- grupos no debe estar vacío y debe contener valores únicos.
+
 **Peticiones habituales:** Auditoría de eliminaciones por sucursal.
+
+## Documentos comerciales
+
+### `buscarDocumentosComerciales`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `buscarProductosDocumentosComerciales`: Buscar productos de documentos comerciales
+
+**Para qué sirve:** Buscar productos de documentos comerciales. Su resultado principal es `productos`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_cliente` | No | número entero; mínimo `1` |
+| `id_vendedor` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `cantidades`, `totales`, `costos`, `fechas`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_cliente": 1179,
+  "body": {
+    "grupos": [
+      "producto",
+      "cantidades",
+      "totales",
+      "costos",
+      "fechas"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, productos: ProductoDocumento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "productos": []
+}
+```
+
+- Los productos se agrupan por id_producto y respetan la paginación.
+- No se permite mezclar políticas de buscarProductosComprados.
+- Debe especificar id_cliente o id_vendedor.
+- Los filtros de fecha son inclusivos y usan epoch-milliseconds.
+
+**Peticiones habituales:** Productos por cliente.
+
+### `buscarDescuentosDocumentosComerciales`: Buscar descuentos de documentos comerciales
+
+**Para qué sirve:** Buscar descuentos de documentos comerciales. Su resultado principal es `descuentos`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `id_cliente` | No | número entero; mínimo `1` |
+| `id_empleado` | No | número entero; mínimo `1` |
+| `id_vendedor` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `documento`, `cliente`, `empleado`, `vendedor`, `producto`, `cantidades`, `precios`, `descuento`, `totales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "grupos": [
+      "documento",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "totales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, descuentos: DescuentoDocumento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "descuentos": []
+}
+```
+
+- Los grupos producto, cantidades o precios solicitan el modo detalle.
+- Los resultados solo incluyen documentos con descuentos.
+- Los grupos incompatibles con el detalle solicitado se rechazan.
+- Los filtros de fecha son inclusivos y usan epoch-milliseconds.
+
+**Peticiones habituales:** Descuentos por documento.
+
+### `buscarConsolidadoDocumentosComerciales`: Consolidar documentos comerciales
+
+**Para qué sirve:** Consolidar documentos comerciales. Su resultado principal es `consolidado`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `agrupar_por` | No | `cliente`, `empleado`, `vendedor`, `sucursal`; valor habitual `cliente` |
+| `id_cliente` | No | número entero; mínimo `1` |
+| `id_empleado` | No | número entero; mínimo `1` |
+| `id_vendedor` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `agrupacion`, `cantidad`, `totales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "agrupar_por": "cliente",
+  "body": {
+    "grupos": [
+      "agrupacion",
+      "cantidad",
+      "totales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, consolidado: ConsolidadoDocumento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "consolidado": []
+}
+```
+
+- El consolidado agrupa documentos por la dimensión seleccionada.
+- Los rangos de fecha incluyen ambos extremos y usan epoch-milliseconds.
+- agrupar_por debe ser cliente, empleado, vendedor o sucursal.
+- Los grupos deben ser únicos y no vacíos.
+
+**Peticiones habituales:** Consolidado por cliente.

@@ -110,7 +110,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '24 operaciones' }),
+      screen.getByRole('heading', { name: '28 operaciones' }),
     ).toBeVisible();
   });
 
@@ -371,12 +371,12 @@ describe('documentation application', () => {
       .closest('section');
     expect(quickStart).not.toBeNull();
     expect(
-      within(quickStart as HTMLElement).getByText(/\{\{id_empresa\}\}/),
-    ).toBeVisible();
+      quickStart?.querySelector('.curl-code .curl-variable'),
+    ).toHaveTextContent('{{id_empresa}}');
     expect(quickStart).toHaveTextContent('Bearer {{token}}');
-    expect(
-      within(quickStart as HTMLElement).getByText(/GMT-0500/),
-    ).toBeVisible();
+    expect(quickStart?.querySelector('.curl-code')).toHaveTextContent(
+      'GMT-0500',
+    );
 
     await user.click(
       within(quickStart as HTMLElement).getByRole('button', {
@@ -509,14 +509,14 @@ describe('documentation application', () => {
     ).toBeVisible();
     expect(screen.getByText(/\/jServerj4ErpPro$/)).toBeVisible();
     expect(
-      screen.getAllByText(/todos deben cumplirse simultáneamente mediante AND/),
+      screen.getAllByText(/Los filtros y columnas desconocidos se rechazan/),
     ).not.toHaveLength(0);
     expect(
       screen.queryByText('PUBLIC_TRY_IT_ENABLED=true'),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('ERP_PROXY_TARGET')).not.toBeInTheDocument();
     expect(
-      screen.queryByText('20 consultas con caché · 4 mutaciones sin caché'),
+      screen.queryByText('24 consultas con caché · 4 mutaciones sin caché'),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('Try It')).not.toBeInTheDocument();
     expect(screen.queryByText('Query params')).not.toBeInTheDocument();
@@ -527,16 +527,13 @@ describe('documentation application', () => {
 
     expect(screen.queryByText('Validación 1')).not.toBeInTheDocument();
     expect(
-      screen.getByText(
-        'id_producto debe ser mayor que cero cuando se proporciona.',
-      ),
+      screen.getByText('Los filtros y columnas desconocidos se rechazan.'),
     ).toBeVisible();
   });
 
   it('presents preset options as readable fields instead of JSON', () => {
     render(<App />);
 
-    expect(screen.getAllByText('Valores de la ruta').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Filtros').length).toBeGreaterThan(0);
     expect(
       document.querySelector('.preset-docs .json-code'),

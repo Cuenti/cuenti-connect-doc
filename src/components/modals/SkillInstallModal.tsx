@@ -84,7 +84,7 @@ export const SkillInstallModal = ({
         </header>
         <p className="credentials-modal-description">
           Descarga un único paquete con las instrucciones, la guía de conexión,
-          los catálogos y el catálogo funcional de las 24 herramientas.
+          los catálogos y el catálogo funcional de las 28 herramientas.
         </p>
         <div className="skill-downloads">
           <a

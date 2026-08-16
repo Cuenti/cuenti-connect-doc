@@ -36,12 +36,13 @@ Consulta `references/mcp-guide.md` para la conexión rápida por Streamable HTTP
 
 | Necesidad | Herramientas principales |
 | --- | --- |
-| Productos | `consultaProductoPaginadaMCP` |
+| Productos | `buscarProductosCatalogo` |
 | Clientes y proveedores | `buscarTercero`, `guardarTercero` |
 | Facturas e historiales | `buscarTransacciones`, `buscarProductosComprados`, `buscarDescuentos`, `buscarConsolidado` |
 | Cuentas por cobrar o pagar | `buscarCartera`, `buscarResumenTerceros` |
 | Cocina y auditoría | `obtenerComandas`, `platosEliminados` |
 | Catálogos de configuración | Herramientas `buscar...` de categorías, impuestos, bancos, pagos, consecutivos, sucursales y empleados |
+| Documentos comerciales | `buscarDocumentosComerciales`, `buscarProductosDocumentosComerciales`, `buscarDescuentosDocumentosComerciales`, `buscarConsolidadoDocumentosComerciales` |
 
 ## Execution Steps
 

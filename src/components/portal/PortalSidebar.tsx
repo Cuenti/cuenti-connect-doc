@@ -148,7 +148,7 @@ export const PortalSidebar = ({
     </div>
     <div className="sidebar-intro">
       <p className="eyebrow">Índice implementado</p>
-      <h2>24 operaciones</h2>
+      <h2>28 operaciones</h2>
     </div>
     <label className="search-label" htmlFor="endpoint-search">
       <span className="sr-only">Buscar operaciones</span>

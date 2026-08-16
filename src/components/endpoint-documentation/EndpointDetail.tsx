@@ -145,38 +145,50 @@ export const EndpointDetail = ({
             <h2 id="projection-title">Cuerpo JSON, grupos y columnas</h2>
           </div>
         </div>
+        {endpoint.compatibility ? (
+          <p className="projection-note">
+            La proyección recomendada usa grupos; columnas está disponible para
+            respuestas planas.
+          </p>
+        ) : null}
         {endpoint.bodyDescription ? <p>{endpoint.bodyDescription}</p> : null}
         <BodyFieldsTable fields={endpoint.bodyFields} />
         <EndpointGuidance guidance={endpoint.guidance} />
         {endpoint.groups.length ? (
-          <div className="projection-grid">
-            {endpoint.groups.map((group) => (
-              <div className="projection-row" key={group.name}>
-                <FieldTooltip
-                  label={group.name}
-                  description={
-                    group.description || getGroupDescription(group.name)
-                  }
-                  className="field-tooltip-trigger projection-group-trigger"
-                />
-                <span className="projection-fields">
-                  {group.description || getGroupDescription(group.name)}
-                </span>
-              </div>
-            ))}
+          <div>
+            <h3>Grupos</h3>
+            <div className="projection-grid">
+              {endpoint.groups.map((group) => (
+                <div className="projection-row" key={group.name}>
+                  <FieldTooltip
+                    label={group.name}
+                    description={
+                      group.description || getGroupDescription(group.name)
+                    }
+                    className="field-tooltip-trigger projection-group-trigger"
+                  />
+                  <span className="projection-fields">
+                    {group.description || getGroupDescription(group.name)}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
         {endpoint.columns.length ? (
-          <section className="token-cloud" aria-label="Columnas permitidas">
-            {endpoint.columns.map((column) => (
-              <FieldTooltip
-                key={column}
-                label={column}
-                description={columnDescription(endpoint, column)}
-                className="field-tooltip-trigger column-tooltip-trigger"
-              />
-            ))}
-          </section>
+          <div>
+            <h3>Columnas</h3>
+            <section className="token-cloud" aria-label="Columnas permitidas">
+              {endpoint.columns.map((column) => (
+                <FieldTooltip
+                  key={column}
+                  label={column}
+                  description={columnDescription(endpoint, column)}
+                  className="field-tooltip-trigger column-tooltip-trigger"
+                />
+              ))}
+            </section>
+          </div>
         ) : null}
         {!endpoint.groups.length && !endpoint.columns.length ? (
           <p className="empty-note">

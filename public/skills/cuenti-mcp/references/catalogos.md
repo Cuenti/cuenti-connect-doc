@@ -27,7 +27,7 @@ Catálogos MCP disponibles:
 
 | Necesitas el ID de... | Consulta |
 | --- | --- |
-| Producto | `consultaProductoPaginadaMCP` |
+| Producto | `buscarProductosCatalogo` |
 | Categoría | `buscarCategorias` |
 | Sucursal | `buscarSucursales` |
 | Banco | `buscarBancos` |

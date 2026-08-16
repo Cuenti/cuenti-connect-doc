@@ -71,11 +71,15 @@ export type PaymentMethodSearchResponse = PaginatedResponse<PaymentMethod> & {
 };
 
 export type EndpointResponseContracts = {
-  consultaProductoPaginadaMCP: ProductSearchResponse;
+  buscarProductosCatalogo: ProductSearchResponse;
   buscarBancos: BankSearchResponse;
   buscarCategorias: CategorySearchResponse;
   buscarEmpleados: EmployeeSearchResponse;
   buscarMediosPago: PaymentMethodSearchResponse;
+  buscarDocumentosComerciales: PaginatedResponse<JsonValue>;
+  buscarProductosDocumentosComerciales: PaginatedResponse<JsonValue>;
+  buscarDescuentosDocumentosComerciales: PaginatedResponse<JsonValue>;
+  buscarConsolidadoDocumentosComerciales: PaginatedResponse<JsonValue>;
 };
 
 export const normalizeHistoricalJsonValue = (

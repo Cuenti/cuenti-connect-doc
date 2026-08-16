@@ -168,8 +168,12 @@ export const TryIt = ({
         >
           {loading ? 'Enviando...' : 'Enviar solicitud'}
         </Button>
-        <Button variant="outline" onClick={copyCurl}>
-          {copied ? 'Comando curl copiado' : 'Copiar comando curl'}
+        <Button
+          variant="primary"
+          className="curl-copy-button"
+          onClick={copyCurl}
+        >
+          {copied ? 'Curl copiado' : 'Copiar curl'}
         </Button>
       </div>
 

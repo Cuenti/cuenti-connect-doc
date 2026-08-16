@@ -4,6 +4,9 @@ const pendingDescription =
 const groupDescriptions: Record<string, string> = {
   agrupacion: 'Identidad de la entidad usada para agrupar los resultados.',
   acta_entrega: 'Datos del acta de entrega asociada al documento.',
+  bodegas: 'Bodegas relacionadas con el documento o la logística.',
+  banco: 'Entidad bancaria y sus datos principales.',
+  categoria: 'Categoría comercial asociada al producto.',
   cantidad: 'Conteos agregados de registros o transacciones.',
   cantidades:
     'Cantidades registradas y cantidades netas después de devoluciones.',
@@ -11,7 +14,11 @@ const groupDescriptions: Record<string, string> = {
   cliente: 'Identificación y datos de contacto del tercero del documento.',
   codigos: 'Identificadores y números que permiten localizar el registro.',
   configuracion: 'Configuración comercial o contable asociada a la línea.',
+  contabilidad: 'Cuentas y configuración contable asociadas al registro.',
+  contacto: 'Teléfonos, correos y datos de contacto del tercero.',
+  comision: 'Comisión configurada y reglas de cálculo aplicadas al empleado.',
   consecutivo: 'Configuración de numeración usada por el documento.',
+  cuenta: 'Cuenta bancaria y referencia contable asociada.',
   costos: 'Costos acumulados o proporcionales del producto comprado.',
   costo: 'Costo registrado para la línea del documento.',
   detalle: 'Bloques de información de las líneas del documento.',
@@ -22,6 +29,8 @@ const groupDescriptions: Record<string, string> = {
   empresa: 'Datos compartidos de la empresa del contexto de respuesta.',
   estado: 'Indicadores del estado operativo, financiero o documental.',
   estado_electronico: 'Estado de envío, validación y contingencia electrónica.',
+  factura_electronica:
+    'Resultado y trazabilidad de la integración fiscal electrónica.',
   fecha: 'Fecha de registro del evento operativo.',
   fechas: 'Fechas del documento y cálculo de vencimiento.',
   facturacion_electronica:
@@ -29,12 +38,19 @@ const groupDescriptions: Record<string, string> = {
   grupos: 'Conjunto de bloques funcionales solicitados para la respuesta.',
   impresion: 'Configuración de plantillas, contenido y opciones de impresión.',
   impuestos: 'Impuestos y tributos calculados para el documento o la línea.',
+  impuesto: 'Impuesto principal aplicado al registro.',
+  imagen: 'Referencia y URL de la imagen del producto.',
+  inventario: 'Existencias y configuración de inventario del producto.',
   mesa: 'Identificación de la mesa y datos de sus comensales.',
   motivo: 'Nota o motivo registrado para la eliminación del plato.',
   moneda: 'Moneda y tasa de conversión del documento.',
   notas_credito: 'Notas crédito y líneas que modifican el documento.',
   nota: 'Observación general o específica del registro.',
   pedido: 'Referencias del pedido en línea y sus órdenes.',
+  logistica: 'Datos de preparación, despacho y seguimiento logístico.',
+  marca: 'Marca comercial asociada al producto.',
+  medida: 'Unidad y presentación de medida del producto.',
+  medio_pago: 'Medio de pago configurado o usado en la operación.',
   pagos: 'Comprobantes y movimientos aplicados como pago.',
   presentacion: 'Equivalencias y datos de la presentación comercial.',
   preparacion: 'Tiempos y estación de preparación de la comanda.',
@@ -42,16 +58,30 @@ const groupDescriptions: Record<string, string> = {
   producto: 'Identificación, descripción y presentación del producto.',
   producto_ampliado:
     'Información adicional del producto, sanitaria y logística.',
+  licores: 'Configuración comercial específica para compra y venta de licores.',
+  politicas_precios: 'Políticas de precios aplicadas entre sucursales.',
+  pos: 'Configuración operativa del punto de venta.',
   qr: 'Datos usados para construir o consultar el código QR.',
   retenciones: 'Retenciones aplicadas, sus bases, porcentajes y valores.',
+  ruta_despacho: 'Ruta de despacho asignada al documento.',
+  rangos: 'Rangos y límites de numeración configurados.',
   saldo: 'Deuda, abonos y pendiente financiero normalizado.',
   seriales: 'Seriales asociados a la línea del producto.',
   sucursal: 'Sucursal donde se originó o aplica la operación.',
   sucursal_configuracion:
     'Configuración de documentos y facturación de la sucursal.',
+  sucursales: 'Relaciones y configuración asociadas a las sucursales.',
+  permisos_caja:
+    'Reglas de apertura, cierre y operación de la caja del empleado.',
+  restaurante: 'Permisos y configuración del empleado para mesas.',
+  roles: 'Indicadores de rol y capacidades operativas del empleado.',
+  horario: 'Horario de ingreso y salida configurado para el empleado.',
+  app_movil: 'Permisos de acceso del empleado a las aplicaciones móviles.',
+  ventas_ext: 'Configuración extendida para la operación de ventas.',
   taller: 'Información del vehículo y del servicio de taller relacionado.',
   tercero: 'Identificación del tercero agrupado en cartera.',
   totales: 'Importes agregados y saldos calculados del documento.',
+  tienda: 'Configuración de publicación y visibilidad en la tienda.',
   transaccion:
     'Identificación y datos principales del documento transaccional.',
   vendedor: 'Vendedor comercial asociado a la operación.',
@@ -122,6 +152,7 @@ const commonFieldDescriptions: Record<string, string> = {
   pais: 'País registrado o país de aplicación.',
   prefijo: 'Prefijo que antecede la numeración documental.',
   saldo: 'Saldo registrado o pendiente financiero; puede ser sensible.',
+  sku: 'Código interno o SKU usado para identificar el producto.',
   sucursales:
     'Configuración de sucursales; JSON válido se estructura y el histórico inválido se conserva como texto.',
   telefonos: 'Lista de teléfonos registrados para el tercero.',
@@ -167,6 +198,10 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
   buscarCategorias: {
     id_categoria: 'Identificador único de la categoría.',
     nombre_categoria: 'Nombre visible de la categoría.',
+    alias: 'Nombre alternativo o slug funcional de la categoría.',
+    codigo_dian: 'Código de clasificación usado por la integración DIAN.',
+    formato: 'Formato de presentación de la imagen o categoría.',
+    url: 'Dirección del recurso asociado a la categoría.',
     es_activo: 'Estado operativo de la categoría.',
     fecha_registro: 'Momento de creación de la categoría.',
     id_imagen: 'Identificador de la imagen asociada.',
@@ -178,14 +213,14 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
       'Identificador de la categoría superior; vacío ubica el nodo como raíz.',
     metadata:
       'Información adicional de la categoría según los datos históricos.',
-    alias: 'Nombre alternativo o slug funcional de la categoría.',
     mostrar_catalogo_linea:
       'Controla la visualización en el catálogo en línea.',
     sucursales:
       'Sucursales asociadas; puede ser arreglo, objeto, string histórico o null.',
     alerta_vencimiento_lotes:
       'Controla alertas de vencimiento de lotes de la categoría.',
-    es_visible_produccion:
+    visible_tienda: 'Controla la visibilidad de la categoría en la tienda.',
+    visible_produccion:
       'Indica si la categoría aparece en procesos de producción.',
   },
   buscarTercero: {
@@ -496,6 +531,7 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     id_sucursal: 'Sucursal donde se registra el conteo.',
     id_bodega: 'Bodega del conteo; debe coincidir con la sucursal.',
     id_producto: 'Producto contado.',
+    id_empleado: 'Empleado que registra el conteo.',
     fecha_registro: 'Fecha del conteo en milisegundos desde epoch.',
     id_centro_costo: 'Centro de costo opcional del movimiento.',
   },
@@ -674,7 +710,7 @@ export const getFieldDescription = (endpointId: string, field: string) =>
   endpointFieldDescriptions.buscarTercero?.[field] ??
   commonFieldDescriptions[field] ??
   groupDescriptions[field] ??
-  pendingDescription;
+  `Campo ${field}; confirma su significado funcional antes de interpretarlo.`;
 
 export const getFieldType = (endpointId: string, field: string) =>
   endpointFieldTypes[endpointId]?.[field] ??

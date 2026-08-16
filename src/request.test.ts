@@ -48,9 +48,9 @@ describe('request builder', () => {
     expect(hasRequiredCredentials(credentials)).toBe(true);
   });
 
-  it('builds a GET with global headers and a placeholder curl by default', () => {
+  it('builds the catalog POST with global headers and a placeholder curl by default', () => {
     const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultaProductoPaginadaMCP',
+      (item) => item.id === 'buscarProductosCatalogo',
     );
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
@@ -63,7 +63,7 @@ describe('request builder', () => {
       draft,
       'https://proxy.example.test/',
     );
-    expect(request.url).toContain('/consultaProductoPaginadaMCP/3/0?');
+    expect(request.url).toContain('/buscarProductos?');
     expect(request.url).toContain('nombre_producto=Cafe+molido');
     expect(request.init.headers).toBeInstanceOf(Headers);
     const headers = request.init.headers as Headers;
@@ -84,7 +84,7 @@ describe('request builder', () => {
 
   it('includes configured credentials only when explicitly requested for curl', () => {
     const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultaProductoPaginadaMCP',
+      (item) => item.id === 'buscarProductosCatalogo',
     );
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
@@ -112,7 +112,7 @@ describe('request builder', () => {
 
   it('builds an anonymous curl with exact Postman placeholders', () => {
     const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultaProductoPaginadaMCP',
+      (item) => item.id === 'buscarProductosCatalogo',
     );
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
@@ -129,42 +129,37 @@ describe('request builder', () => {
 
   it('preserves Postman path variables instead of encoding documentary markers', () => {
     const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultaProductoPaginadaMCP',
+      (item) => item.id === 'consultarImpuestoCuenti',
     );
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
-    draft.path = {
-      id_sucursal: '<id_sucursal>',
-      pagina: '<pagina>',
-    };
+    draft.path = { id_impuesto: '<id_impuesto>' };
 
     const curl = buildCurl(endpoint, draft, 'https://proxy.example.test');
 
-    expect(curl).toContain(
-      '/consultaProductoPaginadaMCP/{{id_sucursal}}/{{pagina}}',
-    );
+    expect(curl).toContain('/consultarImpuestosCuenti/{{id_impuesto}}');
     expect(curl).not.toMatch(/%3C|%3E|%7B|%7D/i);
   });
 
   it('keeps URL encoding enabled for real request path values', () => {
     const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultaProductoPaginadaMCP',
+      (item) => item.id === 'consultarImpuestoCuenti',
     );
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
-    draft.path = { id_sucursal: 'branch/with space', pagina: '0' };
+    draft.path = { id_impuesto: 'branch/with space' };
     draft.credentials = credentials;
 
     const request = buildRequest(endpoint, draft, 'https://proxy.example.test');
 
     expect(request.url).toContain(
-      '/consultaProductoPaginadaMCP/branch%2Fwith%20space/0',
+      '/consultarImpuestosCuenti/branch%2Fwith%20space',
     );
   });
 
   it('builds an authenticated curl from in-memory credentials', () => {
     const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultaProductoPaginadaMCP',
+      (item) => item.id === 'buscarProductosCatalogo',
     );
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
@@ -246,6 +241,25 @@ describe('request builder', () => {
     draft.credentials = credentials;
     expect(() => buildRequest(endpoint, draft)).toThrow(
       /es_ingreso.*JSON válido/,
+    );
+  });
+
+  it('keeps the Try It body editor open to empty and column projections', () => {
+    const endpoint = registry.endpoints.find(
+      (item) => item.id === 'buscarCategorias',
+    );
+    if (!endpoint) throw new Error('Category endpoint was not found.');
+    const draft = defaultDraft(endpoint);
+    draft.credentials = credentials;
+
+    draft.body = '{}';
+    expect(buildRequest(endpoint, draft).init.body).toBe('{}');
+
+    draft.body = JSON.stringify({
+      columnas: ['id_categoria', 'nombre_categoria'],
+    });
+    expect(buildRequest(endpoint, draft).init.body).toBe(
+      '{"columnas":["id_categoria","nombre_categoria"]}',
     );
   });
 });

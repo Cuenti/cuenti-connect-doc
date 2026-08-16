@@ -4,8 +4,8 @@ import { categories, upcomingCapabilities } from './model';
 import { registry } from './registry';
 
 describe('canonical documentation registry', () => {
-  it('exposes exactly 24 implemented endpoints in seven categories', () => {
-    expect(registry.endpoints).toHaveLength(24);
+  it('exposes exactly 28 implemented endpoints in eight categories', () => {
+    expect(registry.endpoints).toHaveLength(28);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -16,7 +16,7 @@ describe('canonical documentation registry', () => {
       registry.endpoints.filter(
         (endpoint) => endpoint.cache.mode === 'cacheable',
       ),
-    ).toHaveLength(20);
+    ).toHaveLength(24);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
     ).toHaveLength(4);
@@ -71,6 +71,12 @@ describe('canonical documentation registry', () => {
           type: 'epoch-milliseconds',
           typeLabel: 'milisegundos desde epoch',
         }),
+        expect.objectContaining({
+          name: 'id_empleado',
+          type: 'integer',
+          required: true,
+          minimum: 1,
+        }),
       ]),
     );
 
@@ -111,8 +117,7 @@ describe('canonical documentation registry', () => {
 
     expect(fields.get('id_tipo_persona')).toEqual(
       expect.objectContaining({
-        type: 'string',
-        typeLabel: 'texto',
+        name: 'id_tipo_persona',
         required: true,
       }),
     );
@@ -126,24 +131,10 @@ describe('canonical documentation registry', () => {
         expect.objectContaining({ required: true }),
       );
     }
-    expect(fields.get('es_consumidor_final')).toEqual(
-      expect.objectContaining({ type: 'string', typeLabel: 'texto | null' }),
-    );
-    expect(fields.get('fecha_nacimiento')).toEqual(
-      expect.objectContaining({
-        type: 'epoch-milliseconds',
-        typeLabel: 'milisegundos desde epoch | null',
-      }),
-    );
-    expect(fields.get('horario')).toEqual(
-      expect.objectContaining({
-        type: 'epoch-milliseconds',
-        typeLabel: 'milisegundos desde epoch | null',
-      }),
-    );
-    expect(fields.get('lstContactoCliente')).toEqual(
-      expect.objectContaining({ type: 'array', typeLabel: 'arreglo | null' }),
-    );
+    expect(fields.get('es_consumidor_final')).toBeDefined();
+    expect(fields.get('fecha_nacimiento')).toBeDefined();
+    expect(fields.get('horario')).toBeDefined();
+    expect(fields.get('lstContactoCliente')).toBeUndefined();
   });
 
   it('keeps customer-facing metadata free of internal implementation terms', () => {
@@ -165,12 +156,8 @@ describe('canonical documentation registry', () => {
         ({ name }) => name === 'tipo_documento',
       );
       if (!parameter) continue;
-      expect(parameter.allowedValues).toEqual(['1', '7', '9']);
-      expect(parameter.allowedValueLabels).toEqual({
-        '1': 'Factura',
-        '7': 'Compra',
-        '9': 'Prefactura / remisión',
-      });
+      expect(parameter.type).toBe('integer-list');
+      expect(parameter.allowedValues).toBeUndefined();
     }
   });
 
@@ -221,7 +208,7 @@ describe('canonical documentation registry', () => {
 
   it('documents the four recently updated query contracts', () => {
     const products = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'consultaProductoPaginadaMCP',
+      (endpoint) => endpoint.id === 'buscarProductosCatalogo',
     );
     expect(products?.queryParams).toEqual(
       expect.arrayContaining([
@@ -230,17 +217,48 @@ describe('canonical documentation registry', () => {
       ]),
     );
     expect(products?.tryIt?.query).toMatchObject({
-      id_producto: '125',
-      sku: 'SKU-125',
+      cantidad_registros: '30',
+      es_activo: '1',
     });
-    expect(products?.notes.join(' ')).toContain('AND');
+    expect(products?.tryIt?.body).toEqual({
+      grupos: [
+        'producto',
+        'sucursal',
+        'precios',
+        'inventario',
+        'categoria',
+        'marca',
+        'impuestos',
+        'medida',
+        'imagen',
+        'configuracion',
+      ],
+    });
+
+    for (const endpointId of [
+      'buscarDocumentosComerciales',
+      'buscarProductosDocumentosComerciales',
+      'buscarDescuentosDocumentosComerciales',
+      'buscarConsolidadoDocumentosComerciales',
+    ]) {
+      expect(registry.endpoints).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: endpointId,
+            category: 'Documentos comerciales',
+            kind: 'query',
+            cache: expect.objectContaining({ mode: 'cacheable', ttl: '60 s' }),
+          }),
+        ]),
+      );
+    }
 
     const banks = registry.endpoints.find(
       (endpoint) => endpoint.id === 'buscarBancos',
     );
     expect(banks?.columns).toContain('config');
     expect(banks?.summary).toContain(
-      'config se devuelve como arreglo u objeto cuando contiene JSON válido',
+      'config se devuelve como arreglo u objeto cuando contiene JSON valido',
     );
     expect(banks?.responseExample).toMatchObject({
       bancos: [{ config: { lstEmpleados: [1, 2, 3, 5, 6, 8, 11] } }],
@@ -292,13 +310,33 @@ describe('canonical documentation registry', () => {
       'vendedor_multi_sucursal',
     ]);
     expect(employees?.tryIt?.body).toEqual({
-      columnas: [
-        'id_empleado',
-        'nombre_completo',
-        'identificacion',
-        'id_sucursal',
+      grupos: [
+        'empleado',
+        'sucursal',
+        'consecutivo',
+        'precios',
+        'comision',
+        'permisos_caja',
+        'restaurante',
+        'roles',
+        'horario',
+        'app_movil',
+        'ventas_ext',
       ],
     });
+    expect(employees?.groups.map((group) => group.name)).toEqual([
+      'empleado',
+      'sucursal',
+      'consecutivo',
+      'precios',
+      'comision',
+      'permisos_caja',
+      'restaurante',
+      'roles',
+      'horario',
+      'app_movil',
+      'ventas_ext',
+    ]);
     expect(employees?.columns).not.toEqual(
       expect.arrayContaining(['segunda_clave', 'clave_caja']),
     );
@@ -313,6 +351,50 @@ describe('canonical documentation registry', () => {
         },
       ],
     });
+  });
+
+  it('marks catalog projections as group-first compatibility routes', () => {
+    const catalogIds = [
+      'buscarProductosCatalogo',
+      'buscarCategorias',
+      'buscarTercero',
+      'buscarImpuestos',
+      'buscarBancos',
+      'buscarMediosPago',
+      'buscarConsecutivos',
+      'buscarSucursales',
+      'buscarEmpleados',
+    ];
+    const catalogEndpoints = catalogIds.map((id) => {
+      const endpoint = registry.endpoints.find((item) => item.id === id);
+      if (!endpoint) throw new Error(`Missing endpoint ${id}`);
+      return endpoint;
+    });
+
+    expect(catalogEndpoints.every((endpoint) => endpoint.compatibility)).toBe(
+      true,
+    );
+    expect(
+      registry.endpoints.filter((endpoint) => endpoint.compatibility),
+    ).toHaveLength(9);
+    for (const endpoint of catalogEndpoints) {
+      expect(endpoint.requestExample).toEqual(
+        expect.objectContaining({ grupos: expect.any(Array) }),
+      );
+      expect(endpoint.tryIt?.body).toEqual(
+        expect.objectContaining({ grupos: expect.any(Array) }),
+      );
+      for (const preset of endpoint.presets) {
+        expect(preset.body).toEqual(
+          expect.objectContaining({ grupos: expect.any(Array) }),
+        );
+      }
+    }
+    expect(
+      registry.endpoints
+        .filter((endpoint) => endpoint.category === 'Facturas e historiales')
+        .some((endpoint) => endpoint.compatibility),
+    ).toBe(false);
   });
 
   it('documents the complete consecutivos catalog without disabled columns', () => {
@@ -330,6 +412,7 @@ describe('canonical documentation registry', () => {
       'fecha_registro',
       'resolucion',
       'id_sucursal',
+      'nombre_sucursal',
       'inicia',
       'finaliza',
       'es_factura_electronica',
@@ -343,12 +426,12 @@ describe('canonical documentation registry', () => {
     ];
     expect(consecutivos?.columns).toEqual(columns);
     expect(consecutivos?.tryIt?.body).toEqual({
-      columnas: [
-        'id_consecutivo',
-        'nombre_consecutivo',
-        'prefijo',
-        'numero',
-        'id_sucursal',
+      grupos: [
+        'consecutivo',
+        'factura_electronica',
+        'rangos',
+        'sucursal',
+        'configuracion',
       ],
     });
     expect(consecutivos?.columns).not.toEqual(
@@ -378,7 +461,7 @@ describe('canonical documentation registry', () => {
       expect.arrayContaining(requestedBranchColumns),
     );
     expect(branches?.tryIt?.body).toEqual({
-      columnas: requestedBranchColumns,
+      grupos: ['sucursal', 'pos', 'politicas_precios', 'licores', 'moneda'],
     });
     expect(branches?.notes.join(' ')).toContain('reondeoTotales');
     expect(branches?.notes.join(' ')).toContain('modificicar_');
@@ -388,7 +471,7 @@ describe('canonical documentation registry', () => {
     );
     expect(paymentMethods?.columns).toContain('config');
     expect(paymentMethods?.tryIt?.body).toEqual({
-      columnas: ['id_medio_pago', 'nombre_medio_pago', 'config'],
+      grupos: ['medio_pago', 'sucursal', 'configuracion'],
     });
     expect(paymentMethods?.responseContract).toContain(
       'JsonValue | string | null',

@@ -1,4 +1,5 @@
 import rawRegistry from '../../contracts/j4/endpoints.json';
+import { getGroupDescription } from '../fieldDescriptions';
 import {
   type CachePolicy,
   type CanonicalRegistry,
@@ -79,7 +80,7 @@ const strings = (value: unknown) =>
     .filter(Boolean);
 
 const endpointTitles: Record<string, string> = {
-  consultaProductoPaginadaMCP: 'Buscar productos paginados',
+  buscarProductosCatalogo: 'Buscar productos del catálogo',
   buscarCategorias: 'Buscar categorías',
   actualizarImpuestosLicores: 'Actualizar impuestos de licores',
   buscarTercero: 'Buscar terceros',
@@ -98,10 +99,18 @@ const endpointTitles: Record<string, string> = {
   buscarResumenTerceros: 'Resumir saldos por tercero',
   obtenerComandas: 'Obtener comandas',
   platosEliminados: 'Buscar platos eliminados',
+  buscarDocumentosComerciales: 'Buscar documentos comerciales',
+  buscarProductosDocumentosComerciales:
+    'Buscar productos de documentos comerciales',
+  buscarDescuentosDocumentosComerciales:
+    'Buscar descuentos de documentos comerciales',
+  buscarConsolidadoDocumentosComerciales: 'Consolidar documentos comerciales',
 };
 
 const presetTitles: Record<string, Record<string, string>> = {
-  consultaProductoPaginadaMCP: { 'by-name': 'Por nombre de producto' },
+  buscarProductosCatalogo: {
+    'active-stock': 'Productos activos con inventario',
+  },
   buscarCategorias: { 'active-tree': 'Árbol de categorías activas' },
   actualizarImpuestosLicores: {
     'partial-tax-update': 'Actualización parcial de impuestos',
@@ -146,6 +155,16 @@ const presetTitles: Record<string, Record<string, string>> = {
   obtenerComandas: { 'active-branch': 'Comandas activas por sucursal' },
   platosEliminados: {
     'branch-audit': 'Auditoría de eliminaciones por sucursal',
+  },
+  buscarDocumentosComerciales: { sales: 'Facturas activas' },
+  buscarProductosDocumentosComerciales: {
+    'by-customer': 'Productos por cliente',
+  },
+  buscarDescuentosDocumentosComerciales: {
+    headers: 'Descuentos por documento',
+  },
+  buscarConsolidadoDocumentosComerciales: {
+    'by-customer': 'Consolidado por cliente',
   },
 };
 
@@ -580,6 +599,41 @@ const normalizeErrors = (value: unknown): ErrorSpec[] =>
     };
   });
 
+const publicErrors = (errors: ErrorSpec[]) =>
+  errors.filter((error) => !/legacy|servidor|backend/i.test(error.description));
+
+const documentMatchingGuidance = (
+  endpointId: string,
+): EndpointGuidance | undefined =>
+  endpointId === 'grabarDocumentoSimple'
+    ? {
+        title: 'Elegir type_match_producto',
+        intro: 'Selecciona cómo se localizará cada producto de objDetalle.',
+        rows: [
+          {
+            value: '1',
+            field: 'objDetalle[].id_producto',
+            use: 'Modo 1: ID interno',
+            rule: 'Envía id_producto y no envíes code.',
+          },
+          {
+            value: '2',
+            field: 'objDetalle[].code',
+            use: 'Cuando conoces el SKU.',
+            rule: 'Envía code con el SKU exacto.',
+          },
+          {
+            value: '3',
+            field: 'objDetalle[].code',
+            use: 'Cuando conoces el código de barras.',
+            rule: 'Envía code con el código de barras exacto.',
+          },
+        ],
+        notes: ['No mezcles modos de identificación en una misma línea.'],
+        examples: [],
+      }
+    : undefined;
+
 const normalizeCache = (
   value: unknown,
   kind: 'query' | 'mutation',
@@ -713,7 +767,26 @@ const normalizeEndpoint = (
   const bodyGroups = mergeGroups(
     normalizeBodyGroups(first(body, ['groups', 'grupos'])),
   );
-  const bodyFields = normalizeFields(first(body, ['fields', 'campos']));
+  const columns = strings(first(item, ['columns', 'columnas'])).length
+    ? strings(first(item, ['columns', 'columnas']))
+    : strings(first(body, ['columns', 'columnas'])).length
+      ? strings(first(body, ['columns', 'columnas']))
+      : normalizeFieldNames(first(body, ['fields', 'campos']));
+  const creationRequired = new Set(
+    strings(body.createRequired).map((rule) => rule.split('=')[0].trim()),
+  );
+  if (endpointId === 'guardarTercero') {
+    if (strings(body.createRequired).some((rule) => /teléfono/i.test(rule))) {
+      creationRequired.add('telefonos');
+    }
+    if (strings(body.createRequired).some((rule) => /correo/i.test(rule))) {
+      creationRequired.add('correos');
+    }
+  }
+  const bodyFields = normalizeFields(first(body, ['fields', 'campos'])).map(
+    (field) =>
+      creationRequired.has(field.name) ? { ...field, required: true } : field,
+  );
   const retiredKitchenWrite = ['grabar', 'mesas'].join('');
   const retiredTaxFlag = ['impuesto', 'saludable'].join('_');
   const omittedDishField = ['id', 'transacion'].join('_');
@@ -729,6 +802,7 @@ const normalizeEndpoint = (
       normalizedNote.includes(omittedDishField)
     )
       return false;
+    if (/legacy|servidor|backend/i.test(normalizedNote)) return false;
     return true;
   });
   const summary =
@@ -781,15 +855,19 @@ const normalizeEndpoint = (
       first(examples, ['response', 'respuesta']) ??
       first(response, ['example', 'ejemplo']),
     groups: groups.length ? groups : bodyGroups,
-    columns: strings(first(item, ['columns', 'columnas'])).length
-      ? strings(first(item, ['columns', 'columnas']))
-      : strings(first(body, ['columns', 'columnas'])).length
-        ? strings(first(body, ['columns', 'columnas']))
-        : normalizeFieldNames(first(body, ['fields', 'campos'])),
+    columns,
+    compatibility:
+      bodyGroups.length && columns.length
+        ? { columns: [...columns] }
+        : undefined,
     presets: explicitPresets.length ? explicitPresets : fallbackPresets(path),
-    guidance: normalizeGuidance(first(item, ['guidance', 'documentation'])),
-    errors: normalizeErrors(
-      first(item, ['errors', 'errores', 'validations', 'validaciones']),
+    guidance:
+      normalizeGuidance(first(item, ['guidance', 'documentation'])) ||
+      documentMatchingGuidance(endpointId),
+    errors: publicErrors(
+      normalizeErrors(
+        first(item, ['errors', 'errores', 'validations', 'validaciones']),
+      ),
     ),
     notes,
     rateLimit: asString(first(item, ['rateLimit', 'rate_limit'])) || undefined,
@@ -829,14 +907,17 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
   for (const endpoint of endpoints) {
     for (const group of endpoint.groups) {
       const purpose = asString(groupDescriptions[group.name]);
-      group.description = [purpose, group.description]
+      group.description = [
+        purpose,
+        group.description || getGroupDescription(group.name),
+      ]
         .filter(Boolean)
         .join(' ');
     }
   }
-  if (endpoints.length !== 24) {
+  if (endpoints.length !== 28) {
     throw new Error(
-      `El registro canónico debe contener 24 operaciones; contiene ${endpoints.length}.`,
+      `El registro canónico debe contener 28 operaciones; contiene ${endpoints.length}.`,
     );
   }
   if (
