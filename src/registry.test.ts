@@ -389,6 +389,13 @@ describe('canonical documentation registry', () => {
     expect(commercialDiscounts?.tryIt?.body).toEqual({
       grupos: ['documento', 'cliente', 'empleado', 'vendedor', 'totales'],
     });
+    expect(commercialDiscounts?.groups).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'empleado', level: 'header' }),
+        expect.objectContaining({ name: 'producto', level: 'detail' }),
+        expect.objectContaining({ name: 'documento', level: 'both' }),
+      ]),
+    );
   });
 
   it('hides route-owned selectors and keeps public request examples valid', () => {

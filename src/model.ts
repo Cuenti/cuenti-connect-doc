@@ -39,6 +39,7 @@ export interface FieldGroup {
   name: string;
   fields: string[];
   description?: string;
+  level?: 'header' | 'detail' | 'both';
 }
 
 export interface CompatibilityMetadata {

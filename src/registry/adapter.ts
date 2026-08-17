@@ -406,6 +406,7 @@ const normalizeGroups = (value: unknown): FieldGroup[] => {
       .map((entry) => {
         if (typeof entry === 'string') return { name: entry, fields: [] };
         const item = asRecord(entry);
+        const level = asString(item.level) as FieldGroup['level'];
         return {
           name: asString(first(item, ['name', 'nombre', 'group', 'grupo'])),
           fields: strings(
@@ -413,6 +414,7 @@ const normalizeGroups = (value: unknown): FieldGroup[] => {
           ),
           description:
             asString(first(item, ['description', 'descripcion'])) || undefined,
+          level: ['header', 'detail', 'both'].includes(level) ? level : undefined,
         };
       })
       .filter((group) => group.name);
@@ -422,6 +424,27 @@ const normalizeGroups = (value: unknown): FieldGroup[] => {
     fields: strings(fields),
   }));
 };
+
+const discountGroupLevels: Record<string, FieldGroup['level']> = {
+  transaccion: 'both',
+  documento: 'both',
+  cliente: 'both',
+  totales: 'both',
+  empleado: 'header',
+  vendedor: 'header',
+  producto: 'detail',
+  cantidades: 'detail',
+  precios: 'detail',
+  descuento: 'detail',
+};
+
+const classifyDiscountGroups = (groups: FieldGroup[], path: string) =>
+  path.includes('/buscarDescuentos')
+    ? groups.map((group) => ({
+        ...group,
+        level: discountGroupLevels[group.name] ?? group.level,
+      }))
+    : groups;
 
 const mergeGroups = (groups: FieldGroup[]) => {
   const merged = new Map<string, FieldGroup>();
@@ -910,6 +933,10 @@ const normalizeEndpoint = (
   const bodyGroups = mergeGroups(
     normalizeBodyGroups(first(body, ['groups', 'grupos'])),
   );
+  const classifiedGroups = classifyDiscountGroups(
+    groups.length ? groups : bodyGroups,
+    path,
+  );
   const columns =
     first(item, ['projectionPolicy']) === 'groups-or-empty'
       ? []
@@ -1009,7 +1036,7 @@ const normalizeEndpoint = (
       first(item, ['responseExample']) ??
       first(examples, ['response', 'respuesta']) ??
       first(response, ['example', 'ejemplo']),
-    groups: groups.length ? groups : bodyGroups,
+    groups: classifiedGroups,
     columns,
     compatibility:
       bodyGroups.length && columns.length

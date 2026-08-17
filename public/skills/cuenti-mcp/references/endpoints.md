@@ -985,7 +985,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `empleado`, `vendedor`, `totales`, `producto`, `cantidades`, `precios`, `descuento`.
 
 **Regla de selección:**
-- Si `grupos` contiene `producto`, `cantidades`, `precios`, usa únicamente grupos de detalle; no mezcles `empleado` o `vendedor`.
+- Si `grupos` contiene `producto`, `cantidades`, `precios`, `descuento`, usa únicamente grupos de detalle; no mezcles `empleado` o `vendedor`.
 - Si no contiene esos grupos, usa únicamente grupos de cabecera.
 
 **Ejemplo de argumentos:**
@@ -2038,7 +2038,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `documento`, `cliente`, `empleado`, `vendedor`, `totales`, `producto`, `cantidades`, `precios`, `descuento`.
 
 **Regla de selección:**
-- Si `grupos` contiene `producto`, `cantidades`, `precios`, usa únicamente grupos de detalle; no mezcles `empleado` o `vendedor`.
+- Si `grupos` contiene `producto`, `cantidades`, `precios`, `descuento`, usa únicamente grupos de detalle; no mezcles `empleado` o `vendedor`.
 - Si no contiene esos grupos, usa únicamente grupos de cabecera.
 
 **Ejemplo de argumentos:**
@@ -2073,7 +2073,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Los resultados solo incluyen documentos con descuentos.
 - Los filtros de fecha son inclusivos y usan epoch-milliseconds.
 
-**Peticiones habituales:** Descuentos por documento.
+**Peticiones habituales:** Descuentos por documento (cabecera); Descuentos por producto (detalle).
 
 ### `operativas-consolidados-busquedas`: Consolidar documentos comerciales
 

@@ -169,6 +169,15 @@ export const EndpointDetail = ({
                     }
                     className="field-tooltip-trigger projection-group-trigger"
                   />
+                  {group.level ? (
+                    <span className="projection-level">
+                      {group.level === 'header'
+                        ? 'Cabecera'
+                        : group.level === 'detail'
+                          ? 'Detalle'
+                          : 'Cabecera y detalle'}
+                    </span>
+                  ) : null}
                   <span className="projection-fields">
                     {group.description || getGroupDescription(group.name)}
                   </span>
