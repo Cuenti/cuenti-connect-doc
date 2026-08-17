@@ -9,7 +9,7 @@ describe('endpoint search', () => {
     ['id_auditoria', 'restaurante-platos-eliminados-busquedas'],
     ['cantidad_registros', 'catalogo-categorias-busquedas'],
     ['producto_ampliado', 'ventas-facturas-busquedas'],
-    ['Categorías e impuestos', 'catalogo-categorias-busquedas'],
+    ['Catálogo', 'catalogo-categorias-busquedas'],
   ])('finds %s across route metadata', (query, expectedId) => {
     expect(
       filterEndpoints(registry.endpoints, query).map((endpoint) => endpoint.id),

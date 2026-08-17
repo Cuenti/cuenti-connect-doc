@@ -7,7 +7,9 @@ const openCategory = async (
   user: ReturnType<typeof userEvent.setup>,
   name: string,
 ) => {
-  const toggle = screen.getByRole('button', { name: new RegExp(`^${name}`) });
+  const toggle = screen.getByRole('button', {
+    name: new RegExp(`^${name}\\d+$`),
+  });
   if (toggle.getAttribute('aria-expanded') === 'false') {
     await user.click(toggle);
   }
@@ -90,10 +92,10 @@ describe('documentation application', () => {
       name: 'Operaciones implementadas',
     });
     expect(
-      screen.getByRole('button', { name: /^Productos e inventario/ }),
+      screen.getByRole('button', { name: /^Catálogo\d+$/ }),
     ).toHaveAttribute('aria-expanded', 'true');
     expect(
-      screen.getByRole('button', { name: /^Facturas e historiales/ }),
+      screen.getByRole('button', { name: /^Transacciones\d+$/ }),
     ).toHaveAttribute('aria-expanded', 'false');
     expect(
       within(navigation).queryByRole('button', {
@@ -102,7 +104,7 @@ describe('documentation application', () => {
     ).not.toBeInTheDocument();
 
     await user.click(
-      screen.getByRole('button', { name: /^Facturas e historiales/ }),
+      screen.getByRole('button', { name: /^Transacciones\d+$/ }),
     );
     expect(
       within(navigation).getByRole('button', {
@@ -118,7 +120,7 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Categorías e impuestos');
+    await openCategory(user, 'Catálogo');
     await user.click(
       screen.getByRole('button', { name: /Buscar categorías/i }),
     );
@@ -153,7 +155,7 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Categorías e impuestos');
+    await openCategory(user, 'Catálogo');
     await user.click(
       screen.getByRole('button', { name: /Buscar categorías/i }),
     );
@@ -166,7 +168,7 @@ describe('documentation application', () => {
       'Tipo: entero.',
     );
 
-    await openCategory(user, 'Comandas');
+    await openCategory(user, 'Restaurante');
     await user.click(screen.getByRole('button', { name: /Obtener comandas/i }));
     const productGroup = screen.getByRole('button', { name: 'producto' });
     productGroup.focus();
@@ -179,7 +181,7 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Facturas e historiales');
+    await openCategory(user, 'Transacciones');
     await user.click(
       screen.getByRole('button', {
         name: /^POSTCrear factura, compra, gasto o remisión$/i,
@@ -195,7 +197,7 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Facturas e historiales');
+    await openCategory(user, 'Transacciones');
     await user.click(
       screen.getByRole('button', {
         name: /^POSTCrear factura, compra, gasto o remisión$/i,
@@ -211,7 +213,7 @@ describe('documentation application', () => {
   it('updates selection in the URL and responds to browser history', async () => {
     const user = userEvent.setup();
     render(<App />);
-    await openCategory(user, 'Cartera');
+    await openCategory(user, 'Finanzas y cartera');
     await user.click(
       screen.getByRole('button', {
         name: /^POSTBuscar cuentas por cobrar y pagar$/i,
@@ -288,7 +290,7 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Facturas e historiales');
+    await openCategory(user, 'Transacciones');
     await user.click(
       screen.getByRole('button', {
         name: /^POSTCrear factura, compra, gasto o remisión$/i,

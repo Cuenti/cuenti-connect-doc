@@ -90,6 +90,28 @@ describe('canonical documentation registry', () => {
     ).toHaveLength(7);
   });
 
+  it('keeps the flat public service distribution', () => {
+    const counts = Object.fromEntries(
+      categories.map((category) => [
+        category,
+        registry.endpoints.filter((endpoint) => endpoint.category === category)
+          .length,
+      ]),
+    );
+    expect(counts).toEqual({
+      'Catálogo': 5,
+      Inventario: 1,
+      Terceros: 3,
+      Transacciones: 11,
+      'Otros documentos': 12,
+      Impuestos: 2,
+      'Finanzas y cartera': 6,
+      'Organización': 2,
+      'Facturación': 1,
+      Restaurante: 2,
+    });
+  });
+
   it('provides public examples and response contracts for every route', () => {
     for (const endpoint of registry.endpoints) {
       expect(endpoint.path).toMatch(/^\/api\/v1\//);
@@ -476,7 +498,7 @@ describe('canonical documentation registry', () => {
     }
     expect(
       registry.endpoints
-        .filter((endpoint) => endpoint.category === 'Facturas e historiales')
+        .filter((endpoint) => endpoint.category === 'Transacciones')
         .some((endpoint) => endpoint.compatibility),
     ).toBe(false);
   });

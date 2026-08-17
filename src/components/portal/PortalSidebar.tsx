@@ -27,13 +27,13 @@ const NavigationIcon = ({ kind }: { kind: string }) => {
         <path d="M8 9h8M8 13h5" />
       </>
     ),
-    'Productos e inventario': (
+    Inventario: (
       <>
         <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" />
         <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
       </>
     ),
-    'Categorías e impuestos': (
+    Impuestos: (
       <>
         <path d="M4 4h7v7H4zM13 13h7v7h-7z" />
         <path d="m14 4 6 6M20 4l-6 6M4 16h7" />
@@ -46,28 +46,46 @@ const NavigationIcon = ({ kind }: { kind: string }) => {
         <path d="M3 20c0-4 2-6 6-6s6 2 6 6M15 15c3 0 5 2 5 5" />
       </>
     ),
-    Maestros: (
+    Organización: (
       <>
         <path d="M5 3h14v18H5z" />
         <path d="M9 7h6M9 11h6M9 15h4" />
       </>
     ),
-    'Facturas e historiales': (
+    Transacciones: (
       <>
         <path d="M5 3h14v18l-3-2-4 2-4-2-3 2z" />
         <path d="M9 8h6M9 12h6" />
       </>
     ),
-    Cartera: (
+    'Finanzas y cartera': (
       <>
         <path d="M3 7h18v12H3z" />
         <path d="M3 10h18M16 15h2" />
       </>
     ),
-    Comandas: (
+    Restaurante: (
       <>
         <path d="M6 3h12v18H6z" />
         <path d="M9 8h6M9 12h6M9 16h4" />
+      </>
+    ),
+    Catálogo: (
+      <>
+        <path d="M4 5h16v14H4z" />
+        <path d="M8 9h8M8 13h5" />
+      </>
+    ),
+    'Otros documentos': (
+      <>
+        <path d="M5 3h14v18H5z" />
+        <path d="M9 8h6M9 12h6M9 16h4" />
+      </>
+    ),
+    Facturación: (
+      <>
+        <path d="M5 3h14v18l-3-2-4 2-4-2-3 2z" />
+        <path d="M9 8h6M9 12h6" />
       </>
     ),
   };

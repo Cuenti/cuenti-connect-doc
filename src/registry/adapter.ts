@@ -177,36 +177,38 @@ const slugify = (value: string) =>
     .replace(/^-|-$/g, '');
 
 const categoryAliases: Record<string, EndpointCategory> = {
-  productos: categories[0],
-  producto: categories[0],
-  inventario: categories[0],
-  'productos-e-inventario': categories[0],
-  'products-and-inventory': categories[0],
-  categorias: categories[1],
-  impuestos: categories[1],
-  'categorias-e-impuestos': categories[1],
-  'categories-and-taxes': categories[1],
-  terceros: categories[2],
-  'third-parties': categories[2],
-  maestros: categories[3],
-  masters: categories[3],
-  transacciones: categories[4],
-  operativas: categories[7],
-  ventas: categories[4],
-  facturas: categories[4],
-  historiales: categories[4],
-  'facturas-e-historiales': categories[4],
-  'invoices-and-history': categories[4],
-  catalogo: categories[0],
-  tributario: categories[1],
-  finanzas: categories[5],
-  organizacion: categories[3],
-  facturacion: categories[3],
-  restaurante: categories[6],
-  cartera: categories[5],
-  'accounts-receivable': categories[5],
-  comandas: categories[6],
-  'kitchen-orders': categories[6],
+  productos: 'Catálogo',
+  producto: 'Catálogo',
+  catalogo: 'Catálogo',
+  'productos-e-inventario': 'Catálogo',
+  'products-and-inventory': 'Catálogo',
+  inventario: 'Inventario',
+  categorias: 'Catálogo',
+  'categorias-e-impuestos': 'Catálogo',
+  'categories-and-taxes': 'Catálogo',
+  impuestos: 'Impuestos',
+  tributario: 'Impuestos',
+  terceros: 'Terceros',
+  'third-parties': 'Terceros',
+  transacciones: 'Transacciones',
+  ventas: 'Transacciones',
+  facturas: 'Transacciones',
+  historiales: 'Transacciones',
+  'facturas-e-historiales': 'Transacciones',
+  'invoices-and-history': 'Transacciones',
+  operativas: 'Otros documentos',
+  'documentos-comerciales': 'Otros documentos',
+  'other-documents': 'Otros documentos',
+  finanzas: 'Finanzas y cartera',
+  cartera: 'Finanzas y cartera',
+  'accounts-receivable': 'Finanzas y cartera',
+  organizacion: 'Organización',
+  facturacion: 'Facturación',
+  restaurante: 'Restaurante',
+  comandas: 'Restaurante',
+  'kitchen-orders': 'Restaurante',
+  masters: 'Catálogo',
+  maestros: 'Catálogo',
 };
 
 const normalizeCategory = (value: unknown): EndpointCategory => {
@@ -685,6 +687,7 @@ const projectPublicRoute = (
   projected.contractId = asString(route.contract);
   projected.method = asString(route.method).toUpperCase();
   projected.path = asString(route.path);
+  projected.category = asString(route.category) || asString(projected.category);
   projected.publicRoute = true;
   projected.descriptionId = asString(route.contract);
   return redactTerms(projected, hidden) as UnknownRecord;

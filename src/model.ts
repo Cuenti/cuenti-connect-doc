@@ -1,12 +1,14 @@
 export const categories = [
-  'Productos e inventario',
-  'Categorías e impuestos',
+  'Catálogo',
+  'Inventario',
   'Terceros',
-  'Maestros',
-  'Facturas e historiales',
-  'Cartera',
-  'Comandas',
-  'Documentos comerciales',
+  'Transacciones',
+  'Otros documentos',
+  'Impuestos',
+  'Finanzas y cartera',
+  'Organización',
+  'Facturación',
+  'Restaurante',
 ] as const;
 
 export type EndpointCategory = (typeof categories)[number];
