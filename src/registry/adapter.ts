@@ -552,7 +552,7 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
         id: 'receivable',
         name: 'Cuentas por cobrar',
         description: 'Cartera de clientes.',
-        query: { es_ingreso: '1', pagina: '0', cantidad_registros: '30' },
+        query: { pagina: '0', cantidad_registros: '30' },
         body: {
           grupos: ['transaccion', 'fechas', 'tercero', 'saldo', 'estado'],
         },
@@ -561,7 +561,7 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
         id: 'payable',
         name: 'Cuentas por pagar',
         description: 'Cartera de proveedores.',
-        query: { es_ingreso: '0', pagina: '0', cantidad_registros: '30' },
+        query: { pagina: '0', cantidad_registros: '30' },
         body: {
           grupos: ['transaccion', 'fechas', 'tercero', 'saldo', 'estado'],
         },
@@ -570,7 +570,7 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
         id: 'overdue',
         name: 'Cartera vencida',
         description: 'Solo documentos vencidos.',
-        query: { es_ingreso: '1', vencida: '1' },
+        query: { vencida: '1' },
         body: { grupos: ['tercero', 'saldo', 'estado'] },
       },
     ];
@@ -581,15 +581,26 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
         id: 'receivable-summary',
         name: 'Resumen por cobrar',
         description: 'Saldos agregados por cliente.',
-        query: { es_ingreso: '1' },
+        query: {},
         body: { grupos: ['tercero', 'documentos', 'saldo'] },
       },
       {
         id: 'payable-summary',
         name: 'Resumen por pagar',
         description: 'Saldos agregados por proveedor.',
-        query: { es_ingreso: '0' },
+        query: {},
         body: { grupos: ['tercero', 'documentos', 'saldo'] },
+      },
+    ];
+  }
+  if (path.endsWith('/buscarDescuentos')) {
+    return [
+      {
+        id: 'headers',
+        name: 'Descuentos por documento',
+        description: 'Descuentos agregados por documento.',
+        query: {},
+        body: { grupos: ['documento', 'cliente', 'empleado', 'vendedor', 'totales'] },
       },
     ];
   }

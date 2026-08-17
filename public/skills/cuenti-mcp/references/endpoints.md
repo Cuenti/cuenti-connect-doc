@@ -11,7 +11,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Usa el ejemplo de argumentos como punto de partida y cambia únicamente los datos necesarios.
 - Antes de llamar, contrasta los nombres y tipos con el `inputSchema` publicado por el MCP.
 - Los **filtros** reducen los resultados. Usa páginas pequeñas y evita consultas sin criterio cuando exista un filtro útil.
-- Las **columnas** eligen datos concretos de una consulta.
+- Las **columnas** solo aplican cuando la operación las declara explícitamente; los catálogos maestros usan `grupos` o `{}`.
 - Los **grupos** agregan bloques relacionados; cada grupo explica sus campos incluidos.
 - `0` suele significar no/inactivo y `1` sí/activo, salvo que la operación indique otro significado.
 - Las fechas en milisegundos Unix son números como `1722470400000`.
@@ -66,7 +66,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -106,19 +106,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "ruta_despacho"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "costo",
-      "nota",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado",
-      "seriales"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -177,7 +170,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -217,19 +210,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "ruta_despacho"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "costo",
-      "nota",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado",
-      "seriales"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -288,7 +274,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -328,19 +314,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "ruta_despacho"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "costo",
-      "nota",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado",
-      "seriales"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -399,7 +378,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -439,19 +418,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "ruta_despacho"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "costo",
-      "nota",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado",
-      "seriales"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -510,7 +482,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -550,19 +522,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "ruta_despacho"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "costo",
-      "nota",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado",
-      "seriales"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -948,7 +913,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `cantidades`, `totales`, `impuestos`, `costos`, `fechas`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `cantidades`, `totales`, `costos`, `fechas`.
 
 **Ejemplo de argumentos:**
 
@@ -964,7 +929,6 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "producto",
       "cantidades",
       "totales",
-      "impuestos",
       "costos",
       "fechas"
     ]
@@ -1018,7 +982,11 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `empleado`, `totales`, `impuestos`, `producto`, `cantidades`, `precios`, `descuento`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `empleado`, `vendedor`, `totales`, `producto`, `cantidades`, `precios`, `descuento`.
+
+**Regla de selección:**
+- Si `grupos` contiene `producto`, `cantidades`, `precios`, usa únicamente grupos de detalle; no mezcles `empleado` o `vendedor`.
+- Si no contiene esos grupos, usa únicamente grupos de cabecera.
 
 **Ejemplo de argumentos:**
 
@@ -1162,7 +1130,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1187,16 +1155,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1261,7 +1225,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1286,16 +1250,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1360,7 +1320,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1385,16 +1345,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1459,7 +1415,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1484,16 +1440,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1558,7 +1510,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1583,16 +1535,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1657,7 +1605,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1682,16 +1630,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1756,7 +1700,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1781,16 +1725,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1855,7 +1795,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1880,16 +1820,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -1954,7 +1890,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
 
@@ -1979,16 +1915,12 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "nota"
     ],
     "detalle": [
-      "codigos",
       "producto",
       "cantidades",
       "precios",
-      "descuento",
       "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
+      "descuento",
+      "totales"
     ]
   }
 }
@@ -2103,7 +2035,11 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `documento`, `cliente`, `empleado`, `vendedor`, `producto`, `cantidades`, `precios`, `descuento`, `totales`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `documento`, `cliente`, `empleado`, `vendedor`, `totales`, `producto`, `cantidades`, `precios`, `descuento`.
+
+**Regla de selección:**
+- Si `grupos` contiene `producto`, `cantidades`, `precios`, usa únicamente grupos de detalle; no mezcles `empleado` o `vendedor`.
+- Si no contiene esos grupos, usa únicamente grupos de cabecera.
 
 **Ejemplo de argumentos:**
 
@@ -2115,10 +2051,6 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "cliente",
       "empleado",
       "vendedor",
-      "producto",
-      "cantidades",
-      "precios",
-      "descuento",
       "totales"
     ]
   }
@@ -2239,66 +2171,6 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `mostrar_tienda` | No | `0`, `1` |
 | `con_existencias` | No | `0`, `1` |
 
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_producto` | Identificador maestro del producto. |
-| `nombre` | Nombre visible del registro. |
-| `sku` | Código interno o SKU usado para identificar el producto. |
-| `codigo_barras` | Código de barras principal o de la presentación consultada. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_servicio` | Campo `es_servicio`; confirma su significado funcional antes de interpretarlo. |
-| `es_ingrediente` | Campo `es_ingrediente`; confirma su significado funcional antes de interpretarlo. |
-| `mostrar_tienda` | Campo `mostrar_tienda`; confirma su significado funcional antes de interpretarlo. |
-| `vende_sin_existencia` | Campo `vende_sin_existencia`; confirma su significado funcional antes de interpretarlo. |
-| `maneja_lote` | Campo `maneja_lote`; confirma su significado funcional antes de interpretarlo. |
-| `maneja_seriales` | Campo `maneja_seriales`; confirma su significado funcional antes de interpretarlo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `metadata` | Información adicional de la categoría; su estructura depende de los datos históricos. |
-| `id_producto_sucursal` | Campo `id_producto_sucursal`; confirma su significado funcional antes de interpretarlo. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `nombre_sucursal` | Nombre visible de la sucursal. |
-| `ubicacion` | Campo `ubicacion`; confirma su significado funcional antes de interpretarlo. |
-| `es_activo` | Estado operativo del tercero. |
-| `precio_venta` | Campo `precio_venta`; confirma su significado funcional antes de interpretarlo. |
-| `precio_compra` | Campo `precio_compra`; confirma su significado funcional antes de interpretarlo. |
-| `costo` | Costo registrado para la línea del documento. |
-| `costo_fijo` | Campo `costo_fijo`; confirma su significado funcional antes de interpretarlo. |
-| `precio_venta_minimo` | Campo `precio_venta_minimo`; confirma su significado funcional antes de interpretarlo. |
-| `precio_venta_online` | Campo `precio_venta_online`; confirma su significado funcional antes de interpretarlo. |
-| `precio_promocion_sito` | Campo `precio_promocion_sito`; confirma su significado funcional antes de interpretarlo. |
-| `precio_promocion_online` | Campo `precio_promocion_online`; confirma su significado funcional antes de interpretarlo. |
-| `descuento_maximo` | Campo `descuento_maximo`; confirma su significado funcional antes de interpretarlo. |
-| `existencias` | Campo `existencias`; confirma su significado funcional antes de interpretarlo. |
-| `stock_minimo` | Campo `stock_minimo`; confirma su significado funcional antes de interpretarlo. |
-| `id_categoria` | Campo `id_categoria`; confirma su significado funcional antes de interpretarlo. |
-| `nombre_categoria` | Campo `nombre_categoria`; confirma su significado funcional antes de interpretarlo. |
-| `id_marca` | Campo `id_marca`; confirma su significado funcional antes de interpretarlo. |
-| `nombre_marca` | Campo `nombre_marca`; confirma su significado funcional antes de interpretarlo. |
-| `id_impuesto` | Campo `id_impuesto`; confirma su significado funcional antes de interpretarlo. |
-| `nombre_impuesto` | Campo `nombre_impuesto`; confirma su significado funcional antes de interpretarlo. |
-| `valor_impuesto` | Campo `valor_impuesto`; confirma su significado funcional antes de interpretarlo. |
-| `tipo_impuesto` | Clasificación funcional del impuesto; validar códigos tributarios. |
-| `clasificacion_tributaria` | Campo `clasificacion_tributaria`; confirma su significado funcional antes de interpretarlo. |
-| `total_estampilla` | Valor de estampilla asociado al producto o documento. |
-| `total_impoconsumo` | Valor del impuesto al consumo asociado al producto o documento. |
-| `id_tipo_medida` | Campo `id_tipo_medida`; confirma su significado funcional antes de interpretarlo. |
-| `nombre_medida` | Campo `nombre_medida`; confirma su significado funcional antes de interpretarlo. |
-| `tipo_medida` | Campo `tipo_medida`; confirma su significado funcional antes de interpretarlo. |
-| `id_imagen` | Identificador del recurso de imagen. |
-| `ext1` | Campo `ext1`; confirma su significado funcional antes de interpretarlo. |
-| `ext2` | Campo `ext2`; confirma su significado funcional antes de interpretarlo. |
-| `url_imagen` | Dirección para consultar la imagen del producto. |
-| `url_imagen_400` | Campo `url_imagen_400`; confirma su significado funcional antes de interpretarlo. |
-| `invima` | Campo `invima`; confirma su significado funcional antes de interpretarlo. |
-| `cum` | Campo `cum`; confirma su significado funcional antes de interpretarlo. |
-| `cups` | Campo `cups`; confirma su significado funcional antes de interpretarlo. |
-| `codigo_producto_dian` | Campo `codigo_producto_dian`; confirma su significado funcional antes de interpretarlo. |
-| `tiempo_preparacion` | Campo `tiempo_preparacion`; confirma su significado funcional antes de interpretarlo. |
-| `ncm` | Campo `ncm`; confirma su significado funcional antes de interpretarlo. |
-| `fecha_registro` | Fecha de creación del tercero. |
-
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `sucursal`, `precios`, `inventario`, `categoria`, `marca`, `impuestos`, `medida`, `imagen`, `configuracion`.
@@ -2380,28 +2252,6 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `es_visible_tienda` | No | `0`, `1` |
 | `mostrar_tienda_linea` | No | `0`, `1` |
 | `es_activo` | No | `0`, `1`; valor habitual `1` |
-
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_categoria` | Identificador único de la categoría. |
-| `nombre_categoria` | Nombre visible de la categoría. |
-| `alias` | Nombre alternativo o slug funcional de la categoría. |
-| `codigo_dian` | Código de clasificación usado por la integración DIAN. |
-| `id_categoria_padre` | Identificador de la categoría superior; vacío ubica el nodo como raíz. |
-| `es_activo` | Estado operativo de la categoría. |
-| `fecha_registro` | Momento de creación de la categoría. |
-| `visible_tienda` | Controla la visibilidad de la categoría en la tienda. |
-| `mostrar_tienda_linea` | Controla la visualización en la tienda en línea. |
-| `mostrar_catalogo_linea` | Controla la visualización en el catálogo en línea. |
-| `metadata` | Información adicional de la categoría según los datos históricos. |
-| `id_imagen` | Identificador de la imagen asociada. |
-| `formato` | Formato de presentación de la imagen o categoría. |
-| `url` | Dirección del recurso asociado a la categoría. |
-| `sucursales` | Sucursales asociadas; puede ser arreglo, objeto, string histórico o null. |
-| `alerta_vencimiento_lotes` | Controla alertas de vencimiento de lotes de la categoría. |
-| `visible_produccion` | Indica si la categoría aparece en procesos de producción. |
 
 **Bloques de información que puedes pedir**
 
@@ -3044,32 +2894,6 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 | `codigo` | No | texto; coincidencia exacta |
 | `es_activo` | No | `0`, `1`; valor habitual `1` |
 
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_impuesto` | Identificador de la configuración de impuesto. |
-| `nombre_impuesto` | Nombre visible del impuesto. |
-| `valor_impuesto` | Tarifa o valor configurado; validar su unidad con el tipo de impuesto. |
-| `nota` | Observaciones internas del impuesto. |
-| `es_activo` | Estado operativo de la configuración tributaria. |
-| `fecha_registro` | Momento de creación de la configuración. |
-| `tipo_impuesto` | Tipo funcional del impuesto; validar códigos tributarios. |
-| `id_plan_cuentas_venta` | Cuenta contable usada para impuestos en ventas. |
-| `id_plan_cuentas_pasivo` | Cuenta de pasivo asociada al impuesto. |
-| `id_plan_cuentas_activo` | Cuenta de activo asociada al impuesto. |
-| `id_plan_cuentas_compra` | Cuenta contable usada para impuestos en compras. |
-| `id_plan_cuenta_imp_venta_devolucion` | Cuenta para impuestos en devoluciones de ventas. |
-| `id_plan_cuenta_imp_compa_devolucion` | Cuenta para impuestos en devoluciones de compra. |
-| `id_plan_cuenta_imp_gasto_devolucion` | Cuenta para impuestos en devoluciones de gastos. |
-| `id_plan_cuentas_gasto` | Cuenta de gasto asociada al impuesto. |
-| `id_plan_cuenta_compra_item` | Cuenta aplicada al ítem de compra. |
-| `clasificacion_tributaria` | Clasificación usada en reglas o reportes tributarios; validar valores por país. |
-| `codigo` | Código interno o fiscal del impuesto. |
-| `codigo_tipo_impuesto` | Código del tipo de impuesto para integración fiscal. |
-| `nombre_codigo_impuesto` | Nombre descriptivo del código fiscal asociado. |
-| `pais` | País al que aplica la configuración tributaria. |
-
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `impuesto`, `contabilidad`.
@@ -3178,22 +3002,6 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 | `codigo` | No | texto; coincidencia exacta |
 | `es_activo` | No | `0`, `1`; valor habitual `1` |
 
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_banco` | Identificador de la cuenta bancaria, caja o recurso financiero. |
-| `nombre` | Nombre visible del banco o caja. |
-| `numero_cuenta` | Número de cuenta como texto; puede contener información empresarial sensible. |
-| `saldo` | Saldo registrado de la cuenta; no necesariamente es conciliado en tiempo real. |
-| `descripcion` | Descripción funcional de la cuenta. |
-| `es_activo` | Estado operativo de la cuenta. |
-| `id_plan_cuenta` | Cuenta contable relacionada. |
-| `codigo` | Código interno del banco o caja. |
-| `id_sucursal` | Sucursal propietaria o asociada. |
-| `nombre_sucursal` | Nombre visible de la sucursal. |
-| `config` | Configuración adicional, por ejemplo empleados autorizados. |
-
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `banco`, `sucursal`, `contabilidad`, `configuracion`.
@@ -3275,21 +3083,6 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 | `codigo` | No | texto; coincidencia exacta |
 | `codigo_pago_fisco` | No | texto; coincidencia exacta |
 | `es_activo` | No | `0`, `1`; valor habitual `1` |
-
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_medio_pago` | Identificador interno del medio de pago. |
-| `nombre_medio_pago` | Nombre visible del medio de pago. |
-| `nota` | Observaciones de configuración. |
-| `es_activo` | Estado operativo del medio de pago. |
-| `codigo` | Código interno del medio de pago. |
-| `id_sucursal` | Sucursal a la que pertenece o aplica. |
-| `nombre_sucursal` | Nombre visible de la sucursal. |
-| `comision` | Comisión configurada; validar si se expresa como porcentaje o importe. |
-| `codigo_pago_fisco` | Código fiscal equivalente del medio de pago. |
-| `config` | Configuración adicional, por ejemplo bancos permitidos. |
 
 **Bloques de información que puedes pedir**
 
@@ -3637,31 +3430,6 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 | `id_padre` | No | número entero; mínimo `1` |
 | `es_activo` | No | `0`, `1`; valor habitual `1` |
 
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_sucursal` | Identificador interno de la sucursal. |
-| `nombre_sucursal` | Nombre visible de la sucursal. |
-| `nota` | Observaciones internas. |
-| `codigo_sucursal` | Código interno o de integración. |
-| `es_activo` | Estado operativo. |
-| `fecha_registro` | Momento de creación. |
-| `es_bodega` | Indica si funciona como bodega. |
-| `id_padre` | Sucursal o entidad superior en una jerarquía. |
-| `id_moneda` | Moneda predeterminada. |
-| `simbolo_moneda` | Símbolo mostrado para la moneda. |
-| `vender_con_impuestos` | Indica si la venta opera incluyendo impuestos. |
-| `numero_mesas` | Número de mesas configuradas para restaurante. |
-| `digitos_decimales` | Precisión decimal usada en cálculos o presentación. |
-| `reondeoTotales` | Control de redondeo de totales. |
-| `modificicar_precio_minimos_otras_sucursales` | Controla cambios de precios mínimos de otras sucursales. |
-| `modificicar_descuento_maximo_otras_sucursales` | Controla cambios de descuentos máximos de otras sucursales. |
-| `actualizarPrecioVentaSucursales` | Controla la propagación de precios de venta entre sucursales. |
-| `activar_venta_compra_licores` | Habilita reglas especiales de compra y venta de licores. |
-| `actualizarPrecioCostoSucursales` | Controla la propagación de precios de costo entre sucursales. |
-| `vender_ip_estampilla` | Control relacionado con venta y estampilla; validar la sigla IP. |
-
 **Bloques de información que puedes pedir**
 
 - `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `sucursal`, `pos`, `politicas_precios`, `licores`, `moneda`.
@@ -3726,38 +3494,6 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 | `id_sucursal` | No | número entero; mínimo `1` |
 | `tipo_usuario` | No | número entero |
 | `es_activo` | No | `0`, `1`; valor habitual `1` |
-
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_empleado` | Identificador interno del empleado. |
-| `id_usuario_portal` | Usuario de portal vinculado. |
-| `nombre_completo` | Nombre completo para visualización. |
-| `es_activo` | Estado operativo. |
-| `fecha_registro` | Momento de creación. |
-| `id_lista_precios` | Lista de precios predeterminada. |
-| `id_sucursal` | Sucursal principal. |
-| `id_consecutivo` | Consecutivo predeterminado. |
-| `sincroniazar_datos` | Control de sincronización. |
-| `tipo_usuario` | Rol o tipo de usuario; validar catálogo de seguridad. |
-| `comision` | Comisión asignada al empleado. |
-| `id_bodega` | Bodega predeterminada. |
-| `tipo_comision` | Forma de cálculo de la comisión. |
-| `modePosDefecto` | Modo POS predeterminado. |
-| `comision_antes_iva` | Indica si la comisión se calcula antes del IVA. |
-| `identificacion` | Documento de identificación del empleado. |
-| `mostrar_mesa` | Habilita la visualización o selección de mesas. |
-| `es_contador` | Marca al empleado como contador. |
-| `solo_bodegas_sucursal` | Restringe las bodegas a las de su sucursal. |
-| `obligar_apertura_caja` | Exige apertura de caja antes de operar. |
-| `cerrar_session_cierre` | Controla el cierre de sesión durante un cierre. |
-| `es_tienda` | Clasifica al usuario para operación de tienda. |
-| `codigo_empleado` | Código interno del empleado. |
-| `sucursal_adicional` | Sucursales y bodegas adicionales permitidas. |
-| `cierra_caja` | Autoriza o configura el cierre de caja. |
-| `ventas_solo_credito` | Restringe ventas a modalidad crédito. |
-| `vendedor_multi_sucursal` | Habilita operación comercial en varias sucursales. |
 
 **Bloques de información que puedes pedir**
 
@@ -3898,32 +3634,6 @@ Para `grupos`:
 | `tipo_consecutivo` | No | número entero |
 | `es_factura_electronica` | No | `0`, `1` |
 | `es_activo` | No | `0`, `1`; valor habitual `1` |
-
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_consecutivo` | Identificador de la numeración documental. |
-| `nombre_consecutivo` | Nombre administrativo del consecutivo. |
-| `prefijo` | Prefijo de la numeración visible. |
-| `numero` | Número actual o siguiente según la regla del módulo; consultar no lo incrementa. |
-| `alertar_numero` | Umbral para alertar proximidad al agotamiento de la numeración. |
-| `facturaOnline` | Indica habilitación de facturación en línea. |
-| `es_activo` | Estado operativo del consecutivo. |
-| `fecha_registro` | Momento de creación. |
-| `resolucion` | Resolución que autoriza la numeración. |
-| `id_sucursal` | Sucursal a la que pertenece. |
-| `nombre_sucursal` | Nombre visible de la sucursal. |
-| `inicia` | Primer número autorizado del rango. |
-| `finaliza` | Último número autorizado del rango. |
-| `es_factura_electronica` | Indica uso para factura electrónica. |
-| `fecha_vencimiento` | Vencimiento de la resolución o autorización. |
-| `nRelleno` | Longitud o cantidad de caracteres de relleno. |
-| `es_tirilla_pos` | Indica numeración para tirilla POS. |
-| `es_contingencia` | Indica numeración destinada a contingencia. |
-| `predeterminado` | Marca el consecutivo propuesto por defecto. |
-| `multi_moneda` | Permite documentos con configuración multimoneda. |
-| `tipo_consecutivo` | Tipo documental asociado al consecutivo. |
 
 **Bloques de información que puedes pedir**
 

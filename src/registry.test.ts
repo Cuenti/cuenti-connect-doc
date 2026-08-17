@@ -382,6 +382,13 @@ describe('canonical documentation registry', () => {
     expect(discounts?.tryIt?.body).toEqual({
       grupos: ['transaccion', 'cliente', 'totales'],
     });
+
+    const commercialDiscounts = findEndpoint(
+      'buscarDescuentosDocumentosComerciales',
+    );
+    expect(commercialDiscounts?.tryIt?.body).toEqual({
+      grupos: ['documento', 'cliente', 'empleado', 'vendedor', 'totales'],
+    });
   });
 
   it('hides route-owned selectors and keeps public request examples valid', () => {
