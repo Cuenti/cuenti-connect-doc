@@ -20,20 +20,22 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Facturas e historiales | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `ventas-facturas`, `ventas-compras-gastos`, `ventas-remisiones`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas` |
-| Documentos comerciales | `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-despachos-agrupados-busquedas`, `operativas-ordenes-produccion-busquedas`, `operativas-devoluciones-ajustes-busquedas`, `operativas-traslados-internos-busquedas`, `operativas-ordenes-compra-busquedas`, `operativas-recepciones-mercancia-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
-| Productos e inventario | `catalogo-productos-busquedas`, `inventario-conteos` |
-| Categorías e impuestos | `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `tributario-impuesto-por-id` |
-| Maestros | `catalogo-marcas`, `catalogo-marca-por-id`, `tributario-impuestos-busquedas`, `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `organizacion-sucursales-busquedas`, `organizacion-empleados-busquedas`, `facturacion-consecutivos-busquedas` |
+| Transacciones | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `ventas-facturas`, `ventas-compras-gastos`, `ventas-remisiones`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas` |
+| Otros documentos | `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-despachos-agrupados-busquedas`, `operativas-ordenes-produccion-busquedas`, `operativas-devoluciones-ajustes-busquedas`, `operativas-traslados-internos-busquedas`, `operativas-ordenes-compra-busquedas`, `operativas-recepciones-mercancia-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
+| Catálogo | `catalogo-productos-busquedas`, `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `catalogo-marcas`, `catalogo-marca-por-id` |
+| Inventario | `inventario-conteos` |
 | Terceros | `terceros-busquedas`, `terceros-crear`, `terceros-actualizar` |
-| Cartera | `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
-| Comandas | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas` |
+| Impuestos | `tributario-impuestos-busquedas`, `tributario-impuesto-por-id` |
+| Finanzas y cartera | `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
+| Organización | `organizacion-sucursales-busquedas`, `organizacion-empleados-busquedas` |
+| Facturación | `facturacion-consecutivos-busquedas` |
+| Restaurante | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas` |
 
-## Facturas e historiales
+## Transacciones
 
-### `ventas-facturas-busquedas`: Buscar transacciones
+### `ventas-facturas-busquedas`: Buscar facturas
 
-**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar facturas. Su resultado principal es `transacciones`.
 
 **Método:** `POST`.
 
@@ -57,16 +59,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
-| `es_factura` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1` |
-| `es_devolucion` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
 
 **Ejemplo de argumentos:**
@@ -103,7 +102,8 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "empresa",
       "sucursal_configuracion",
       "taller",
-      "acta_entrega"
+      "acta_entrega",
+      "ruta_despacho"
     ],
     "detalle": [
       "codigos",
@@ -124,16 +124,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "transacciones",
-  "resultados": []
+  "transacciones": []
 }
 ```
 
@@ -146,9 +144,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
 
-### `ventas-planes-separe-busquedas`: Buscar transacciones
+### `ventas-planes-separe-busquedas`: Buscar plan separe
 
-**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar plan separe. Su resultado principal es `transacciones`.
 
 **Método:** `POST`.
 
@@ -172,16 +170,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
-| `es_factura` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1` |
-| `es_devolucion` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
 
 **Ejemplo de argumentos:**
@@ -218,7 +213,8 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "empresa",
       "sucursal_configuracion",
       "taller",
-      "acta_entrega"
+      "acta_entrega",
+      "ruta_despacho"
     ],
     "detalle": [
       "codigos",
@@ -239,16 +235,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "transacciones",
-  "resultados": []
+  "transacciones": []
 }
 ```
 
@@ -261,9 +255,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
 
-### `ventas-otros-ingresos-busquedas`: Buscar transacciones
+### `ventas-otros-ingresos-busquedas`: Buscar otros ingresos
 
-**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar otros ingresos. Su resultado principal es `transacciones`.
 
 **Método:** `POST`.
 
@@ -287,16 +281,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
-| `es_factura` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1` |
-| `es_devolucion` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
 
 **Ejemplo de argumentos:**
@@ -333,7 +324,8 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "empresa",
       "sucursal_configuracion",
       "taller",
-      "acta_entrega"
+      "acta_entrega",
+      "ruta_despacho"
     ],
     "detalle": [
       "codigos",
@@ -354,16 +346,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "transacciones",
-  "resultados": []
+  "transacciones": []
 }
 ```
 
@@ -376,9 +366,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
 
-### `ventas-compras-gastos-busquedas`: Buscar transacciones
+### `ventas-compras-gastos-busquedas`: Buscar compra/gasto
 
-**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar compra/gasto. Su resultado principal es `transacciones`.
 
 **Método:** `POST`.
 
@@ -402,16 +392,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
-| `es_factura` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1` |
-| `es_devolucion` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
 
 **Ejemplo de argumentos:**
@@ -448,7 +435,8 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "empresa",
       "sucursal_configuracion",
       "taller",
-      "acta_entrega"
+      "acta_entrega",
+      "ruta_despacho"
     ],
     "detalle": [
       "codigos",
@@ -469,16 +457,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "transacciones",
-  "resultados": []
+  "transacciones": []
 }
 ```
 
@@ -491,9 +477,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
 
-### `ventas-remisiones-busquedas`: Buscar transacciones
+### `ventas-remisiones-busquedas`: Buscar remisiones
 
-**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar remisiones. Su resultado principal es `transacciones`.
 
 **Método:** `POST`.
 
@@ -517,16 +503,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
-| `es_factura` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1` |
-| `es_devolucion` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
 
 **Ejemplo de argumentos:**
@@ -563,7 +546,8 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "empresa",
       "sucursal_configuracion",
       "taller",
-      "acta_entrega"
+      "acta_entrega",
+      "ruta_despacho"
     ],
     "detalle": [
       "codigos",
@@ -584,16 +568,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "transacciones",
-  "resultados": []
+  "transacciones": []
 }
 ```
 
@@ -606,9 +588,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
 
-### `ventas-facturas`: Crear factura, compra, gasto o remisión
+### `ventas-facturas`: Crear factura
 
-**Para qué sirve:** Crear factura, compra, gasto o remisión.
+**Para qué sirve:** Crear factura.
 
 **Método:** `POST`.
 
@@ -717,9 +699,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
-### `ventas-compras-gastos`: Crear factura, compra, gasto o remisión
+### `ventas-compras-gastos`: Crear compra/gasto
 
-**Para qué sirve:** Crear factura, compra, gasto o remisión.
+**Para qué sirve:** Crear compra/gasto.
 
 **Método:** `POST`.
 
@@ -828,9 +810,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
-### `ventas-remisiones`: Crear factura, compra, gasto o remisión
+### `ventas-remisiones`: Crear remisión
 
-**Para qué sirve:** Crear factura, compra, gasto o remisión.
+**Para qué sirve:** Crear remisión.
 
 **Método:** `POST`.
 
@@ -941,7 +923,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 ### `ventas-productos-comprados-busquedas`: Buscar productos comprados
 
-**Para qué sirve:** Buscar productos comprados. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar productos comprados. Su resultado principal es `productos`.
 
 **Método:** `POST`.
 
@@ -990,16 +972,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'productos', resultados: ProductoComprado[] }.
+**Respuesta esperada:** { pagina: integer, productos: ProductoComprado[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "productos",
-  "resultados": []
+  "productos": []
 }
 ```
 
@@ -1012,7 +992,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 ### `ventas-descuentos-busquedas`: Buscar descuentos
 
-**Para qué sirve:** Buscar descuentos. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar descuentos. Su resultado principal es `descuentos`.
 
 **Método:** `POST`.
 
@@ -1026,7 +1006,6 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `nivel` | No | `encabezado`, `detalle`; valor habitual `encabezado` |
 | `id_cliente` | No | número entero |
 | `id_empleado` | No | número entero |
 | `id_vendedor` | No | número entero |
@@ -1039,8 +1018,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos` cuando `nivel=encabezado`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `empleado`, `totales`, `impuestos`.
-- `grupos` cuando `nivel=detalle`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `empleado`, `totales`, `impuestos`, `producto`, `cantidades`, `precios`, `descuento`.
 
 **Ejemplo de argumentos:**
 
@@ -1048,43 +1026,37 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 {
   "pagina": 0,
   "cantidad_registros": 100,
-  "nivel": "encabezado",
   "es_ingreso": 1,
   "body": {
     "grupos": [
       "transaccion",
       "cliente",
-      "empleado",
-      "totales",
-      "impuestos"
+      "totales"
     ]
   }
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'descuentos', resultados: Descuento[] }.
+**Respuesta esperada:** { pagina: integer, descuentos: Descuento[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "descuentos",
-  "resultados": []
+  "descuentos": []
 }
 ```
 
 - Las transacciones anuladas se excluyen de forma predeterminada.
-- Los dos niveles son configuraciones predefinidas de un solo punto de acceso, no rutas independientes.
-- nivel debe ser encabezado o detalle.
-- Los grupos seleccionados deben pertenecer al nivel seleccionado.
+- La proyección se determina por los grupos solicitados.
+- Los grupos de detalle requieren producto, cantidades, precios o descuento.
 
 **Peticiones habituales:** Descuentos de factura; Descuentos de producto.
 
 ### `ventas-consolidados-busquedas`: Buscar historial consolidado
 
-**Para qué sirve:** Buscar historial consolidado. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar historial consolidado. Su resultado principal es `consolidado`.
 
 **Método:** `POST`.
 
@@ -1131,16 +1103,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'consolidado', resultados: FilaConsolidada[] }.
+**Respuesta esperada:** { pagina: integer, consolidado: FilaConsolidada[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "consolidado",
-  "resultados": []
+  "consolidado": []
 }
 ```
 
@@ -1150,11 +1120,11 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Por cliente; Por empleado; Por vendedor.
 
-## Documentos comerciales
+## Otros documentos
 
-### `operativas-pedidos-busquedas`: Buscar documentos comerciales
+### `operativas-pedidos-busquedas`: Buscar pedidos
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar pedidos. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1251,9 +1221,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-cotizaciones-busquedas`: Buscar documentos comerciales
+### `operativas-cotizaciones-busquedas`: Buscar cotizaciones
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar cotizaciones. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1350,9 +1320,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-despachos-busquedas`: Buscar documentos comerciales
+### `operativas-despachos-busquedas`: Buscar despachos
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar despachos. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1449,9 +1419,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-despachos-agrupados-busquedas`: Buscar documentos comerciales
+### `operativas-despachos-agrupados-busquedas`: Buscar despachos agrupados
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar despachos agrupados. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1548,9 +1518,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-ordenes-produccion-busquedas`: Buscar documentos comerciales
+### `operativas-ordenes-produccion-busquedas`: Buscar órdenes de producción
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar órdenes de producción. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1647,9 +1617,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-devoluciones-ajustes-busquedas`: Buscar documentos comerciales
+### `operativas-devoluciones-ajustes-busquedas`: Buscar devoluciones/ajustes
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar devoluciones/ajustes. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1746,9 +1716,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-traslados-internos-busquedas`: Buscar documentos comerciales
+### `operativas-traslados-internos-busquedas`: Buscar traslados internos
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar traslados internos. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1845,9 +1815,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-ordenes-compra-busquedas`: Buscar documentos comerciales
+### `operativas-ordenes-compra-busquedas`: Buscar órdenes de compra
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar órdenes de compra. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -1944,9 +1914,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Facturas activas.
 
-### `operativas-recepciones-mercancia-busquedas`: Buscar documentos comerciales
+### `operativas-recepciones-mercancia-busquedas`: Buscar recepciones de mercancía
 
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+**Para qué sirve:** Buscar recepciones de mercancía. Su resultado principal es `documentos`.
 
 **Método:** `POST`.
 
@@ -2167,9 +2137,8 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-- Los grupos producto, cantidades o precios solicitan el modo detalle.
+- Los grupos producto, cantidades, precios o descuento solicitan el modo detalle.
 - Los resultados solo incluyen documentos con descuentos.
-- Los grupos incompatibles con el detalle solicitado se rechazan.
 - Los filtros de fecha son inclusivos y usan epoch-milliseconds.
 
 **Peticiones habituales:** Descuentos por documento.
@@ -2237,7 +2206,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Consolidado por cliente.
 
-## Productos e inventario
+## Catálogo
 
 ### `catalogo-productos-busquedas`: Buscar productos del catálogo
 
@@ -2388,90 +2357,6 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Los valores de paginación deben permanecer entre 0 y 1000 registros por página.
 
 **Peticiones habituales:** Productos activos con inventario.
-
-### `inventario-conteos`: Registrar conteo de inventario
-
-**Para qué sirve:** Registrar conteo de inventario.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/inventario/conteos`.
-
-**Tipo:** Acción que modifica datos.
-
-**Filtros:** no requiere filtros adicionales.
-
-**Datos que acepta la acción**
-
-Envía una lista con entre 1 y 1000 elementos.
-
-| Dato | Obligatorio | Valores que acepta | Significado |
-| --- | --- | --- | --- |
-| `nombre` | Sí | texto | Nombre o concepto visible del conteo. |
-| `nota` | Sí | texto | Observación asociada al conteo. |
-| `id_concepto` | Sí | `-1`; valor habitual `-1` | Concepto del movimiento; debe ser -1. |
-| `es_entrada` | Sí | `1`; valor habitual `1` | Sentido del movimiento; debe ser 1. |
-| `cantidad` | Sí | número; mínimo `0` | Cantidad contada para el producto. |
-| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal donde se registra el conteo. |
-| `id_bodega` | Sí | número entero; mínimo `1` | Bodega del conteo; debe coincidir con la sucursal. |
-| `id_producto` | Sí | número entero; mínimo `1` | Producto contado. |
-| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el conteo. |
-| `fecha_registro` | Sí | fecha y hora en milisegundos Unix | Fecha del conteo en milisegundos desde epoch. |
-| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo opcional del movimiento. |
-
-- id_bodega debe ser igual a id_sucursal.
-- id_concepto debe ser -1 y es_entrada debe ser 1.
-- fecha_registro usa milisegundos desde la época Unix.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": [
-    {
-      "nombre": "Conteo físico",
-      "nota": "",
-      "id_concepto": -1,
-      "es_entrada": 1,
-      "cantidad": 1,
-      "id_sucursal": 1,
-      "id_bodega": 1,
-      "id_producto": 25,
-      "id_empleado": 1,
-      "fecha_registro": 1735689600000
-    }
-  ]
-}
-```
-
-**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
-
-**Éxito semántico:** la respuesta debe contener `type` = `1` y `message` = `"save"`.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "message": "save",
-  "type": 1,
-  "retorno": ""
-}
-```
-
-- Registra un conteo de inventario por producto y sucursal.
-- El header X-Id-Empleado no sustituye el campo id_empleado dentro de cada elemento del body.
-- La operación no se almacena en caché y solo invalida productos e inventario cuando la respuesta contiene type=1 y message=save.
-- El cuerpo debe ser un arreglo no vacío.
-- Cada movimiento debe incluir id_empleado con un valor entero mayor o igual a 1.
-- id_bodega debe coincidir con id_sucursal.
-- La respuesta type=0 indica que el ERP rechazó el movimiento y no invalida la caché.
-- No se reintentan automáticamente escrituras sin idempotencia comprobada.
-
-**Peticiones habituales:** Conteo de un producto.
-
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-
-## Categorías e impuestos
 
 ### `catalogo-categorias-busquedas`: Buscar categorías
 
@@ -2640,53 +2525,6 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
-### `tributario-impuesto-por-id`: Consultar impuesto por ID
-
-**Para qué sirve:** Consultar impuesto por ID.
-
-**Método:** `GET`.
-
-**Ruta:** `/api/v1/tributario/impuestos/{id_impuesto}`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_impuesto` | Sí | número entero; mínimo `1` |
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "id_impuesto": 3
-}
-```
-
-**Respuesta esperada:** Impuesto[].
-
-**Ejemplo de respuesta:**
-
-```json
-[
-  {
-    "id_impuesto": 3,
-    "nombre_impuesto": "IVA",
-    "valor_impuesto": 19,
-    "tipo_impuesto": "porcentaje",
-    "clasificacion_tributaria": "gravado"
-  }
-]
-```
-
-- Consulta de datos maestros por identificador; la respuesta es un arreglo.
-- id_impuesto debe ser mayor que cero.
-
-**Peticiones habituales:** Impuesto por ID.
-
-## Maestros
-
 ### `catalogo-marcas`: Consultar marcas activas
 
 **Para qué sirve:** Consultar marcas activas.
@@ -2766,6 +2604,422 @@ Envía una lista con entre 1 y 1000 elementos.
 - id_marca debe ser mayor que cero.
 
 **Peticiones habituales:** Marca por ID.
+
+## Inventario
+
+### `inventario-conteos`: Registrar conteo de inventario
+
+**Para qué sirve:** Registrar conteo de inventario.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/inventario/conteos`.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Datos que acepta la acción**
+
+Envía una lista con entre 1 y 1000 elementos.
+
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `nombre` | Sí | texto | Nombre o concepto visible del conteo. |
+| `nota` | Sí | texto | Observación asociada al conteo. |
+| `id_concepto` | Sí | `-1`; valor habitual `-1` | Concepto del movimiento; debe ser -1. |
+| `es_entrada` | Sí | `1`; valor habitual `1` | Sentido del movimiento; debe ser 1. |
+| `cantidad` | Sí | número; mínimo `0` | Cantidad contada para el producto. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal donde se registra el conteo. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Bodega del conteo; debe coincidir con la sucursal. |
+| `id_producto` | Sí | número entero; mínimo `1` | Producto contado. |
+| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el conteo. |
+| `fecha_registro` | Sí | fecha y hora en milisegundos Unix | Fecha del conteo en milisegundos desde epoch. |
+| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo opcional del movimiento. |
+
+- id_bodega debe ser igual a id_sucursal.
+- id_concepto debe ser -1 y es_entrada debe ser 1.
+- fecha_registro usa milisegundos desde la época Unix.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": [
+    {
+      "nombre": "Conteo físico",
+      "nota": "",
+      "id_concepto": -1,
+      "es_entrada": 1,
+      "cantidad": 1,
+      "id_sucursal": 1,
+      "id_bodega": 1,
+      "id_producto": 25,
+      "id_empleado": 1,
+      "fecha_registro": 1735689600000
+    }
+  ]
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Éxito semántico:** la respuesta debe contener `type` = `1` y `message` = `"save"`.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "save",
+  "type": 1,
+  "retorno": ""
+}
+```
+
+- Registra un conteo de inventario por producto y sucursal.
+- El header X-Id-Empleado no sustituye el campo id_empleado dentro de cada elemento del body.
+- La operación no se almacena en caché y solo invalida productos e inventario cuando la respuesta contiene type=1 y message=save.
+- El cuerpo debe ser un arreglo no vacío.
+- Cada movimiento debe incluir id_empleado con un valor entero mayor o igual a 1.
+- id_bodega debe coincidir con id_sucursal.
+- La respuesta type=0 indica que el ERP rechazó el movimiento y no invalida la caché.
+- No se reintentan automáticamente escrituras sin idempotencia comprobada.
+
+**Peticiones habituales:** Conteo de un producto.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
+## Terceros
+
+### `terceros-busquedas`: Buscar terceros
+
+**Para qué sirve:** Buscar terceros. Su resultado principal es `clientes`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/terceros/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | Sí | número entero; mínimo `1`; máximo `1000` |
+| `nombre` | No | texto; coincidencia parcial |
+| `nit` | No | texto; coincidencia exacta |
+| `telefono` | No | texto; coincidencia parcial en tres campos de teléfono |
+| `correo` | No | texto; coincidencia parcial en dos campos de correo |
+| `tipo_tercero` | No | `1` (cliente), `2` (proveedor), `3` (ambos) |
+| `es_activo` | No | `0`, `1` |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `tercero`, `contacto`, `sucursal`, `cartera_cliente`, `tributaria`, `configuracion`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 30,
+  "tipo_tercero": 1,
+  "es_activo": 1,
+  "body": {
+    "grupos": [
+      "tercero",
+      "contacto",
+      "sucursal",
+      "cartera_cliente",
+      "tributaria",
+      "configuracion"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, clientes: Cliente[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "clientes": []
+}
+```
+
+- La respuesta se publica en la colección clientes y conserva los bloques funcionales del ERP.
+- No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché.
+- cantidad_registros es obligatorio según el contrato actual del servidor.
+- grupos no debe estar vacío y debe contener valores únicos.
+- Se rechazan los grupos desconocidos.
+
+**Peticiones habituales:** Clientes.
+
+### `terceros-crear`: Crear tercero
+
+**Para qué sirve:** Crear tercero.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/terceros`.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Datos que acepta la acción**
+
+| Dato | Significado |
+| --- | --- |
+| `nombre_cliente` | Nombre completo o razón social del tercero. |
+| `id_tipo_persona` | Clasificación de persona requerida en creación. |
+| `identificacion` | Documento requerido en creación. |
+| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
+| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
+| `primer_nombre` | Primer nombre de una persona natural. |
+| `segundo_nombre` | Segundo nombre de una persona natural. |
+| `primer_apellido` | Primer apellido de una persona natural. |
+| `segundo_apellido` | Segundo apellido de una persona natural. |
+| `direccion` | Dirección principal del tercero. |
+| `sitio_web` | Sitio web registrado. |
+| `facebook` | Perfil o referencia de Facebook. |
+| `twitter` | Perfil o referencia de X/Twitter. |
+| `instagram` | Perfil o referencia de Instagram. |
+| `snapchat` | Perfil o referencia de Snapchat. |
+| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
+| `nota` | Observaciones internas sobre el tercero. |
+| `es_activo` | Estado operativo del tercero. |
+| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
+| `id_lista_precios` | Lista de precios asignada al tercero. |
+| `id_ruta_despacho` | Ruta de despacho asociada. |
+| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
+| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
+| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
+| `zona` | Zona comercial, logística o geográfica asociada. |
+| `contacto` | Nombre o referencia del contacto principal. |
+| `codigo_interno` | Código interno asignado por la empresa. |
+| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
+| `id_estado_civil` | Identificador del estado civil seleccionado. |
+| `id_estrato_social` | Identificador del estrato social seleccionado. |
+| `id_clase_cliente` | Clasificación comercial del cliente. |
+| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
+| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
+| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
+| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
+| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
+| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
+| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
+| `cupo_cartera` | Límite de crédito autorizado. |
+| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
+| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
+| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
+| `id_sucursal` | Sucursal principal o de creación del tercero. |
+| `id_vendedor` | Vendedor asignado. |
+| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
+| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
+| `pais` | País registrado. |
+| `departamento` | Departamento, estado o región registrada. |
+| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
+| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
+| `medio_pago` | Medio de pago preferido o configurado. |
+| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
+| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
+| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
+| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
+| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
+| `codigo_turismo` | Código del registro de turismo. |
+| `alias` | Nombre corto o comercial alternativo. |
+| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
+| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
+| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
+| `genera_bonos` | Habilita la generación o acumulación de bonos. |
+| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
+| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
+| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
+| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
+
+Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
+Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "nombre_cliente": "Tercero de ejemplo",
+    "identificacion": "<id-documento>",
+    "id_tipo_persona": 1,
+    "es_cliente": 1,
+    "telefonos": [
+      "<teléfono>"
+    ],
+    "correos": [
+      "<correo>"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "guardar",
+  "type": 1,
+  "retorno": "<route-fixed-selector>"
+}
+```
+
+- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
+- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
+- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
+- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
+
+**Peticiones habituales:** Crear; Actualización parcial.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
+### `terceros-actualizar`: Actualizar tercero
+
+**Para qué sirve:** Actualizar tercero.
+
+**Método:** `PUT`.
+
+**Ruta:** `/api/v1/terceros/{id_tercero}`.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_tercero` | Sí | número entero; mínimo `1` |
+
+**Datos que acepta la acción**
+
+| Dato | Significado |
+| --- | --- |
+| `nombre_cliente` | Nombre completo o razón social del tercero. |
+| `id_tipo_persona` | Clasificación de persona requerida en creación. |
+| `identificacion` | Documento requerido en creación. |
+| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
+| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
+| `primer_nombre` | Primer nombre de una persona natural. |
+| `segundo_nombre` | Segundo nombre de una persona natural. |
+| `primer_apellido` | Primer apellido de una persona natural. |
+| `segundo_apellido` | Segundo apellido de una persona natural. |
+| `direccion` | Dirección principal del tercero. |
+| `sitio_web` | Sitio web registrado. |
+| `facebook` | Perfil o referencia de Facebook. |
+| `twitter` | Perfil o referencia de X/Twitter. |
+| `instagram` | Perfil o referencia de Instagram. |
+| `snapchat` | Perfil o referencia de Snapchat. |
+| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
+| `nota` | Observaciones internas sobre el tercero. |
+| `es_activo` | Estado operativo del tercero. |
+| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
+| `id_lista_precios` | Lista de precios asignada al tercero. |
+| `id_ruta_despacho` | Ruta de despacho asociada. |
+| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
+| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
+| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
+| `zona` | Zona comercial, logística o geográfica asociada. |
+| `contacto` | Nombre o referencia del contacto principal. |
+| `codigo_interno` | Código interno asignado por la empresa. |
+| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
+| `id_estado_civil` | Identificador del estado civil seleccionado. |
+| `id_estrato_social` | Identificador del estrato social seleccionado. |
+| `id_clase_cliente` | Clasificación comercial del cliente. |
+| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
+| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
+| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
+| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
+| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
+| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
+| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
+| `cupo_cartera` | Límite de crédito autorizado. |
+| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
+| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
+| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
+| `id_sucursal` | Sucursal principal o de creación del tercero. |
+| `id_vendedor` | Vendedor asignado. |
+| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
+| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
+| `pais` | País registrado. |
+| `departamento` | Departamento, estado o región registrada. |
+| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
+| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
+| `medio_pago` | Medio de pago preferido o configurado. |
+| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
+| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
+| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
+| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
+| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
+| `codigo_turismo` | Código del registro de turismo. |
+| `alias` | Nombre corto o comercial alternativo. |
+| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
+| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
+| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
+| `genera_bonos` | Habilita la generación o acumulación de bonos. |
+| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
+| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
+| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
+| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
+
+Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
+Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "nombre_cliente": "Tercero de ejemplo",
+    "identificacion": "<id-documento>",
+    "id_tipo_persona": 1,
+    "es_cliente": 1,
+    "telefonos": [
+      "<teléfono>"
+    ],
+    "correos": [
+      "<correo>"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "guardar",
+  "type": 1,
+  "retorno": "<route-fixed-selector>"
+}
+```
+
+- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
+- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
+- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
+- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
+
+**Peticiones habituales:** Crear; Actualización parcial.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
+## Impuestos
 
 ### `tributario-impuestos-busquedas`: Buscar impuestos
 
@@ -2853,6 +3107,53 @@ Envía una lista con entre 1 y 1000 elementos.
 - Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
 
 **Peticiones habituales:** Impuestos activos.
+
+### `tributario-impuesto-por-id`: Consultar impuesto por ID
+
+**Para qué sirve:** Consultar impuesto por ID.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/tributario/impuestos/{id_impuesto}`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_impuesto` | Sí | número entero; mínimo `1` |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_impuesto": 3
+}
+```
+
+**Respuesta esperada:** Impuesto[].
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "id_impuesto": 3,
+    "nombre_impuesto": "IVA",
+    "valor_impuesto": 19,
+    "tipo_impuesto": "porcentaje",
+    "clasificacion_tributaria": "gravado"
+  }
+]
+```
+
+- Consulta de datos maestros por identificador; la respuesta es un arreglo.
+- id_impuesto debe ser mayor que cero.
+
+**Peticiones habituales:** Impuesto por ID.
+
+## Finanzas y cartera
 
 ### `finanzas-bancos-busquedas`: Buscar bancos
 
@@ -3038,6 +3339,280 @@ Envía una lista con entre 1 y 1000 elementos.
 - Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
 
 **Peticiones habituales:** Medios de pago activos con configuracion.
+
+### `finanzas-cartera-cobrar-busquedas`: Buscar cuentas por cobrar
+
+**Para qué sirve:** Buscar cuentas por cobrar. Su resultado principal es `cartera`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `vencida` | No | `0`, `1` |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `fechas`, `sucursal`, `tercero`, `vendedor`, `saldo`, `estado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "body": {
+    "grupos": [
+      "transaccion",
+      "fechas",
+      "sucursal",
+      "tercero",
+      "vendedor",
+      "saldo",
+      "estado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, totales: { total_deuda: number, total_abono: number, total_pendiente: number }, cartera: DocumentoCartera[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "totales": {
+    "total_deuda": 0,
+    "total_abono": 0,
+    "total_pendiente": 0
+  },
+  "cartera": []
+}
+```
+
+- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
+- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
+- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
+
+### `finanzas-cartera-pagar-busquedas`: Buscar cuentas por pagar
+
+**Para qué sirve:** Buscar cuentas por pagar. Su resultado principal es `cartera`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `vencida` | No | `0`, `1` |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `fechas`, `sucursal`, `tercero`, `vendedor`, `saldo`, `estado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "body": {
+    "grupos": [
+      "transaccion",
+      "fechas",
+      "sucursal",
+      "tercero",
+      "vendedor",
+      "saldo",
+      "estado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, totales: { total_deuda: number, total_abono: number, total_pendiente: number }, cartera: DocumentoCartera[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "totales": {
+    "total_deuda": 0,
+    "total_abono": 0,
+    "total_pendiente": 0
+  },
+  "cartera": []
+}
+```
+
+- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
+- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
+- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
+
+### `finanzas-resumen-cobrar-busquedas`: Buscar resumen de cuentas por cobrar
+
+**Para qué sirve:** Buscar resumen de cuentas por cobrar. Su resultado principal es `resumen_terceros`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/resumenes-por-tercero/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `vencida` | No | `0`, `1` |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `tercero`, `documentos`, `saldo`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "body": {
+    "grupos": [
+      "tercero",
+      "documentos",
+      "saldo"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, resumen_terceros: SaldoTercero[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "resumen_terceros": []
+}
+```
+
+- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
+- Las cuentas por cobrar y por pagar nunca se mezclan.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
+- grupos no debe estar vacío y debe contener valores únicos.
+
+**Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
+
+### `finanzas-resumen-pagar-busquedas`: Buscar resumen de cuentas por pagar
+
+**Para qué sirve:** Buscar resumen de cuentas por pagar. Su resultado principal es `resumen_terceros`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/resumenes-por-tercero/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `vencida` | No | `0`, `1` |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `tercero`, `documentos`, `saldo`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "body": {
+    "grupos": [
+      "tercero",
+      "documentos",
+      "saldo"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, resumen_terceros: SaldoTercero[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "resumen_terceros": []
+}
+```
+
+- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
+- Las cuentas por cobrar y por pagar nunca se mezclan.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
+- grupos no debe estar vacío y debe contener valores únicos.
+
+**Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
+
+## Organización
 
 ### `organizacion-sucursales-busquedas`: Buscar sucursales
 
@@ -3297,6 +3872,8 @@ Para `grupos`:
 
 **Peticiones habituales:** Empleados activos.
 
+## Facturación
+
 ### `facturacion-consecutivos-busquedas`: Buscar consecutivos de documentos
 
 **Para qué sirve:** Buscar consecutivos de documentos. Su resultado principal es `consecutivos`.
@@ -3391,689 +3968,11 @@ Para `grupos`:
 
 **Peticiones habituales:** Consecutivos activos.
 
-## Terceros
-
-### `terceros-busquedas`: Buscar terceros
-
-**Para qué sirve:** Buscar terceros. Su resultado principal es `terceros`.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/terceros/busquedas`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | Sí | número entero; mínimo `1`; máximo `1000` |
-| `nombre` | No | texto; coincidencia parcial |
-| `nit` | No | texto; coincidencia exacta |
-| `telefono` | No | texto; coincidencia parcial en tres campos de teléfono |
-| `correo` | No | texto; coincidencia parcial en dos campos de correo |
-| `tipo_tercero` | No | `1` (cliente), `2` (proveedor), `3` (ambos) |
-
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_cliente` | Identificador del tercero consultado. |
-| `nombre_cliente` | Nombre completo o razón social principal. |
-| `identificacion` | Documento de identidad o identificación tributaria. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de creación del tercero. |
-| `fecha_actualizacion` | Fecha de la última actualización registrada. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento de una persona natural. |
-| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Fecha de vencimiento del registro de turismo. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Horario asociado al tercero; la estructura depende del dato almacenado. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
-| `tipo_identificacion` | Datos relacionados del tipo de identificación. |
-| `tipo_persona` | Datos relacionados de la clasificación de persona. |
-| `estado_civil` | Datos relacionados del estado civil. |
-| `estrato_social` | Datos relacionados del estrato social. |
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "tipo_tercero": 1,
-  "body": {
-    "columnas": [
-      "id_cliente",
-      "nombre_cliente",
-      "identificacion",
-      "telefonos",
-      "correos"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, terceros: Tercero[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "terceros": []
-}
-```
-
-- telefonos y correos se proyectan como arreglos; las columnas de relaciones se proyectan como objetos.
-- No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché.
-- cantidad_registros es obligatorio según el contrato actual del servidor.
-- El cuerpo debe contener únicamente un arreglo columnas no vacío y sin duplicados.
-- Se rechazan las columnas desconocidas.
-
-**Peticiones habituales:** Clientes.
-
-### `terceros-crear`: Guardar tercero
-
-**Para qué sirve:** Guardar tercero.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/terceros`.
-
-**Tipo:** Acción que modifica datos.
-
-**Filtros:** no requiere filtros adicionales.
-
-**Datos que acepta la acción**
-
-| Dato | Significado |
-| --- | --- |
-| `nombre_cliente` | Nombre completo o razón social del tercero. |
-| `id_tipo_persona` | Clasificación de persona requerida en creación. |
-| `identificacion` | Documento requerido en creación. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_estado_civil` | Identificador del estado civil seleccionado. |
-| `id_estrato_social` | Identificador del estrato social seleccionado. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
-| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
-
-Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
-Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "nombre_cliente": "Tercero de ejemplo",
-    "identificacion": "<id-documento>",
-    "id_tipo_persona": 1,
-    "es_cliente": 1,
-    "telefonos": [
-      "<teléfono>"
-    ],
-    "correos": [
-      "<correo>"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "message": "guardar",
-  "type": 1,
-  "retorno": "<route-fixed-selector>"
-}
-```
-
-- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
-- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
-- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
-- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
-- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
-- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
-
-**Peticiones habituales:** Crear; Actualización parcial.
-
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-
-### `terceros-actualizar`: Guardar tercero
-
-**Para qué sirve:** Guardar tercero.
-
-**Método:** `PUT`.
-
-**Ruta:** `/api/v1/terceros/{id_tercero}`.
-
-**Tipo:** Acción que modifica datos.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_tercero` | Sí | número entero; mínimo `1` |
-
-**Datos que acepta la acción**
-
-| Dato | Significado |
-| --- | --- |
-| `nombre_cliente` | Nombre completo o razón social del tercero. |
-| `id_tipo_persona` | Clasificación de persona requerida en creación. |
-| `identificacion` | Documento requerido en creación. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_estado_civil` | Identificador del estado civil seleccionado. |
-| `id_estrato_social` | Identificador del estrato social seleccionado. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
-| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
-
-Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
-Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "nombre_cliente": "Tercero de ejemplo",
-    "identificacion": "<id-documento>",
-    "id_tipo_persona": 1,
-    "es_cliente": 1,
-    "telefonos": [
-      "<teléfono>"
-    ],
-    "correos": [
-      "<correo>"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "message": "guardar",
-  "type": 1,
-  "retorno": "<route-fixed-selector>"
-}
-```
-
-- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
-- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
-- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
-- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
-- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
-- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
-
-**Peticiones habituales:** Crear; Actualización parcial.
-
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-
-## Cartera
-
-### `finanzas-cartera-cobrar-busquedas`: Buscar cuentas por cobrar y por pagar
-
-**Para qué sirve:** Buscar cuentas por cobrar y por pagar. Su resultado principal es `resultados`.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/busquedas`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_transacion` | No | número entero |
-| `id_cliente` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-| `vencida` | No | `0`, `1` |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `fechas`, `sucursal`, `tercero`, `vendedor`, `saldo`, `estado`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 100,
-  "body": {
-    "grupos": [
-      "transaccion",
-      "fechas",
-      "sucursal",
-      "tercero",
-      "vendedor",
-      "saldo",
-      "estado"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'cartera', resultados: DocumentoCartera[], totales: { total_deuda: number, total_abono: number, total_pendiente: number } }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "cartera",
-  "resultados": [],
-  "totales": {
-    "total_deuda": 0,
-    "total_abono": 0,
-    "total_pendiente": 0
-  }
-}
-```
-
-- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
-- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
-- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
-- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
-
-**Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
-
-### `finanzas-cartera-pagar-busquedas`: Buscar cuentas por cobrar y por pagar
-
-**Para qué sirve:** Buscar cuentas por cobrar y por pagar. Su resultado principal es `resultados`.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/busquedas`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_transacion` | No | número entero |
-| `id_cliente` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-| `vencida` | No | `0`, `1` |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `fechas`, `sucursal`, `tercero`, `vendedor`, `saldo`, `estado`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 100,
-  "body": {
-    "grupos": [
-      "transaccion",
-      "fechas",
-      "sucursal",
-      "tercero",
-      "vendedor",
-      "saldo",
-      "estado"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'cartera', resultados: DocumentoCartera[], totales: { total_deuda: number, total_abono: number, total_pendiente: number } }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "cartera",
-  "resultados": [],
-  "totales": {
-    "total_deuda": 0,
-    "total_abono": 0,
-    "total_pendiente": 0
-  }
-}
-```
-
-- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
-- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
-- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
-- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
-
-**Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
-
-### `finanzas-resumen-cobrar-busquedas`: Resumir saldos por tercero
-
-**Para qué sirve:** Resumir saldos por tercero. Su resultado principal es `resultados`.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/resumenes-por-tercero/busquedas`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_transacion` | No | número entero |
-| `id_cliente` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-| `vencida` | No | `0`, `1` |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `tercero`, `documentos`, `saldo`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 100,
-  "body": {
-    "grupos": [
-      "tercero",
-      "documentos",
-      "saldo"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'resumen_terceros', resultados: SaldoTercero[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "resumen_terceros",
-  "resultados": []
-}
-```
-
-- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
-- Las cuentas por cobrar y por pagar nunca se mezclan.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
-- grupos no debe estar vacío y debe contener valores únicos.
-
-**Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
-
-### `finanzas-resumen-pagar-busquedas`: Resumir saldos por tercero
-
-**Para qué sirve:** Resumir saldos por tercero. Su resultado principal es `resultados`.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/resumenes-por-tercero/busquedas`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_transacion` | No | número entero |
-| `id_cliente` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-| `vencida` | No | `0`, `1` |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `tercero`, `documentos`, `saldo`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 100,
-  "body": {
-    "grupos": [
-      "tercero",
-      "documentos",
-      "saldo"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'resumen_terceros', resultados: SaldoTercero[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "resumen_terceros",
-  "resultados": []
-}
-```
-
-- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
-- Las cuentas por cobrar y por pagar nunca se mezclan.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
-- grupos no debe estar vacío y debe contener valores únicos.
-
-**Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
-
-## Comandas
+## Restaurante
 
 ### `restaurante-comandas-busquedas`: Obtener comandas de cocina
 
-**Para qué sirve:** Obtener comandas de cocina. Su resultado principal es `resultados`.
+**Para qué sirve:** Obtener comandas de cocina. Su resultado principal es `comandas`.
 
 **Método:** `POST`.
 
@@ -4165,16 +4064,14 @@ Para `grupos`:
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'comandas', resultados: ComandaCocina[] }.
+**Respuesta esperada:** { pagina: integer, comandas: ComandaCocina[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "comandas",
-  "resultados": []
+  "comandas": []
 }
 ```
 
@@ -4186,7 +4083,7 @@ Para `grupos`:
 
 ### `restaurante-platos-eliminados-busquedas`: Buscar platos eliminados
 
-**Para qué sirve:** Buscar platos eliminados. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar platos eliminados. Su resultado principal es `platos_eliminados`.
 
 **Método:** `POST`.
 
@@ -4249,16 +4146,14 @@ Para `grupos`:
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'platos_eliminados', resultados: AuditoriaPlatoEliminado[] }.
+**Respuesta esperada:** { pagina: integer, platos_eliminados: AuditoriaPlatoEliminado[] }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "platos_eliminados",
-  "resultados": []
+  "platos_eliminados": []
 }
 ```
 

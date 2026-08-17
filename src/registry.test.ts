@@ -99,15 +99,15 @@ describe('canonical documentation registry', () => {
       ]),
     );
     expect(counts).toEqual({
-      'Catálogo': 5,
+      Catálogo: 5,
       Inventario: 1,
       Terceros: 3,
       Transacciones: 11,
       'Otros documentos': 12,
       Impuestos: 2,
       'Finanzas y cartera': 6,
-      'Organización': 2,
-      'Facturación': 1,
+      Organización: 2,
+      Facturación: 1,
       Restaurante: 2,
     });
   });
@@ -157,6 +157,43 @@ describe('canonical documentation registry', () => {
       registry.endpoints.find((endpoint) => endpoint.id === 'terceros-crear')
         ?.queryParams,
     ).toEqual([]);
+  });
+
+  it('uses route-specific names for shared contracts', () => {
+    const expectedTitles = {
+      'ventas-facturas-busquedas': 'Buscar facturas',
+      'ventas-planes-separe-busquedas': 'Buscar plan separe',
+      'ventas-compras-gastos-busquedas': 'Buscar compra/gasto',
+      'ventas-facturas': 'Crear factura',
+      'ventas-compras-gastos': 'Crear compra/gasto',
+      'operativas-pedidos-busquedas': 'Buscar pedidos',
+      'operativas-cotizaciones-busquedas': 'Buscar cotizaciones',
+      'finanzas-cartera-cobrar-busquedas': 'Buscar cuentas por cobrar',
+      'finanzas-cartera-pagar-busquedas': 'Buscar cuentas por pagar',
+    };
+
+    for (const [id, title] of Object.entries(expectedTitles)) {
+      expect(findEndpoint(id)?.name).toBe(title);
+    }
+
+    const sharedContractTitles = registry.endpoints
+      .filter((endpoint) =>
+        [
+          'buscarTransacciones',
+          'buscarDocumentosComerciales',
+          'grabarDocumentoSimple',
+          'guardarTercero',
+          'buscarCartera',
+          'buscarResumenTerceros',
+        ].includes(endpoint.contractId ?? ''),
+      )
+      .map((endpoint) => endpoint.name);
+    expect(new Set(sharedContractTitles).size).toBe(
+      sharedContractTitles.length,
+    );
+    expect(
+      sharedContractTitles.every((title) => !title.endsWith('(busquedas)')),
+    ).toBe(true);
   });
 
   it('describes every projected group and field', () => {
@@ -323,6 +360,88 @@ describe('canonical documentation registry', () => {
     }
   });
 
+  it('documents projection by groups without exposing the legacy level filter', () => {
+    const transactions = findEndpoint('buscarTransacciones');
+    const discounts = findEndpoint('buscarDescuentos');
+    const documents = findEndpoint('buscarDocumentosComerciales');
+
+    expect(
+      transactions?.queryParams.map((parameter) => parameter.name),
+    ).not.toContain('nivel');
+    expect(transactions?.tryIt?.body).toHaveProperty('detalle');
+    expect(transactions?.groups.map((group) => group.name)).toContain(
+      'producto',
+    );
+
+    expect(documents?.tryIt?.body).toHaveProperty('detalle');
+    expect(documents?.groups.map((group) => group.name)).toContain('producto');
+
+    expect(
+      discounts?.queryParams.map((parameter) => parameter.name),
+    ).not.toContain('nivel');
+    expect(discounts?.tryIt?.body).toEqual({
+      grupos: ['transaccion', 'cliente', 'totales'],
+    });
+  });
+
+  it('hides route-owned selectors and keeps public request examples valid', () => {
+    const routeSelectors = new Map([
+      ['catalogo-marcas', ['es_activo']],
+      ['terceros-busquedas', []],
+      ['finanzas-cartera-cobrar-busquedas', ['es_ingreso']],
+      ['finanzas-cartera-pagar-busquedas', ['es_ingreso']],
+      ['finanzas-resumen-cobrar-busquedas', ['es_ingreso']],
+      ['finanzas-resumen-pagar-busquedas', ['es_ingreso']],
+      ['operativas-pedidos-busquedas', ['tipo_documento']],
+      ['operativas-cotizaciones-busquedas', ['tipo_documento']],
+      ['operativas-despachos-busquedas', ['tipo_documento']],
+      ['operativas-despachos-agrupados-busquedas', ['tipo_documento']],
+      ['operativas-ordenes-produccion-busquedas', ['tipo_documento']],
+      ['operativas-devoluciones-ajustes-busquedas', ['tipo_documento']],
+      ['operativas-traslados-internos-busquedas', ['tipo_documento']],
+      ['operativas-ordenes-compra-busquedas', ['tipo_documento']],
+      ['operativas-recepciones-mercancia-busquedas', ['tipo_documento']],
+    ]);
+
+    for (const [routeId, fixedSelectors] of routeSelectors) {
+      const endpoint = findEndpoint(routeId);
+      if (!endpoint) throw new Error(`Missing endpoint ${routeId}`);
+      const forbiddenPattern = fixedSelectors.length
+        ? new RegExp(fixedSelectors.join('|'))
+        : null;
+      for (const selector of fixedSelectors) {
+        expect(
+          endpoint.queryParams.map((parameter) => parameter.name),
+          `${routeId} query`,
+        ).not.toContain(selector);
+        expect(
+          endpoint.pathParams.map((parameter) => parameter.name),
+          `${routeId} path`,
+        ).not.toContain(selector);
+      }
+      if (forbiddenPattern) {
+        expect(JSON.stringify(endpoint.tryIt)).not.toMatch(forbiddenPattern);
+        expect(
+          endpoint.presets.some((preset) =>
+            forbiddenPattern.test(JSON.stringify(preset)),
+          ),
+        ).toBe(false);
+      }
+    }
+
+    const thirdParties = findEndpoint('terceros-busquedas');
+    expect(thirdParties?.tryIt?.body).toEqual({
+      grupos: [
+        'tercero',
+        'contacto',
+        'sucursal',
+        'cartera_cliente',
+        'tributaria',
+        'configuracion',
+      ],
+    });
+  });
+
   it('documents the four recently updated query contracts', () => {
     const products = findEndpoint('buscarProductosCatalogo');
     expect(products?.queryParams).toEqual(
@@ -463,7 +582,6 @@ describe('canonical documentation registry', () => {
     const catalogIds = [
       'buscarProductosCatalogo',
       'buscarCategorias',
-      'buscarTercero',
       'buscarImpuestos',
       'buscarBancos',
       'buscarMediosPago',
@@ -482,7 +600,7 @@ describe('canonical documentation registry', () => {
     );
     expect(
       registry.endpoints.filter((endpoint) => endpoint.compatibility),
-    ).toHaveLength(9);
+    ).toHaveLength(8);
     for (const endpoint of catalogEndpoints) {
       expect(endpoint.requestExample).toEqual(
         expect.objectContaining({ grupos: expect.any(Array) }),
@@ -501,6 +619,19 @@ describe('canonical documentation registry', () => {
         .filter((endpoint) => endpoint.category === 'Transacciones')
         .some((endpoint) => endpoint.compatibility),
     ).toBe(false);
+
+    const thirdParty = findEndpoint('buscarTercero');
+    expect(thirdParty?.compatibility).toBeUndefined();
+    expect(thirdParty?.tryIt?.body).toEqual({
+      grupos: [
+        'tercero',
+        'contacto',
+        'sucursal',
+        'cartera_cliente',
+        'tributaria',
+        'configuracion',
+      ],
+    });
   });
 
   it('documents the complete consecutivos catalog without disabled columns', () => {

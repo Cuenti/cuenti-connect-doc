@@ -188,10 +188,10 @@ const PortalApp = () => {
           ) : page.kind === 'mcp' ? (
             <McpGuide />
           ) : (
-              <EndpointDetail
-                endpoint={selectedEndpoint}
-                routePath={serverApiPath(selectedEndpoint)}
-                enabled={tryItEnabled}
+            <EndpointDetail
+              endpoint={selectedEndpoint}
+              routePath={serverApiPath(selectedEndpoint)}
+              enabled={tryItEnabled}
               proxyBaseUrl={proxyBaseUrl}
               curlBaseUrl={serverOrigin}
               credentials={credentials}

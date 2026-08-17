@@ -80,6 +80,7 @@ const groupDescriptions: Record<string, string> = {
   ventas_ext: 'Configuración extendida para la operación de ventas.',
   taller: 'Información del vehículo y del servicio de taller relacionado.',
   tercero: 'Identificación del tercero agrupado en cartera.',
+  tributaria: 'Configuración fiscal y tributaria asociada al tercero.',
   totales: 'Importes agregados y saldos calculados del documento.',
   tienda: 'Configuración de publicación y visibilidad en la tienda.',
   transaccion:

@@ -99,7 +99,7 @@ describe('documentation application', () => {
     ).toHaveAttribute('aria-expanded', 'false');
     expect(
       within(navigation).queryByRole('button', {
-        name: /^POSTBuscar transacciones$/i,
+        name: /^POSTBuscar facturas$/i,
       }),
     ).not.toBeInTheDocument();
 
@@ -108,7 +108,7 @@ describe('documentation application', () => {
     );
     expect(
       within(navigation).getByRole('button', {
-        name: /^POSTBuscar transacciones$/i,
+        name: /^POSTBuscar facturas$/i,
       }),
     ).toBeVisible();
     expect(
@@ -184,7 +184,7 @@ describe('documentation application', () => {
     await openCategory(user, 'Transacciones');
     await user.click(
       screen.getByRole('button', {
-        name: /^POSTCrear factura, compra, gasto o remisión$/i,
+        name: /^POSTCrear factura$/i,
       }),
     );
 
@@ -200,7 +200,7 @@ describe('documentation application', () => {
     await openCategory(user, 'Transacciones');
     await user.click(
       screen.getByRole('button', {
-        name: /^POSTCrear factura, compra, gasto o remisión$/i,
+        name: /^POSTCrear factura$/i,
       }),
     );
 
@@ -216,7 +216,7 @@ describe('documentation application', () => {
     await openCategory(user, 'Finanzas y cartera');
     await user.click(
       screen.getByRole('button', {
-        name: /^POSTBuscar cuentas por cobrar y pagar$/i,
+        name: /^POSTBuscar cuentas por cobrar$/i,
       }),
     );
     expect(new URLSearchParams(window.location.search).get('endpoint')).toBe(
@@ -225,7 +225,7 @@ describe('documentation application', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'Buscar cuentas por cobrar y pagar',
+        name: 'Buscar cuentas por cobrar',
       }),
     ).toBeVisible();
 
@@ -293,7 +293,7 @@ describe('documentation application', () => {
     await openCategory(user, 'Transacciones');
     await user.click(
       screen.getByRole('button', {
-        name: /^POSTCrear factura, compra, gasto o remisión$/i,
+        name: /^POSTCrear factura$/i,
       }),
     );
 

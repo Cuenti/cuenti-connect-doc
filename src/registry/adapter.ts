@@ -300,6 +300,7 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
 
 const normalizeParameters = (value: unknown) =>
   asArray(value)
+    .filter((parameter) => !asBoolean(asRecord(parameter).documentationHidden))
     .map(normalizeParameter)
     .filter((parameter) => parameter.name);
 
@@ -479,8 +480,8 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
         description: 'Listado paginado con encabezado y detalle.',
         query: { pagina: '0', cantidad_registros: '30', es_factura: '1' },
         body: {
-          grupos_encabezado: ['codigos', 'fechas', 'cliente', 'totales'],
-          grupos_detalle: ['codigos', 'producto', 'cantidades', 'totales'],
+          grupos: ['codigos', 'fechas', 'cliente', 'totales'],
+          detalle: ['codigos', 'producto', 'cantidades', 'totales'],
         },
       },
       {
@@ -489,8 +490,8 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
         description: 'Busca una factura concreta.',
         query: { n_factura: 'FV-1001' },
         body: {
-          grupos_encabezado: ['codigos', 'cliente', 'totales'],
-          grupos_detalle: ['producto', 'cantidades', 'precios'],
+          grupos: ['codigos', 'cliente', 'totales'],
+          detalle: ['producto', 'cantidades', 'precios'],
         },
       },
       {
@@ -504,7 +505,7 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
           fecha_desde: '1722470400000',
           fecha_hasta: '1725148799000',
         },
-        body: { grupos_encabezado: ['fechas', 'cliente', 'totales'] },
+        body: { grupos: ['fechas', 'cliente', 'totales'] },
       },
     ];
   }
@@ -512,21 +513,23 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
     return [
       {
         id: 'header',
-        name: 'Nivel encabezado',
+        name: 'Descuentos de encabezado',
         description: 'Descuentos agregados por transacción.',
-        query: { nivel: 'encabezado', pagina: '0', cantidad_registros: '30' },
-        body: { grupos: ['transaccion', 'cliente', 'totales', 'impuestos'] },
+        query: { pagina: '0', cantidad_registros: '30' },
+        body: { grupos: ['transaccion', 'cliente', 'totales'] },
       },
       {
         id: 'detail',
-        name: 'Nivel detalle',
+        name: 'Descuentos de detalle',
         description: 'Descuentos por producto.',
-        query: { nivel: 'detalle', pagina: '0', cantidad_registros: '30' },
+        query: { pagina: '0', cantidad_registros: '30' },
         body: {
           grupos: [
             'transaccion',
             'cliente',
             'producto',
+            'cantidades',
+            'precios',
             'descuento',
             'totales',
           ],
@@ -646,9 +649,20 @@ const projectPublicRoute = (
   const params = asRecord(
     first(projected, ['params', 'parameters', 'parametros']),
   );
-  const query = asArray(first(params, ['query', 'consulta'])).filter(
+  const sourceQuery = asArray(first(params, ['query', 'consulta']));
+  const hiddenDocumentationQuery = new Set(
+    sourceQuery
+      .filter((parameter) => asBoolean(asRecord(parameter).documentationHidden))
+      .map((parameter) =>
+        asString(first(asRecord(parameter), ['name', 'nombre', 'key'])),
+      ),
+  );
+  const query = sourceQuery.filter(
     (parameter) =>
       !hidden.has(
+        asString(first(asRecord(parameter), ['name', 'nombre', 'key'])),
+      ) &&
+      !hiddenDocumentationQuery.has(
         asString(first(asRecord(parameter), ['name', 'nombre', 'key'])),
       ),
   );
@@ -680,13 +694,20 @@ const projectPublicRoute = (
     projected.body = body;
   }
   if (projected.presets !== undefined)
-    projected.presets = removeKeys(projected.presets, hidden);
+    projected.presets = removeKeys(
+      projected.presets,
+      new Set([...hidden, ...hiddenDocumentationQuery]),
+    );
   if (projected.tryIt !== undefined)
-    projected.tryIt = removeKeys(projected.tryIt, hidden);
+    projected.tryIt = removeKeys(
+      projected.tryIt,
+      new Set([...hidden, ...hiddenDocumentationQuery]),
+    );
   projected.id = asString(route.routeId);
   projected.contractId = asString(route.contract);
   projected.method = asString(route.method).toUpperCase();
   projected.path = asString(route.path);
+  projected.title = asString(route.title) || asString(projected.title);
   projected.category = asString(route.category) || asString(projected.category);
   projected.publicRoute = true;
   projected.descriptionId = asString(route.contract);
@@ -1044,13 +1065,11 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
     const contractId = asString(item.contractId);
     const occurrence = routeOccurrences.get(contractId) ?? 0;
     routeOccurrences.set(contractId, occurrence + 1);
-    if (item.publicRoute && occurrence > 0) {
-      const title = endpointTitles[contractId] ?? asString(item.name);
-      const pathParts = asString(item.path).split('/').filter(Boolean);
-      const routeLabel = pathParts[pathParts.length - 1];
-      item.publicTitle = `${title} (${routeLabel})`;
-    } else if (item.publicRoute) {
-      item.publicTitle = endpointTitles[contractId] ?? asString(item.name);
+    if (item.publicRoute) {
+      item.publicTitle =
+        asString(item.title) ||
+        endpointTitles[contractId] ||
+        asString(item.name);
     }
     return normalizeEndpoint(item, headerDefinitions);
   });
