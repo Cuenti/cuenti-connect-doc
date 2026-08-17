@@ -8,7 +8,7 @@ describe('endpoint search', () => {
     ['POST', 'catalogo-categorias-busquedas'],
     ['id_auditoria', 'restaurante-platos-eliminados-busquedas'],
     ['cantidad_registros', 'catalogo-categorias-busquedas'],
-    ['producto_ampliado', 'ventas-facturas-busquedas'],
+    ['ruta_despacho', 'ventas-facturas-busquedas'],
     ['Catálogo', 'catalogo-categorias-busquedas'],
   ])('finds %s across route metadata', (query, expectedId) => {
     expect(

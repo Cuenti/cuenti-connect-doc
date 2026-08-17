@@ -899,11 +899,16 @@ const normalizeEndpoint = (
   const bodyGroups = mergeGroups(
     normalizeBodyGroups(first(body, ['groups', 'grupos'])),
   );
-  const columns = strings(first(item, ['columns', 'columnas'])).length
-    ? strings(first(item, ['columns', 'columnas']))
-    : strings(first(body, ['columns', 'columnas'])).length
-      ? strings(first(body, ['columns', 'columnas']))
-      : normalizeFieldNames(first(body, ['fields', 'campos']));
+  const columns =
+    first(item, ['projectionPolicy']) === 'groups-or-empty'
+      ? []
+      : first(body, ['allowColumns']) === false
+        ? []
+        : strings(first(item, ['columns', 'columnas'])).length
+          ? strings(first(item, ['columns', 'columnas']))
+          : strings(first(body, ['columns', 'columnas'])).length
+            ? strings(first(body, ['columns', 'columnas']))
+            : normalizeFieldNames(first(body, ['fields', 'campos']));
   const creationRequired = new Set(
     strings(body.createRequired).map((rule) => rule.split('=')[0].trim()),
   );
@@ -981,7 +986,7 @@ const normalizeEndpoint = (
     bodyDescription:
       asString(first(item, ['bodyDescription', 'descripcionBody'])) ||
       (asBoolean(first(body, ['required', 'obligatorio']))
-        ? 'El cuerpo JSON es obligatorio y debe respetar los campos, columnas o grupos documentados.'
+        ? 'El cuerpo JSON es obligatorio y debe respetar los campos o grupos documentados.'
         : undefined),
     requestExample:
       first(item, ['requestExample', 'request']) ??

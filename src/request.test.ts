@@ -229,7 +229,7 @@ describe('request builder', () => {
     expect(() => buildRequest(endpoint, draft)).toThrow(/JSON válido/);
   });
 
-  it('keeps the Try It body editor open to empty and column projections', () => {
+  it('keeps the Try It body editor open to empty and group projections', () => {
     const endpoint = findEndpoint('buscarCategorias');
     if (!endpoint) throw new Error('Category endpoint was not found.');
     const draft = defaultDraft(endpoint);
@@ -238,11 +238,9 @@ describe('request builder', () => {
     draft.body = '{}';
     expect(buildRequest(endpoint, draft).init.body).toBe('{}');
 
-    draft.body = JSON.stringify({
-      columnas: ['id_categoria', 'nombre_categoria'],
-    });
+    draft.body = JSON.stringify({ grupos: ['categoria', 'tienda'] });
     expect(buildRequest(endpoint, draft).init.body).toBe(
-      '{"columnas":["id_categoria","nombre_categoria"]}',
+      '{"grupos":["categoria","tienda"]}',
     );
   });
 });

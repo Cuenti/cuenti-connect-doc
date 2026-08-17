@@ -33,6 +33,7 @@
   "endpoints": [
     {
       "id": "buscarProductosCatalogo",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar productos del catálogo",
       "category": "Productos e inventario",
       "method": "POST",
@@ -84,6 +85,7 @@
     },
     {
       "id": "buscarCategorias",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar categorías",
       "category": "Categorías e impuestos",
       "method": "POST",
@@ -169,6 +171,7 @@
     },
     {
       "id": "buscarTercero",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar terceros",
       "category": "Terceros",
       "method": "POST",
@@ -245,6 +248,7 @@
     },
     {
       "id": "buscarImpuestos",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar impuestos",
       "category": "Maestros",
       "method": "POST",
@@ -265,6 +269,7 @@
     },
     {
       "id": "buscarBancos",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar bancos",
       "category": "Maestros",
       "method": "POST",
@@ -285,6 +290,7 @@
     },
     {
       "id": "buscarMediosPago",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar medios de pago",
       "category": "Maestros",
       "method": "POST",
@@ -305,6 +311,7 @@
     },
     {
       "id": "buscarConsecutivos",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar consecutivos de documentos",
       "category": "Maestros",
       "method": "POST",
@@ -325,6 +332,7 @@
     },
     {
       "id": "buscarSucursales",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar sucursales",
       "category": "Maestros",
       "method": "POST",
@@ -345,6 +353,7 @@
     },
     {
       "id": "buscarEmpleados",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar empleados",
       "category": "Maestros",
       "method": "POST",
@@ -419,20 +428,20 @@
         "columns": [],
         "groups": [
           {"key": "grupos", "allowed": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"]},
-          {"key": "detalle", "required": false, "allowed": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "costo", "nota", "presentacion", "configuracion", "producto_ampliado", "seriales"]}
+           {"key": "detalle", "required": false, "allowed": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}
         ],
        "example": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega"]}
       },
        "expectedCollection": "transacciones",
        "response": {"shape": "{ pagina: integer, transacciones: Transaccion[] }", "example": {"pagina": 0, "transacciones": []}},
       "presets": [
-        {"id": "sales-history", "title": "Historial de ventas", "query": {"pagina": 0, "cantidad_registros": 100, "tipo_documento": "1,9", "es_ingreso": 1, "es_nula": 0}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "costo", "nota", "presentacion", "configuracion", "producto_ampliado", "seriales"]}},
-        {"id": "full-by-id", "title": "Factura completa por ID", "query": {"id_transacion": 12345, "pagina": 0, "cantidad_registros": 1}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "costo", "nota", "presentacion", "configuracion", "producto_ampliado", "seriales"]}},
-        {"id": "voided", "title": "Facturas anuladas", "query": {"tipo_documento": "1,9", "es_ingreso": 1, "es_nula": 1}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "costo", "nota", "presentacion", "configuracion", "producto_ampliado", "seriales"]}}
+         {"id": "sales-history", "title": "Historial de ventas", "query": {"pagina": 0, "cantidad_registros": 100, "tipo_documento": "1,9", "es_ingreso": 1, "es_nula": 0}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}},
+         {"id": "full-by-id", "title": "Factura completa por ID", "query": {"id_transacion": 12345, "pagina": 0, "cantidad_registros": 1}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}},
+         {"id": "voided", "title": "Facturas anuladas", "query": {"tipo_documento": "1,9", "es_ingreso": 1, "es_nula": 1}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}}
       ],
       "errors": ["Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.", "La paginación está limitada a 1..1000 registros.", "Los filtros de fecha deben expresarse en milisegundos desde la época Unix."],
       "notes": ["Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.", "detalle.codigos contiene id_detalle_transacion, no id_transacion.", "El grupo impresion devuelve configuración y no genera un PDF."],
-        "tryIt": {"enabled": true, "proxyOnly": true, "query": {"pagina": 0, "cantidad_registros": 30, "es_nula": 0}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "costo", "nota", "presentacion", "configuracion", "producto_ampliado", "seriales"]}},
+        "tryIt": {"enabled": true, "proxyOnly": true, "query": {"pagina": 0, "cantidad_registros": 30, "es_nula": 0}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "impuestos", "estado", "qr", "nota", "documento", "moneda", "estado_electronico", "pagos", "retenciones", "notas_credito", "facturacion_electronica", "consecutivo", "impresion", "cartera_cliente", "empresa", "sucursal_configuracion", "taller", "acta_entrega", "ruta_despacho"], "detalle": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}},
       "cost": {"tier": "high", "factors": ["Uniones dinámicas y contexto enriquecido opcional; los grupos completos agregan varias consultas."]}
     },
     {
@@ -446,13 +455,13 @@
       "invalidates": [],
       "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
        "params": {"path": [], "query": [{"name": "pagina", "type": "integer", "required": false, "default": 0, "minimum": 0}, {"name": "cantidad_registros", "type": "integer", "required": false, "default": 30, "minimum": 1, "maximum": 1000}, {"name": "id_cliente", "type": "integer", "required": true}, {"name": "id_sucursal", "type": "integer", "required": false}, {"name": "id_empleado", "type": "integer", "required": false}, {"name": "id_vendedor", "type": "integer", "required": false}, {"name": "tipo_documento", "type": "integer-list", "required": false}, {"name": "es_ingreso", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "fecha_desde", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "fecha_hasta", "type": "epoch-milliseconds", "required": false, "inclusive": true}]},
-       "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["producto", "cantidades", "totales", "impuestos", "costos", "fechas"]}], "example": {"grupos": ["producto", "cantidades", "totales", "impuestos", "costos", "fechas"]}},
+       "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["producto", "cantidades", "totales", "costos", "fechas"]}], "example": {"grupos": ["producto", "cantidades", "totales", "costos", "fechas"]}},
        "expectedCollection": "productos",
        "response": {"shape": "{ pagina: integer, productos: ProductoComprado[] }", "example": {"pagina": 0, "productos": []}},
-       "presets": [{"id": "customer-history", "title": "Productos comprados por cliente", "query": {"pagina": 0, "cantidad_registros": 100, "id_cliente": 1179, "tipo_documento": "1,9", "es_ingreso": 1}, "body": {"grupos": ["producto", "cantidades", "totales", "impuestos", "costos", "fechas"]}}],
+       "presets": [{"id": "customer-history", "title": "Productos comprados por cliente", "query": {"pagina": 0, "cantidad_registros": 100, "id_cliente": 1179, "tipo_documento": "1,9", "es_ingreso": 1}, "body": {"grupos": ["producto", "cantidades", "totales", "costos", "fechas"]}}],
       "errors": ["id_cliente es obligatorio.", "grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo."],
       "notes": ["Los resultados se consolidan por id_producto.", "Las transacciones anuladas se excluyen de forma predeterminada."],
-       "tryIt": {"enabled": true, "proxyOnly": true, "query": {"pagina": 0, "cantidad_registros": 30, "id_cliente": 1179}, "body": {"grupos": ["producto", "cantidades", "totales", "impuestos", "costos", "fechas"]}},
+        "tryIt": {"enabled": true, "proxyOnly": true, "query": {"pagina": 0, "cantidad_registros": 30, "id_cliente": 1179}, "body": {"grupos": ["producto", "cantidades", "totales", "costos", "fechas"]}},
       "cost": {"tier": "medium", "factors": ["Agregación por producto del detalle de transacciones."]}
     },
     {
@@ -465,8 +474,8 @@
       "cache": {"policy": "cache", "domain": "discounts", "ttlSeconds": 60, "tags": ["tenant:{empresa}:discounts", "tenant:{empresa}:transactions", "tenant:{empresa}:third-parties"]},
       "invalidates": [],
       "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
-        "params": {"path": [], "query": [{"name": "pagina", "type": "integer", "required": false, "default": 0, "minimum": 0}, {"name": "cantidad_registros", "type": "integer", "required": false, "default": 30, "minimum": 1, "maximum": 1000}, {"name": "nivel", "type": "string", "required": false, "default": "encabezado", "allowed": ["encabezado", "detalle"], "documentationHidden": true}, {"name": "id_cliente", "type": "integer", "required": false}, {"name": "id_empleado", "type": "integer", "required": false}, {"name": "id_vendedor", "type": "integer", "required": false}, {"name": "id_sucursal", "type": "integer", "required": false}, {"name": "tipo_documento", "type": "integer-list", "required": false}, {"name": "es_ingreso", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "es_nula", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "fecha_desde", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "fecha_hasta", "type": "epoch-milliseconds", "required": false, "inclusive": true}]},
-        "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["transaccion", "cliente", "empleado", "totales", "impuestos", "producto", "cantidades", "precios", "descuento"]}], "example": {"grupos": ["transaccion", "cliente", "totales"]}},
+         "params": {"path": [], "query": [{"name": "pagina", "type": "integer", "required": false, "default": 0, "minimum": 0}, {"name": "cantidad_registros", "type": "integer", "required": false, "default": 30, "minimum": 1, "maximum": 1000}, {"name": "id_cliente", "type": "integer", "required": false}, {"name": "id_empleado", "type": "integer", "required": false}, {"name": "id_vendedor", "type": "integer", "required": false}, {"name": "id_sucursal", "type": "integer", "required": false}, {"name": "tipo_documento", "type": "integer-list", "required": false}, {"name": "es_ingreso", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "es_nula", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "fecha_desde", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "fecha_hasta", "type": "epoch-milliseconds", "required": false, "inclusive": true}]},
+         "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["transaccion", "cliente", "empleado", "vendedor", "totales", "producto", "cantidades", "precios", "descuento"]}], "selectionRules": {"selectionKey": "grupos", "detailTriggers": ["producto", "cantidades", "precios"], "headerAllowed": ["transaccion", "cliente", "empleado", "vendedor", "totales"], "detailAllowed": ["transaccion", "cliente", "producto", "cantidades", "precios", "descuento", "totales"]}, "example": {"grupos": ["transaccion", "cliente", "totales"]}},
        "expectedCollection": "descuentos",
        "response": {"shape": "{ pagina: integer, descuentos: Descuento[] }", "example": {"pagina": 0, "descuentos": []}},
        "presets": [{"id": "header-discounts", "title": "Descuentos de factura", "query": {"pagina": 0, "cantidad_registros": 100, "es_ingreso": 1}, "body": {"grupos": ["transaccion", "cliente", "totales"]}}, {"id": "line-discounts", "title": "Descuentos de producto", "query": {"pagina": 0, "cantidad_registros": 100, "es_ingreso": 1}, "body": {"grupos": ["transaccion", "cliente", "producto", "cantidades", "precios", "descuento", "totales"]}}],
@@ -751,13 +760,13 @@
       "invalidates": [],
       "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
       "params": {"path": [], "query": [{"name": "pagina", "type": "integer", "required": false, "default": 0, "minimum": 0}, {"name": "cantidad_registros", "type": "integer", "required": false, "default": 30, "minimum": 1, "maximum": 1000}, {"name": "id_documento", "type": "integer", "required": false, "minimum": 1}, {"name": "n_documento", "type": "integer", "required": false}, {"name": "id_cliente", "type": "integer", "required": false}, {"name": "id_empleado", "type": "integer", "required": false}, {"name": "id_vendedor", "type": "integer", "required": false}, {"name": "id_sucursal", "type": "integer", "required": false}, {"name": "id_ruta_despacho", "type": "integer", "required": false}, {"name": "id_transacion", "type": "integer", "required": false}, {"name": "id_canal", "type": "integer", "required": false}, {"name": "es_facturado", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "es_facturado_manual", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "es_nula", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "es_activo", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "pago_realizado", "type": "integer", "required": false, "allowed": [0, 1]}, {"name": "tipo_documento", "type": "integer-list", "required": false}, {"name": "fecha_desde", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "fecha_hasta", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "fecha_documento_desde", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "fecha_documento_hasta", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "ultimo_id", "type": "integer", "required": false}, {"name": "ultima_fecha", "type": "epoch-milliseconds", "required": false}]},
-        "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"]}, {"key": "detalle", "allowed": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "presentacion", "configuracion", "producto_ampliado"]}], "example": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"]}},
+        "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"]}, {"key": "detalle", "allowed": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}], "example": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"]}},
       "expectedCollection": "documentos",
       "response": {"shape": "{ pagina: integer, cantidad: integer, documentos: Documento[] }", "example": {"pagina": 0, "cantidad": 0, "documentos": []}},
-         "presets": [{"id": "sales", "title": "Facturas activas", "query": {"es_facturado": 1, "es_nula": 0}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"], "detalle": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "presentacion", "configuracion", "producto_ampliado"]}}],
+         "presets": [{"id": "sales", "title": "Facturas activas", "query": {"es_facturado": 1, "es_nula": 0}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"], "detalle": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}}],
       "errors": ["Los grupos desconocidos, duplicados o vacíos se rechazan.", "Los filtros de fecha usan rangos inclusivos en epoch-milliseconds."],
       "notes": ["detalle es opcional y conserva el orden de los grupos solicitados.", "Las respuestas no exponen credenciales ni claves internas."],
-         "tryIt": {"enabled": true, "proxyOnly": true, "query": {"pagina": 0, "cantidad_registros": 30, "es_facturado": 1}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"], "detalle": ["codigos", "producto", "cantidades", "precios", "descuento", "impuestos", "totales", "presentacion", "configuracion", "producto_ampliado"]}},
+         "tryIt": {"enabled": true, "proxyOnly": true, "query": {"pagina": 0, "cantidad_registros": 30, "es_facturado": 1}, "body": {"grupos": ["codigos", "fechas", "sucursal", "cliente", "empleado", "vendedor", "totales", "bodegas", "ruta_despacho", "logistica", "estado", "documento", "nota"], "detalle": ["producto", "cantidades", "precios", "impuestos", "descuento", "totales"]}},
       "cost": {"tier": "high", "factors": ["Paginación de encabezados y detalle comercial opcional."]}
     },
     {
@@ -791,7 +800,7 @@
       "invalidates": [],
       "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
        "params": {"path": [], "query": [{"name": "pagina", "type": "integer", "required": false, "default": 0, "minimum": 0}, {"name": "cantidad_registros", "type": "integer", "required": false, "default": 30, "minimum": 1, "maximum": 1000}, {"name": "id_documento", "type": "integer", "required": false, "minimum": 1}, {"name": "id_cliente", "type": "integer", "required": false, "minimum": 1}, {"name": "id_empleado", "type": "integer", "required": false, "minimum": 1}, {"name": "id_vendedor", "type": "integer", "required": false, "minimum": 1}, {"name": "id_sucursal", "type": "integer", "required": false, "minimum": 1}, {"name": "tipo_documento", "type": "integer-list", "required": false}, {"name": "fecha_desde", "type": "epoch-milliseconds", "required": false, "inclusive": true}, {"name": "fecha_hasta", "type": "epoch-milliseconds", "required": false, "inclusive": true}]},
-        "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["documento", "cliente", "empleado", "vendedor", "producto", "cantidades", "precios", "descuento", "totales"]}], "example": {"grupos": ["documento", "cliente", "empleado", "vendedor", "totales"]}},
+         "body": {"required": true, "type": "object", "columns": [], "groups": [{"key": "grupos", "allowed": ["documento", "cliente", "empleado", "vendedor", "totales", "producto", "cantidades", "precios", "descuento"]}], "selectionRules": {"selectionKey": "grupos", "detailTriggers": ["producto", "cantidades", "precios"], "headerAllowed": ["documento", "cliente", "empleado", "vendedor", "totales"], "detailAllowed": ["documento", "cliente", "producto", "cantidades", "precios", "descuento", "totales"]}, "example": {"grupos": ["documento", "cliente", "empleado", "vendedor", "totales"]}},
       "expectedCollection": "descuentos",
       "response": {"shape": "{ pagina: integer, cantidad: integer, descuentos: DescuentoDocumento[] }", "example": {"pagina": 0, "cantidad": 0, "descuentos": []}},
          "presets": [{"id": "headers", "title": "Descuentos por documento", "query": {}, "body": {"grupos": ["documento", "cliente", "empleado", "vendedor", "producto", "cantidades", "precios", "descuento", "totales"]}}],

@@ -485,7 +485,7 @@ describe('canonical documentation registry', () => {
     }
 
     const banks = findEndpoint('buscarBancos');
-    expect(banks?.columns).toContain('config');
+    expect(banks?.columns).toEqual([]);
     expect(banks?.summary).toContain(
       'config se devuelve como arreglo u objeto cuando contiene JSON valido',
     );
@@ -494,7 +494,7 @@ describe('canonical documentation registry', () => {
     });
 
     const categories = findEndpoint('buscarCategorias');
-    expect(categories?.columns).toContain('sucursales');
+    expect(categories?.columns).toEqual([]);
     expect(categories?.responseExample).toMatchObject({
       categorias: [
         {
@@ -505,35 +505,7 @@ describe('canonical documentation registry', () => {
     });
 
     const employees = findEndpoint('buscarEmpleados');
-    expect(employees?.columns).toEqual([
-      'id_empleado',
-      'id_usuario_portal',
-      'nombre_completo',
-      'es_activo',
-      'fecha_registro',
-      'id_lista_precios',
-      'id_sucursal',
-      'id_consecutivo',
-      'sincroniazar_datos',
-      'tipo_usuario',
-      'comision',
-      'id_bodega',
-      'tipo_comision',
-      'modePosDefecto',
-      'comision_antes_iva',
-      'identificacion',
-      'mostrar_mesa',
-      'es_contador',
-      'solo_bodegas_sucursal',
-      'obligar_apertura_caja',
-      'cerrar_session_cierre',
-      'es_tienda',
-      'codigo_empleado',
-      'sucursal_adicional',
-      'cierra_caja',
-      'ventas_solo_credito',
-      'vendedor_multi_sucursal',
-    ]);
+    expect(employees?.columns).toEqual([]);
     expect(employees?.tryIt?.body).toEqual({
       grupos: [
         'empleado',
@@ -595,12 +567,14 @@ describe('canonical documentation registry', () => {
       return endpoint;
     });
 
-    expect(catalogEndpoints.every((endpoint) => endpoint.compatibility)).toBe(
-      true,
-    );
+    expect(
+      catalogEndpoints.every(
+        (endpoint) => endpoint.compatibility === undefined,
+      ),
+    ).toBe(true);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.compatibility),
-    ).toHaveLength(8);
+    ).toHaveLength(0);
     for (const endpoint of catalogEndpoints) {
       expect(endpoint.requestExample).toEqual(
         expect.objectContaining({ grupos: expect.any(Array) }),
@@ -636,30 +610,7 @@ describe('canonical documentation registry', () => {
 
   it('documents the complete consecutivos catalog without disabled columns', () => {
     const consecutivos = findEndpoint('buscarConsecutivos');
-    const columns = [
-      'id_consecutivo',
-      'nombre_consecutivo',
-      'prefijo',
-      'numero',
-      'alertar_numero',
-      'facturaOnline',
-      'es_activo',
-      'fecha_registro',
-      'resolucion',
-      'id_sucursal',
-      'nombre_sucursal',
-      'inicia',
-      'finaliza',
-      'es_factura_electronica',
-      'fecha_vencimiento',
-      'nRelleno',
-      'es_tirilla_pos',
-      'es_contingencia',
-      'predeterminado',
-      'multi_moneda',
-      'tipo_consecutivo',
-    ];
-    expect(consecutivos?.columns).toEqual(columns);
+    expect(consecutivos?.columns).toEqual([]);
     expect(consecutivos?.tryIt?.body).toEqual({
       grupos: [
         'consecutivo',
@@ -676,23 +627,7 @@ describe('canonical documentation registry', () => {
 
   it('documents the updated branch and payment-method contracts', () => {
     const branches = findEndpoint('buscarSucursales');
-    const requestedBranchColumns = [
-      'id_sucursal',
-      'nombre_sucursal',
-      'nota',
-      'simbolo_moneda',
-      'digitos_decimales',
-      'reondeoTotales',
-      'modificicar_precio_minimos_otras_sucursales',
-      'modificicar_descuento_maximo_otras_sucursales',
-      'actualizarPrecioVentaSucursales',
-      'activar_venta_compra_licores',
-      'actualizarPrecioCostoSucursales',
-      'vender_ip_estampilla',
-    ];
-    expect(branches?.columns).toEqual(
-      expect.arrayContaining(requestedBranchColumns),
-    );
+    expect(branches?.columns).toEqual([]);
     expect(branches?.tryIt?.body).toEqual({
       grupos: ['sucursal', 'pos', 'politicas_precios', 'licores', 'moneda'],
     });
@@ -700,7 +635,7 @@ describe('canonical documentation registry', () => {
     expect(branches?.notes.join(' ')).toContain('modificicar_');
 
     const paymentMethods = findEndpoint('buscarMediosPago');
-    expect(paymentMethods?.columns).toContain('config');
+    expect(paymentMethods?.columns).toEqual([]);
     expect(paymentMethods?.tryIt?.body).toEqual({
       grupos: ['medio_pago', 'sucursal', 'configuracion'],
     });

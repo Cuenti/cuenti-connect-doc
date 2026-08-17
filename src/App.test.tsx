@@ -151,7 +151,7 @@ describe('documentation application', () => {
     ).toBeVisible();
   });
 
-  it('shows functional descriptions for columns on hover and groups on focus', async () => {
+  it('shows functional descriptions for groups on focus', async () => {
     const user = userEvent.setup();
     render(<App />);
 
@@ -159,13 +159,10 @@ describe('documentation application', () => {
     await user.click(
       screen.getByRole('button', { name: /Buscar categorías/i }),
     );
-    const categoryColumn = screen.getByRole('button', { name: 'id_categoria' });
-    await user.hover(categoryColumn);
+    const categoryGroup = screen.getByRole('button', { name: 'categoria' });
+    categoryGroup.focus();
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
-      'Identificador único de la categoría.',
-    );
-    expect(await screen.findByRole('tooltip')).not.toHaveTextContent(
-      'Tipo: entero.',
+      'Categoría comercial asociada al producto.',
     );
 
     await openCategory(user, 'Restaurante');
