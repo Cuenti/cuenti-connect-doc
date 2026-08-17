@@ -5,13 +5,18 @@ import { type PageState, pageStateFromLocation } from '../../app/page-state';
 import {
   emptyCredentials,
   proxyBaseUrl,
+  serverApiPath,
   serverApiUrl,
   serverOrigin,
   tryItEnabled,
 } from '../../app/runtime';
 import { CatalogGuide } from '../../CatalogGuide';
 import { McpGuide } from '../../McpGuide';
-import type { EndpointCategory, EndpointDoc } from '../../model';
+import {
+  categories,
+  type EndpointCategory,
+  type EndpointDoc,
+} from '../../model';
 import { catalogGuideUrl, endpointUrl, mcpGuideUrl } from '../../navigation';
 import { registry } from '../../registry';
 import { type Credentials, hasRequiredCredentials } from '../../request';
@@ -24,7 +29,11 @@ import { PortalSidebar } from './PortalSidebar';
 import { PortalTopbar } from './PortalTopbar';
 
 const endpointIds = new Set(registry.endpoints.map((endpoint) => endpoint.id));
-const fallbackId = registry.endpoints[0]?.id ?? '';
+const fallbackId =
+  registry.endpoints.find((endpoint) => endpoint.category === categories[0])
+    ?.id ??
+  registry.endpoints[0]?.id ??
+  '';
 
 const PortalApp = () => {
   const [page, setPage] = useState<PageState>(() =>
@@ -179,9 +188,10 @@ const PortalApp = () => {
           ) : page.kind === 'mcp' ? (
             <McpGuide />
           ) : (
-            <EndpointDetail
-              endpoint={selectedEndpoint}
-              enabled={tryItEnabled}
+              <EndpointDetail
+                endpoint={selectedEndpoint}
+                routePath={serverApiPath(selectedEndpoint)}
+                enabled={tryItEnabled}
               proxyBaseUrl={proxyBaseUrl}
               curlBaseUrl={serverOrigin}
               credentials={credentials}

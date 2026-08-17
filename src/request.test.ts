@@ -16,6 +16,13 @@ const credentials = {
   employee: '42',
 };
 
+const findEndpoint = (id: string) =>
+  registry.endpoints.find(
+    (endpoint) =>
+      endpoint.id === id ||
+      (endpoint as { contractId?: string }).contractId === id,
+  );
+
 describe('URL selection', () => {
   it('reads and updates endpoint selection without removing other query values', () => {
     const location = {
@@ -49,9 +56,7 @@ describe('request builder', () => {
   });
 
   it('builds the catalog POST with global headers and a placeholder curl by default', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarProductosCatalogo',
-    );
+    const endpoint = findEndpoint('buscarProductosCatalogo');
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.path = { id_sucursal: '3', pagina: '0' };
@@ -63,7 +68,7 @@ describe('request builder', () => {
       draft,
       'https://proxy.example.test/',
     );
-    expect(request.url).toContain('/buscarProductos?');
+    expect(request.url).toContain('/api/v1/catalogo/productos/busquedas?');
     expect(request.url).toContain('nombre_producto=Cafe+molido');
     expect(request.init.headers).toBeInstanceOf(Headers);
     const headers = request.init.headers as Headers;
@@ -83,9 +88,7 @@ describe('request builder', () => {
   });
 
   it('includes configured credentials only when explicitly requested for curl', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarProductosCatalogo',
-    );
+    const endpoint = findEndpoint('buscarProductosCatalogo');
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.path = { id_sucursal: '3', pagina: '0' };
@@ -111,9 +114,7 @@ describe('request builder', () => {
   });
 
   it('builds an anonymous curl with exact Postman placeholders', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarProductosCatalogo',
-    );
+    const endpoint = findEndpoint('buscarProductosCatalogo');
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.path = { id_sucursal: '3', pagina: '0' };
@@ -128,23 +129,19 @@ describe('request builder', () => {
   });
 
   it('preserves Postman path variables instead of encoding documentary markers', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultarImpuestoCuenti',
-    );
+    const endpoint = findEndpoint('consultarImpuestoCuenti');
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.path = { id_impuesto: '<id_impuesto>' };
 
     const curl = buildCurl(endpoint, draft, 'https://proxy.example.test');
 
-    expect(curl).toContain('/consultarImpuestosCuenti/{{id_impuesto}}');
+    expect(curl).toContain('/api/v1/tributario/impuestos/{{id_impuesto}}');
     expect(curl).not.toMatch(/%3C|%3E|%7B|%7D/i);
   });
 
   it('keeps URL encoding enabled for real request path values', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'consultarImpuestoCuenti',
-    );
+    const endpoint = findEndpoint('consultarImpuestoCuenti');
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.path = { id_impuesto: 'branch/with space' };
@@ -153,14 +150,12 @@ describe('request builder', () => {
     const request = buildRequest(endpoint, draft, 'https://proxy.example.test');
 
     expect(request.url).toContain(
-      '/consultarImpuestosCuenti/branch%2Fwith%20space',
+      '/api/v1/tributario/impuestos/branch%2Fwith%20space',
     );
   });
 
   it('builds an authenticated curl from in-memory credentials', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarProductosCatalogo',
-    );
+    const endpoint = findEndpoint('buscarProductosCatalogo');
     if (!endpoint) throw new Error('Product endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.path = { id_sucursal: '3', pagina: '0' };
@@ -174,9 +169,7 @@ describe('request builder', () => {
   });
 
   it('builds a POST with global headers and exactly one Bearer prefix', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarCategorias',
-    );
+    const endpoint = findEndpoint('buscarCategorias');
     if (!endpoint) throw new Error('Category endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.credentials = credentials;
@@ -193,9 +186,7 @@ describe('request builder', () => {
   });
 
   it('rejects global header values that Envoy would reject', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarCategorias',
-    );
+    const endpoint = findEndpoint('buscarCategorias');
     if (!endpoint) throw new Error('Category endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.credentials = {
@@ -211,9 +202,7 @@ describe('request builder', () => {
   });
 
   it('redacts secret-looking body fields from curl snippets', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'guardarTercero',
-    );
+    const endpoint = findEndpoint('guardarTercero');
     if (!endpoint) throw new Error('Third-party endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.credentials = credentials;
@@ -231,23 +220,17 @@ describe('request builder', () => {
   });
 
   it('rejects missing required filters and invalid JSON', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarCartera',
-    );
+    const endpoint = findEndpoint('buscarCartera');
     if (!endpoint) throw new Error('Accounts endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.query.es_ingreso = '';
     draft.body = '{broken';
     draft.credentials = credentials;
-    expect(() => buildRequest(endpoint, draft)).toThrow(
-      /es_ingreso.*JSON válido/,
-    );
+    expect(() => buildRequest(endpoint, draft)).toThrow(/JSON válido/);
   });
 
   it('keeps the Try It body editor open to empty and column projections', () => {
-    const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarCategorias',
-    );
+    const endpoint = findEndpoint('buscarCategorias');
     if (!endpoint) throw new Error('Category endpoint was not found.');
     const draft = defaultDraft(endpoint);
     draft.credentials = credentials;

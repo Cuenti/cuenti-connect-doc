@@ -20,20 +20,2232 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Productos e inventario | `buscarProductosCatalogo`, `grabarMovimientoArr` |
-| Categorías e impuestos | `buscarCategorias`, `actualizarImpuestosLicores`, `consultarImpuestoCuenti` |
-| Terceros | `buscarTercero`, `guardarTercero` |
-| Maestros | `buscarImpuestos`, `buscarBancos`, `buscarMediosPago`, `buscarConsecutivos`, `buscarSucursales`, `buscarEmpleados`, `consultarMarcasActivas`, `consultarMarcaPorId` |
-| Facturas e historiales | `buscarTransacciones`, `buscarProductosComprados`, `buscarDescuentos`, `buscarConsolidado`, `grabarDocumentoSimple` |
-| Cartera | `buscarCartera`, `buscarResumenTerceros` |
-| Comandas | `obtenerComandas`, `platosEliminados` |
-| Documentos comerciales | `buscarDocumentosComerciales`, `buscarProductosDocumentosComerciales`, `buscarDescuentosDocumentosComerciales`, `buscarConsolidadoDocumentosComerciales` |
+| Facturas e historiales | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `ventas-facturas`, `ventas-compras-gastos`, `ventas-remisiones`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas` |
+| Documentos comerciales | `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-despachos-agrupados-busquedas`, `operativas-ordenes-produccion-busquedas`, `operativas-devoluciones-ajustes-busquedas`, `operativas-traslados-internos-busquedas`, `operativas-ordenes-compra-busquedas`, `operativas-recepciones-mercancia-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
+| Productos e inventario | `catalogo-productos-busquedas`, `inventario-conteos` |
+| Categorías e impuestos | `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `tributario-impuesto-por-id` |
+| Maestros | `catalogo-marcas`, `catalogo-marca-por-id`, `tributario-impuestos-busquedas`, `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `organizacion-sucursales-busquedas`, `organizacion-empleados-busquedas`, `facturacion-consecutivos-busquedas` |
+| Terceros | `terceros-busquedas`, `terceros-crear`, `terceros-actualizar` |
+| Cartera | `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
+| Comandas | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas` |
+
+## Facturas e historiales
+
+### `ventas-facturas-busquedas`: Buscar transacciones
+
+**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/facturas/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `n_transacion` | No | número entero |
+| `n_factura` | No | texto |
+| `prefijo` | No | texto |
+| `numeracion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `es_ingreso` | No | `0`, `1` |
+| `es_factura` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "es_ingreso": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "impuestos",
+      "estado",
+      "qr",
+      "nota",
+      "documento",
+      "moneda",
+      "estado_electronico",
+      "pagos",
+      "retenciones",
+      "notas_credito",
+      "facturacion_electronica",
+      "consecutivo",
+      "impresion",
+      "cartera_cliente",
+      "empresa",
+      "sucursal_configuracion",
+      "taller",
+      "acta_entrega"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "costo",
+      "nota",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado",
+      "seriales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "transacciones",
+  "resultados": []
+}
+```
+
+- Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- detalle.codigos contiene id_detalle_transacion, no id_transacion.
+- El grupo impresion devuelve configuración y no genera un PDF.
+- Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
+- La paginación está limitada a 1..1000 registros.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+
+### `ventas-planes-separe-busquedas`: Buscar transacciones
+
+**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/planes-separe/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `n_transacion` | No | número entero |
+| `n_factura` | No | texto |
+| `prefijo` | No | texto |
+| `numeracion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `es_ingreso` | No | `0`, `1` |
+| `es_factura` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "es_ingreso": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "impuestos",
+      "estado",
+      "qr",
+      "nota",
+      "documento",
+      "moneda",
+      "estado_electronico",
+      "pagos",
+      "retenciones",
+      "notas_credito",
+      "facturacion_electronica",
+      "consecutivo",
+      "impresion",
+      "cartera_cliente",
+      "empresa",
+      "sucursal_configuracion",
+      "taller",
+      "acta_entrega"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "costo",
+      "nota",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado",
+      "seriales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "transacciones",
+  "resultados": []
+}
+```
+
+- Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- detalle.codigos contiene id_detalle_transacion, no id_transacion.
+- El grupo impresion devuelve configuración y no genera un PDF.
+- Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
+- La paginación está limitada a 1..1000 registros.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+
+### `ventas-otros-ingresos-busquedas`: Buscar transacciones
+
+**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/otros-ingresos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `n_transacion` | No | número entero |
+| `n_factura` | No | texto |
+| `prefijo` | No | texto |
+| `numeracion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `es_ingreso` | No | `0`, `1` |
+| `es_factura` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "es_ingreso": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "impuestos",
+      "estado",
+      "qr",
+      "nota",
+      "documento",
+      "moneda",
+      "estado_electronico",
+      "pagos",
+      "retenciones",
+      "notas_credito",
+      "facturacion_electronica",
+      "consecutivo",
+      "impresion",
+      "cartera_cliente",
+      "empresa",
+      "sucursal_configuracion",
+      "taller",
+      "acta_entrega"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "costo",
+      "nota",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado",
+      "seriales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "transacciones",
+  "resultados": []
+}
+```
+
+- Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- detalle.codigos contiene id_detalle_transacion, no id_transacion.
+- El grupo impresion devuelve configuración y no genera un PDF.
+- Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
+- La paginación está limitada a 1..1000 registros.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+
+### `ventas-compras-gastos-busquedas`: Buscar transacciones
+
+**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/compras-gastos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `n_transacion` | No | número entero |
+| `n_factura` | No | texto |
+| `prefijo` | No | texto |
+| `numeracion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `es_ingreso` | No | `0`, `1` |
+| `es_factura` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "es_ingreso": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "impuestos",
+      "estado",
+      "qr",
+      "nota",
+      "documento",
+      "moneda",
+      "estado_electronico",
+      "pagos",
+      "retenciones",
+      "notas_credito",
+      "facturacion_electronica",
+      "consecutivo",
+      "impresion",
+      "cartera_cliente",
+      "empresa",
+      "sucursal_configuracion",
+      "taller",
+      "acta_entrega"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "costo",
+      "nota",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado",
+      "seriales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "transacciones",
+  "resultados": []
+}
+```
+
+- Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- detalle.codigos contiene id_detalle_transacion, no id_transacion.
+- El grupo impresion devuelve configuración y no genera un PDF.
+- Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
+- La paginación está limitada a 1..1000 registros.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+
+### `ventas-remisiones-busquedas`: Buscar transacciones
+
+**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/remisiones/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `n_transacion` | No | número entero |
+| `n_factura` | No | texto |
+| `prefijo` | No | texto |
+| `numeracion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `es_ingreso` | No | `0`, `1` |
+| `es_factura` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "es_ingreso": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "impuestos",
+      "estado",
+      "qr",
+      "nota",
+      "documento",
+      "moneda",
+      "estado_electronico",
+      "pagos",
+      "retenciones",
+      "notas_credito",
+      "facturacion_electronica",
+      "consecutivo",
+      "impresion",
+      "cartera_cliente",
+      "empresa",
+      "sucursal_configuracion",
+      "taller",
+      "acta_entrega"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "costo",
+      "nota",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado",
+      "seriales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "transacciones",
+  "resultados": []
+}
+```
+
+- Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- detalle.codigos contiene id_detalle_transacion, no id_transacion.
+- El grupo impresion devuelve configuración y no genera un PDF.
+- Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
+- La paginación está limitada a 1..1000 registros.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+
+### `ventas-facturas`: Crear factura, compra, gasto o remisión
+
+**Para qué sirve:** Crear factura, compra, gasto o remisión.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/facturas`.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Datos que acepta la acción**
+
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
+| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
+| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
+| `nota` | Sí | texto | Nota general del documento. |
+| `observacion` | Sí | texto | Observación general del documento. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
+| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
+| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
+| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
+| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
+| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
+| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
+| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
+| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
+| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
+
+- Una solicitud contiene un solo documento.
+- route-fixed-selector 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
+- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
+- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
+- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
+- Para gasto, route-fixed-selector=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "type_match_producto": 1,
+    "id_consecutivo": 3,
+    "codigo_unico": "001",
+    "nota": "",
+    "observacion": "",
+    "id_sucursal": 1,
+    "id_bodega": 1,
+    "id_vendedor": 1,
+    "id_empleado": 1,
+    "objClienteMini": {
+      "id_cliente": 1179,
+      "nombre_cliente": "Cliente de ejemplo",
+      "identificacion": "",
+      "telefono1": "",
+      "telefono2": "",
+      "email1": "",
+      "direccion": "",
+      "id_tipo_persona": 1,
+      "es_cliente": 1,
+      "es_proveedor": 0,
+      "departamento": "",
+      "pais": "",
+      "ciudad": "",
+      "zona": ""
+    },
+    "objDetalle": [
+      {
+        "cantidad": 1,
+        "descripcion": "Producto",
+        "total": 10000,
+        "cambiar_precio_compra": false,
+        "id_producto": 25
+      }
+    ],
+    "lstPagos": []
+  }
+}
+```
+
+**Respuesta esperada:** Mensaje { type: integer, message: string, retorno: string, id_transacion: integer, url_interna: string, url_externa: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "save",
+  "retorno": "opaque-value",
+  "id_transacion": 511903,
+  "url_interna": "...",
+  "url_externa": "..."
+}
+```
+
+- lstPagos vacío representa una operación a crédito.
+- Los campos sin información de objClienteMini se envían como string vacío.
+- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
+- codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
+- No mezcle detalles de inventario y gasto en el mismo documento.
+- retorno es opaco y no debe analizarse.
+- No se reintentan automáticamente documentos sin idempotencia comprobada.
+
+**Peticiones habituales:** Factura de inventario.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
+### `ventas-compras-gastos`: Crear factura, compra, gasto o remisión
+
+**Para qué sirve:** Crear factura, compra, gasto o remisión.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/compras-gastos`.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Datos que acepta la acción**
+
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
+| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
+| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
+| `nota` | Sí | texto | Nota general del documento. |
+| `observacion` | Sí | texto | Observación general del documento. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
+| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
+| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
+| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
+| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
+| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
+| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
+| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
+| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
+| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
+
+- Una solicitud contiene un solo documento.
+- route-fixed-selector 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
+- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
+- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
+- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
+- Para gasto, route-fixed-selector=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "type_match_producto": 1,
+    "id_consecutivo": 3,
+    "codigo_unico": "001",
+    "nota": "",
+    "observacion": "",
+    "id_sucursal": 1,
+    "id_bodega": 1,
+    "id_vendedor": 1,
+    "id_empleado": 1,
+    "objClienteMini": {
+      "id_cliente": 1179,
+      "nombre_cliente": "Cliente de ejemplo",
+      "identificacion": "",
+      "telefono1": "",
+      "telefono2": "",
+      "email1": "",
+      "direccion": "",
+      "id_tipo_persona": 1,
+      "es_cliente": 1,
+      "es_proveedor": 0,
+      "departamento": "",
+      "pais": "",
+      "ciudad": "",
+      "zona": ""
+    },
+    "objDetalle": [
+      {
+        "cantidad": 1,
+        "descripcion": "Producto",
+        "total": 10000,
+        "cambiar_precio_compra": false,
+        "id_producto": 25
+      }
+    ],
+    "lstPagos": []
+  }
+}
+```
+
+**Respuesta esperada:** Mensaje { type: integer, message: string, retorno: string, id_transacion: integer, url_interna: string, url_externa: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "save",
+  "retorno": "opaque-value",
+  "id_transacion": 511903,
+  "url_interna": "...",
+  "url_externa": "..."
+}
+```
+
+- lstPagos vacío representa una operación a crédito.
+- Los campos sin información de objClienteMini se envían como string vacío.
+- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
+- codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
+- No mezcle detalles de inventario y gasto en el mismo documento.
+- retorno es opaco y no debe analizarse.
+- No se reintentan automáticamente documentos sin idempotencia comprobada.
+
+**Peticiones habituales:** Factura de inventario.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
+### `ventas-remisiones`: Crear factura, compra, gasto o remisión
+
+**Para qué sirve:** Crear factura, compra, gasto o remisión.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/remisiones`.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Datos que acepta la acción**
+
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
+| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
+| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
+| `nota` | Sí | texto | Nota general del documento. |
+| `observacion` | Sí | texto | Observación general del documento. |
+| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
+| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
+| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
+| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
+| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
+| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
+| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
+| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
+| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
+| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
+| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
+
+- Una solicitud contiene un solo documento.
+- route-fixed-selector 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
+- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
+- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
+- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
+- Para gasto, route-fixed-selector=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "type_match_producto": 1,
+    "id_consecutivo": 3,
+    "codigo_unico": "001",
+    "nota": "",
+    "observacion": "",
+    "id_sucursal": 1,
+    "id_bodega": 1,
+    "id_vendedor": 1,
+    "id_empleado": 1,
+    "objClienteMini": {
+      "id_cliente": 1179,
+      "nombre_cliente": "Cliente de ejemplo",
+      "identificacion": "",
+      "telefono1": "",
+      "telefono2": "",
+      "email1": "",
+      "direccion": "",
+      "id_tipo_persona": 1,
+      "es_cliente": 1,
+      "es_proveedor": 0,
+      "departamento": "",
+      "pais": "",
+      "ciudad": "",
+      "zona": ""
+    },
+    "objDetalle": [
+      {
+        "cantidad": 1,
+        "descripcion": "Producto",
+        "total": 10000,
+        "cambiar_precio_compra": false,
+        "id_producto": 25
+      }
+    ],
+    "lstPagos": []
+  }
+}
+```
+
+**Respuesta esperada:** Mensaje { type: integer, message: string, retorno: string, id_transacion: integer, url_interna: string, url_externa: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "save",
+  "retorno": "opaque-value",
+  "id_transacion": 511903,
+  "url_interna": "...",
+  "url_externa": "..."
+}
+```
+
+- lstPagos vacío representa una operación a crédito.
+- Los campos sin información de objClienteMini se envían como string vacío.
+- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
+- codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
+- No mezcle detalles de inventario y gasto en el mismo documento.
+- retorno es opaco y no debe analizarse.
+- No se reintentan automáticamente documentos sin idempotencia comprobada.
+
+**Peticiones habituales:** Factura de inventario.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
+### `ventas-productos-comprados-busquedas`: Buscar productos comprados
+
+**Para qué sirve:** Buscar productos comprados. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/productos-comprados/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_cliente` | Sí | número entero |
+| `id_sucursal` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `es_ingreso` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `cantidades`, `totales`, `impuestos`, `costos`, `fechas`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "id_cliente": 1179,
+  "tipo_documento": "1,9",
+  "es_ingreso": 1,
+  "body": {
+    "grupos": [
+      "producto",
+      "cantidades",
+      "totales",
+      "impuestos",
+      "costos",
+      "fechas"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'productos', resultados: ProductoComprado[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "productos",
+  "resultados": []
+}
+```
+
+- Los resultados se consolidan por id_producto.
+- Las transacciones anuladas se excluyen de forma predeterminada.
+- id_cliente es obligatorio.
+- grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo.
+
+**Peticiones habituales:** Productos comprados por cliente.
+
+### `ventas-descuentos-busquedas`: Buscar descuentos
+
+**Para qué sirve:** Buscar descuentos. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/descuentos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `nivel` | No | `encabezado`, `detalle`; valor habitual `encabezado` |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `es_ingreso` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos` cuando `nivel=encabezado`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `empleado`, `totales`, `impuestos`.
+- `grupos` cuando `nivel=detalle`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "nivel": "encabezado",
+  "es_ingreso": 1,
+  "body": {
+    "grupos": [
+      "transaccion",
+      "cliente",
+      "empleado",
+      "totales",
+      "impuestos"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'descuentos', resultados: Descuento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "descuentos",
+  "resultados": []
+}
+```
+
+- Las transacciones anuladas se excluyen de forma predeterminada.
+- Los dos niveles son configuraciones predefinidas de un solo punto de acceso, no rutas independientes.
+- nivel debe ser encabezado o detalle.
+- Los grupos seleccionados deben pertenecer al nivel seleccionado.
+
+**Peticiones habituales:** Descuentos de factura; Descuentos de producto.
+
+### `ventas-consolidados-busquedas`: Buscar historial consolidado
+
+**Para qué sirve:** Buscar historial consolidado. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/ventas/consolidados/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `agrupar_por` | No | `cliente`, `empleado`, `vendedor`; valor habitual `cliente` |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `es_ingreso` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `agrupacion`, `cantidad`, `totales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "agrupar_por": "cliente",
+  "es_ingreso": 1,
+  "body": {
+    "grupos": [
+      "agrupacion",
+      "cantidad",
+      "totales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'consolidado', resultados: FilaConsolidada[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "consolidado",
+  "resultados": []
+}
+```
+
+- Las transacciones anuladas se excluyen de forma predeterminada, salvo que se proporcione es_nula=1.
+- agrupar_por debe ser cliente, empleado o vendedor.
+- grupos no debe estar vacío y debe contener valores únicos.
+
+**Peticiones habituales:** Por cliente; Por empleado; Por vendedor.
+
+## Documentos comerciales
+
+### `operativas-pedidos-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/pedidos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-cotizaciones-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/cotizaciones/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-despachos-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/despachos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-despachos-agrupados-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/despachos-agrupados/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-ordenes-produccion-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/ordenes-produccion/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-devoluciones-ajustes-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/devoluciones-ajustes/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-traslados-internos-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/traslados-internos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-ordenes-compra-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/ordenes-compra/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-recepciones-mercancia-busquedas`: Buscar documentos comerciales
+
+**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/recepciones-mercancia/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `n_documento` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_empleado` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `id_ruta_despacho` | No | número entero |
+| `id_transacion` | No | número entero |
+| `id_canal` | No | número entero |
+| `es_facturado` | No | `0`, `1` |
+| `es_facturado_manual` | No | `0`, `1` |
+| `es_nula` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1` |
+| `pago_realizado` | No | `0`, `1` |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
+| `ultimo_id` | No | número entero |
+| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "es_facturado": 1,
+  "es_nula": 0,
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "codigos",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "impuestos",
+      "totales",
+      "presentacion",
+      "configuracion",
+      "producto_ampliado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "documentos": []
+}
+```
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Las respuestas no exponen credenciales ni claves internas.
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Peticiones habituales:** Facturas activas.
+
+### `operativas-productos-busquedas`: Buscar productos de documentos comerciales
+
+**Para qué sirve:** Buscar productos de documentos comerciales. Su resultado principal es `productos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/productos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_cliente` | No | número entero; mínimo `1` |
+| `id_vendedor` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `cantidades`, `totales`, `costos`, `fechas`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_cliente": 1179,
+  "body": {
+    "grupos": [
+      "producto",
+      "cantidades",
+      "totales",
+      "costos",
+      "fechas"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, productos: ProductoDocumento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "productos": []
+}
+```
+
+- Los productos se agrupan por id_producto y respetan la paginación.
+- No se permite mezclar políticas de buscarProductosComprados.
+- Debe especificar id_cliente o id_vendedor.
+- Los filtros de fecha son inclusivos y usan epoch-milliseconds.
+
+**Peticiones habituales:** Productos por cliente.
+
+### `operativas-descuentos-busquedas`: Buscar descuentos de documentos comerciales
+
+**Para qué sirve:** Buscar descuentos de documentos comerciales. Su resultado principal es `descuentos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/descuentos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_documento` | No | número entero; mínimo `1` |
+| `id_cliente` | No | número entero; mínimo `1` |
+| `id_empleado` | No | número entero; mínimo `1` |
+| `id_vendedor` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `documento`, `cliente`, `empleado`, `vendedor`, `producto`, `cantidades`, `precios`, `descuento`, `totales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "grupos": [
+      "documento",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "producto",
+      "cantidades",
+      "precios",
+      "descuento",
+      "totales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, descuentos: DescuentoDocumento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "descuentos": []
+}
+```
+
+- Los grupos producto, cantidades o precios solicitan el modo detalle.
+- Los resultados solo incluyen documentos con descuentos.
+- Los grupos incompatibles con el detalle solicitado se rechazan.
+- Los filtros de fecha son inclusivos y usan epoch-milliseconds.
+
+**Peticiones habituales:** Descuentos por documento.
+
+### `operativas-consolidados-busquedas`: Consolidar documentos comerciales
+
+**Para qué sirve:** Consolidar documentos comerciales. Su resultado principal es `consolidado`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/consolidados/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `agrupar_por` | No | `cliente`, `empleado`, `vendedor`, `sucursal`; valor habitual `cliente` |
+| `id_cliente` | No | número entero; mínimo `1` |
+| `id_empleado` | No | número entero; mínimo `1` |
+| `id_vendedor` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `agrupacion`, `cantidad`, `totales`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "agrupar_por": "cliente",
+  "body": {
+    "grupos": [
+      "agrupacion",
+      "cantidad",
+      "totales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, consolidado: ConsolidadoDocumento[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "consolidado": []
+}
+```
+
+- El consolidado agrupa documentos por la dimensión seleccionada.
+- Los rangos de fecha incluyen ambos extremos y usan epoch-milliseconds.
+- agrupar_por debe ser cliente, empleado, vendedor o sucursal.
+- Los grupos deben ser únicos y no vacíos.
+
+**Peticiones habituales:** Consolidado por cliente.
 
 ## Productos e inventario
 
-### `buscarProductosCatalogo`: Buscar productos del catálogo
+### `catalogo-productos-busquedas`: Buscar productos del catálogo
 
 **Para qué sirve:** Buscar productos del catálogo. Su resultado principal es `productos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/catalogo/productos/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -177,9 +2389,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Peticiones habituales:** Productos activos con inventario.
 
-### `grabarMovimientoArr`: Registrar conteo de inventario
+### `inventario-conteos`: Registrar conteo de inventario
 
 **Para qué sirve:** Registrar conteo de inventario.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/inventario/conteos`.
 
 **Tipo:** Acción que modifica datos.
 
@@ -257,9 +2473,13 @@ Envía una lista con entre 1 y 1000 elementos.
 
 ## Categorías e impuestos
 
-### `buscarCategorias`: Buscar categorías
+### `catalogo-categorias-busquedas`: Buscar categorías
 
 **Para qué sirve:** Buscar categorías. Su resultado principal es `categorias`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/catalogo/categorias/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -360,9 +2580,13 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Peticiones habituales:** Árbol de categorías activas.
 
-### `actualizarImpuestosLicores`: Actualizar impuestos de licores
+### `catalogo-productos-impuestos-licores`: Actualizar impuestos de licores
 
 **Para qué sirve:** Actualizar impuestos de licores.
+
+**Método:** `PATCH`.
+
+**Ruta:** `/api/v1/catalogo/productos/impuestos-licores`.
 
 **Tipo:** Acción que modifica datos.
 
@@ -416,9 +2640,13 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
-### `consultarImpuestoCuenti`: Consultar impuesto por ID
+### `tributario-impuesto-por-id`: Consultar impuesto por ID
 
 **Para qué sirve:** Consultar impuesto por ID.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/tributario/impuestos/{id_impuesto}`.
 
 **Tipo:** Consulta.
 
@@ -457,11 +2685,49 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Peticiones habituales:** Impuesto por ID.
 
-## Terceros
+## Maestros
 
-### `buscarTercero`: Buscar terceros
+### `catalogo-marcas`: Consultar marcas activas
 
-**Para qué sirve:** Buscar terceros. Su resultado principal es `terceros`.
+**Para qué sirve:** Consultar marcas activas.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/catalogo/marcas`.
+
+**Tipo:** Consulta.
+
+**Filtros:** no requiere filtros adicionales.
+
+**Respuesta esperada:** Marca[].
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "precio_unidad": -1,
+    "id_marca": 2,
+    "nombre_marca": "Marca de ejemplo",
+    "fecha_registro": 1735689600000,
+    "es_activo": 1,
+    "error": ""
+  }
+]
+```
+
+- precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
+- route-fixed-selector debe ser 1.
+
+**Peticiones habituales:** Marcas activas.
+
+### `catalogo-marca-por-id`: Consultar marca por ID
+
+**Para qué sirve:** Consultar marca por ID.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/catalogo/marcas/{id_marca}`.
 
 **Tipo:** Consulta.
 
@@ -469,257 +2735,45 @@ Envía una lista con entre 1 y 1000 elementos.
 
 | Dato | Obligatorio | Valores que acepta |
 | --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | Sí | número entero; mínimo `1`; máximo `1000` |
-| `nombre` | No | texto; coincidencia parcial |
-| `nit` | No | texto; coincidencia exacta |
-| `telefono` | No | texto; coincidencia parcial en tres campos de teléfono |
-| `correo` | No | texto; coincidencia parcial en dos campos de correo |
-| `tipo_tercero` | No | `1` (cliente), `2` (proveedor), `3` (ambos) |
-
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_cliente` | Identificador del tercero consultado. |
-| `nombre_cliente` | Nombre completo o razón social principal. |
-| `identificacion` | Documento de identidad o identificación tributaria. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de creación del tercero. |
-| `fecha_actualizacion` | Fecha de la última actualización registrada. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento de una persona natural. |
-| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Fecha de vencimiento del registro de turismo. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Horario asociado al tercero; la estructura depende del dato almacenado. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
-| `tipo_identificacion` | Datos relacionados del tipo de identificación. |
-| `tipo_persona` | Datos relacionados de la clasificación de persona. |
-| `estado_civil` | Datos relacionados del estado civil. |
-| `estrato_social` | Datos relacionados del estrato social. |
+| `id_marca` | Sí | número entero; mínimo `1` |
 
 **Ejemplo de argumentos:**
 
 ```json
 {
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "tipo_tercero": 1,
-  "body": {
-    "columnas": [
-      "id_cliente",
-      "nombre_cliente",
-      "identificacion",
-      "telefonos",
-      "correos"
-    ]
-  }
+  "id_marca": 2
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, terceros: Tercero[] }.
+**Respuesta esperada:** Marca[].
 
 **Ejemplo de respuesta:**
 
 ```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "terceros": []
-}
-```
-
-- telefonos y correos se proyectan como arreglos; las columnas de relaciones se proyectan como objetos.
-- No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché.
-- cantidad_registros es obligatorio según el contrato actual del servidor.
-- El cuerpo debe contener únicamente un arreglo columnas no vacío y sin duplicados.
-- Se rechazan las columnas desconocidas.
-
-**Peticiones habituales:** Clientes.
-
-### `guardarTercero`: Guardar tercero
-
-**Para qué sirve:** Guardar tercero.
-
-**Tipo:** Acción que modifica datos.
-
-**Filtros:** no requiere filtros adicionales.
-
-**Datos que acepta la acción**
-
-| Dato | Significado |
-| --- | --- |
-| `id_cliente` | Use -1 para crear y un ID positivo para actualizar. |
-| `nombre_cliente` | Nombre completo o razón social del tercero. |
-| `id_tipo_persona` | Clasificación de persona requerida en creación. |
-| `identificacion` | Documento requerido en creación. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_estado_civil` | Identificador del estado civil seleccionado. |
-| `id_estrato_social` | Identificador del estrato social seleccionado. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
-| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
-
-Para crear: id_cliente=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
-Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "id_cliente": -1,
-    "nombre_cliente": "Tercero de ejemplo",
-    "identificacion": "<id-documento>",
-    "id_tipo_persona": 1,
-    "es_cliente": 1,
-    "telefonos": [
-      "<teléfono>"
-    ],
-    "correos": [
-      "<correo>"
-    ]
+[
+  {
+    "precio_unidad": -1,
+    "id_marca": 2,
+    "nombre_marca": "Marca de ejemplo",
+    "fecha_registro": 1735689600000,
+    "es_activo": 1,
+    "error": ""
   }
-}
+]
 ```
 
-**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+- precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
+- id_marca debe ser mayor que cero.
 
-**Ejemplo de respuesta:**
+**Peticiones habituales:** Marca por ID.
 
-```json
-{
-  "message": "guardar",
-  "type": 1,
-  "retorno": "<id_cliente>"
-}
-```
-
-- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir id_cliente no crea; id_cliente=-1 crea.
-- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
-- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
-- id_cliente es obligatorio: -1 crea y un valor positivo actualiza.
-- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
-- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
-
-**Peticiones habituales:** Crear; Actualización parcial.
-
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-
-## Maestros
-
-### `buscarImpuestos`: Buscar impuestos
+### `tributario-impuestos-busquedas`: Buscar impuestos
 
 **Para qué sirve:** Buscar impuestos. Su resultado principal es `impuestos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/tributario/impuestos/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -800,9 +2854,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 
 **Peticiones habituales:** Impuestos activos.
 
-### `buscarBancos`: Buscar bancos
+### `finanzas-bancos-busquedas`: Buscar bancos
 
 **Para qué sirve:** Buscar bancos. Su resultado principal es `bancos`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/bancos/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -894,9 +2952,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 
 **Peticiones habituales:** Bancos activos.
 
-### `buscarMediosPago`: Buscar medios de pago
+### `finanzas-medios-pago-busquedas`: Buscar medios de pago
 
 **Para qué sirve:** Buscar medios de pago. Su resultado principal es `medios_pago`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/medios-pago/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -977,99 +3039,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 
 **Peticiones habituales:** Medios de pago activos con configuracion.
 
-### `buscarConsecutivos`: Buscar consecutivos de documentos
-
-**Para qué sirve:** Buscar consecutivos de documentos. Su resultado principal es `consecutivos`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_consecutivo` | No | número entero; mínimo `1` |
-| `id_sucursal` | No | número entero; mínimo `1` |
-| `nombre_consecutivo` | No | texto; coincidencia parcial |
-| `prefijo` | No | texto; coincidencia exacta |
-| `resolucion` | No | texto; coincidencia parcial |
-| `tipo_consecutivo` | No | número entero |
-| `es_factura_electronica` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1`; valor habitual `1` |
-
-**Información que puedes pedir en `columnas`**
-
-| Columna | Significado |
-| --- | --- |
-| `id_consecutivo` | Identificador de la numeración documental. |
-| `nombre_consecutivo` | Nombre administrativo del consecutivo. |
-| `prefijo` | Prefijo de la numeración visible. |
-| `numero` | Número actual o siguiente según la regla del módulo; consultar no lo incrementa. |
-| `alertar_numero` | Umbral para alertar proximidad al agotamiento de la numeración. |
-| `facturaOnline` | Indica habilitación de facturación en línea. |
-| `es_activo` | Estado operativo del consecutivo. |
-| `fecha_registro` | Momento de creación. |
-| `resolucion` | Resolución que autoriza la numeración. |
-| `id_sucursal` | Sucursal a la que pertenece. |
-| `nombre_sucursal` | Nombre visible de la sucursal. |
-| `inicia` | Primer número autorizado del rango. |
-| `finaliza` | Último número autorizado del rango. |
-| `es_factura_electronica` | Indica uso para factura electrónica. |
-| `fecha_vencimiento` | Vencimiento de la resolución o autorización. |
-| `nRelleno` | Longitud o cantidad de caracteres de relleno. |
-| `es_tirilla_pos` | Indica numeración para tirilla POS. |
-| `es_contingencia` | Indica numeración destinada a contingencia. |
-| `predeterminado` | Marca el consecutivo propuesto por defecto. |
-| `multi_moneda` | Permite documentos con configuración multimoneda. |
-| `tipo_consecutivo` | Tipo documental asociado al consecutivo. |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `consecutivo`, `factura_electronica`, `rangos`, `sucursal`, `configuracion`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "body": {
-    "grupos": [
-      "consecutivo",
-      "factura_electronica",
-      "rangos",
-      "sucursal",
-      "configuracion"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, consecutivos: object[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "consecutivos": []
-}
-```
-
-- Este punto de acceso consulta la configuracion de consecutivos; no reserva ni incrementa numeros.
-- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
-- technicalKey2, registrarEmpleados e id_empleado se omiten porque la auditoria del ERP los marco como columnas no disponibles; los grupos factura_electronica y configuracion del backend actual requieren validacion antes de usarse.
-- segunda_clave y clave_caja estan deshabilitados en el backend y no son columnas consultables.
-- es_activo debe ser 0 o 1.
-- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
-
-**Peticiones habituales:** Consecutivos activos.
-
-### `buscarSucursales`: Buscar sucursales
+### `organizacion-sucursales-busquedas`: Buscar sucursales
 
 **Para qué sirve:** Buscar sucursales. Su resultado principal es `sucursales`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/organizacion/sucursales/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -1153,9 +3129,13 @@ Para actualizar: id_cliente debe ser mayor que cero; Se requiere al menos un cam
 
 **Peticiones habituales:** Sucursales activas con configuracion comercial.
 
-### `buscarEmpleados`: Buscar empleados
+### `organizacion-empleados-busquedas`: Buscar empleados
 
 **Para qué sirve:** Buscar empleados. Su resultado principal es `empleados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/organizacion/empleados/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -1317,95 +3297,13 @@ Para `grupos`:
 
 **Peticiones habituales:** Empleados activos.
 
-### `consultarMarcasActivas`: Consultar marcas activas
+### `facturacion-consecutivos-busquedas`: Buscar consecutivos de documentos
 
-**Para qué sirve:** Consultar marcas activas.
+**Para qué sirve:** Buscar consecutivos de documentos. Su resultado principal es `consecutivos`.
 
-**Tipo:** Consulta.
+**Método:** `POST`.
 
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `es_activo` | Sí | `1`; valor habitual `1` |
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "es_activo": 1
-}
-```
-
-**Respuesta esperada:** Marca[].
-
-**Ejemplo de respuesta:**
-
-```json
-[
-  {
-    "precio_unidad": -1,
-    "id_marca": 2,
-    "nombre_marca": "Marca de ejemplo",
-    "fecha_registro": 1735689600000,
-    "es_activo": 1,
-    "error": ""
-  }
-]
-```
-
-- precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
-- es_activo debe ser 1.
-
-**Peticiones habituales:** Marcas activas.
-
-### `consultarMarcaPorId`: Consultar marca por ID
-
-**Para qué sirve:** Consultar marca por ID.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_marca` | Sí | número entero; mínimo `1` |
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "id_marca": 2
-}
-```
-
-**Respuesta esperada:** Marca[].
-
-**Ejemplo de respuesta:**
-
-```json
-[
-  {
-    "precio_unidad": -1,
-    "id_marca": 2,
-    "nombre_marca": "Marca de ejemplo",
-    "fecha_registro": 1735689600000,
-    "es_activo": 1,
-    "error": ""
-  }
-]
-```
-
-- precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
-- id_marca debe ser mayor que cero.
-
-**Peticiones habituales:** Marca por ID.
-
-## Facturas e historiales
-
-### `buscarTransacciones`: Buscar transacciones
-
-**Para qué sirve:** Buscar transacciones. Su resultado principal es `resultados`.
+**Ruta:** `/api/v1/facturacion/consecutivos/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -1415,86 +3313,64 @@ Para `grupos`:
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_transacion` | No | número entero |
-| `n_transacion` | No | número entero |
-| `n_factura` | No | texto |
-| `prefijo` | No | texto |
-| `numeracion` | No | número entero |
-| `id_cliente` | No | número entero |
-| `id_empleado` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `es_ingreso` | No | `0`, `1` |
-| `es_factura` | No | `0`, `1` |
-| `es_nula` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1` |
-| `es_devolucion` | No | `0`, `1` |
-| `tipo_documento` | No | lista de números separados por comas; separado por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `id_consecutivo` | No | número entero; mínimo `1` |
+| `id_sucursal` | No | número entero; mínimo `1` |
+| `nombre_consecutivo` | No | texto; coincidencia parcial |
+| `prefijo` | No | texto; coincidencia exacta |
+| `resolucion` | No | texto; coincidencia parcial |
+| `tipo_consecutivo` | No | número entero |
+| `es_factura_electronica` | No | `0`, `1` |
+| `es_activo` | No | `0`, `1`; valor habitual `1` |
+
+**Información que puedes pedir en `columnas`**
+
+| Columna | Significado |
+| --- | --- |
+| `id_consecutivo` | Identificador de la numeración documental. |
+| `nombre_consecutivo` | Nombre administrativo del consecutivo. |
+| `prefijo` | Prefijo de la numeración visible. |
+| `numero` | Número actual o siguiente según la regla del módulo; consultar no lo incrementa. |
+| `alertar_numero` | Umbral para alertar proximidad al agotamiento de la numeración. |
+| `facturaOnline` | Indica habilitación de facturación en línea. |
+| `es_activo` | Estado operativo del consecutivo. |
+| `fecha_registro` | Momento de creación. |
+| `resolucion` | Resolución que autoriza la numeración. |
+| `id_sucursal` | Sucursal a la que pertenece. |
+| `nombre_sucursal` | Nombre visible de la sucursal. |
+| `inicia` | Primer número autorizado del rango. |
+| `finaliza` | Último número autorizado del rango. |
+| `es_factura_electronica` | Indica uso para factura electrónica. |
+| `fecha_vencimiento` | Vencimiento de la resolución o autorización. |
+| `nRelleno` | Longitud o cantidad de caracteres de relleno. |
+| `es_tirilla_pos` | Indica numeración para tirilla POS. |
+| `es_contingencia` | Indica numeración destinada a contingencia. |
+| `predeterminado` | Marca el consecutivo propuesto por defecto. |
+| `multi_moneda` | Permite documentos con configuración multimoneda. |
+| `tipo_consecutivo` | Tipo documental asociado al consecutivo. |
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `costo`, `nota`, `presentacion`, `configuracion`, `producto_ampliado`, `seriales`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `consecutivo`, `factura_electronica`, `rangos`, `sucursal`, `configuracion`.
 
 **Ejemplo de argumentos:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad_registros": 100,
-  "tipo_documento": "1,9",
-  "es_ingreso": 1,
-  "es_nula": 0,
+  "cantidad_registros": 30,
   "body": {
     "grupos": [
-      "codigos",
-      "fechas",
-      "sucursal",
-      "cliente",
-      "empleado",
-      "vendedor",
-      "totales",
-      "impuestos",
-      "estado",
-      "qr",
-      "nota",
-      "documento",
-      "moneda",
-      "estado_electronico",
-      "pagos",
-      "retenciones",
-      "notas_credito",
-      "facturacion_electronica",
       "consecutivo",
-      "impresion",
-      "cartera_cliente",
-      "empresa",
-      "sucursal_configuracion",
-      "taller",
-      "acta_entrega"
-    ],
-    "detalle": [
-      "codigos",
-      "producto",
-      "cantidades",
-      "precios",
-      "descuento",
-      "impuestos",
-      "totales",
-      "costo",
-      "nota",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado",
-      "seriales"
+      "factura_electronica",
+      "rangos",
+      "sucursal",
+      "configuracion"
     ]
   }
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'transacciones', resultados: Transaccion[], contexto?: object }.
+**Respuesta esperada:** { pagina: integer, cantidad: integer, consecutivos: object[] }.
 
 **Ejemplo de respuesta:**
 
@@ -1502,23 +3378,28 @@ Para `grupos`:
 {
   "pagina": 0,
   "cantidad": 0,
-  "tipo_consulta": "transacciones",
-  "resultados": []
+  "consecutivos": []
 }
 ```
 
-- Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
-- detalle.codigos contiene id_detalle_transacion, no id_transacion.
-- El grupo impresion devuelve configuración y no genera un PDF.
-- Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
-- La paginación está limitada a 1..1000 registros.
-- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+- Este punto de acceso consulta la configuracion de consecutivos; no reserva ni incrementa numeros.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+- technicalKey2, registrarEmpleados e id_empleado se omiten porque la auditoria del ERP los marco como columnas no disponibles; los grupos factura_electronica y configuracion del backend actual requieren validacion antes de usarse.
+- segunda_clave y clave_caja estan deshabilitados en el backend y no son columnas consultables.
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
 
-**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+**Peticiones habituales:** Consecutivos activos.
 
-### `buscarProductosComprados`: Buscar productos comprados
+## Terceros
 
-**Para qué sirve:** Buscar productos comprados. Su resultado principal es `resultados`.
+### `terceros-busquedas`: Buscar terceros
+
+**Para qué sirve:** Buscar terceros. Su resultado principal es `terceros`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/terceros/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -1527,43 +3408,106 @@ Para `grupos`:
 | Dato | Obligatorio | Valores que acepta |
 | --- | --- | --- |
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_cliente` | Sí | número entero |
-| `id_sucursal` | No | número entero |
-| `id_empleado` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
-| `es_ingreso` | No | `0`, `1` |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `cantidad_registros` | Sí | número entero; mínimo `1`; máximo `1000` |
+| `nombre` | No | texto; coincidencia parcial |
+| `nit` | No | texto; coincidencia exacta |
+| `telefono` | No | texto; coincidencia parcial en tres campos de teléfono |
+| `correo` | No | texto; coincidencia parcial en dos campos de correo |
+| `tipo_tercero` | No | `1` (cliente), `2` (proveedor), `3` (ambos) |
 
-**Bloques de información que puedes pedir**
+**Información que puedes pedir en `columnas`**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `cantidades`, `totales`, `impuestos`, `costos`, `fechas`.
+| Columna | Significado |
+| --- | --- |
+| `id_cliente` | Identificador del tercero consultado. |
+| `nombre_cliente` | Nombre completo o razón social principal. |
+| `identificacion` | Documento de identidad o identificación tributaria. |
+| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
+| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
+| `primer_nombre` | Primer nombre de una persona natural. |
+| `segundo_nombre` | Segundo nombre de una persona natural. |
+| `primer_apellido` | Primer apellido de una persona natural. |
+| `segundo_apellido` | Segundo apellido de una persona natural. |
+| `direccion` | Dirección principal del tercero. |
+| `sitio_web` | Sitio web registrado. |
+| `facebook` | Perfil o referencia de Facebook. |
+| `twitter` | Perfil o referencia de X/Twitter. |
+| `instagram` | Perfil o referencia de Instagram. |
+| `snapchat` | Perfil o referencia de Snapchat. |
+| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
+| `nota` | Observaciones internas sobre el tercero. |
+| `es_activo` | Estado operativo del tercero. |
+| `fecha_registro` | Fecha de creación del tercero. |
+| `fecha_actualizacion` | Fecha de la última actualización registrada. |
+| `id_lista_precios` | Lista de precios asignada al tercero. |
+| `id_ruta_despacho` | Ruta de despacho asociada. |
+| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
+| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
+| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
+| `zona` | Zona comercial, logística o geográfica asociada. |
+| `contacto` | Nombre o referencia del contacto principal. |
+| `codigo_interno` | Código interno asignado por la empresa. |
+| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
+| `id_clase_cliente` | Clasificación comercial del cliente. |
+| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
+| `fecha_nacimiento` | Fecha de nacimiento de una persona natural. |
+| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
+| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
+| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
+| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
+| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
+| `cupo_cartera` | Límite de crédito autorizado. |
+| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
+| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
+| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
+| `id_sucursal` | Sucursal principal o de creación del tercero. |
+| `id_vendedor` | Vendedor asignado. |
+| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
+| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
+| `pais` | País registrado. |
+| `departamento` | Departamento, estado o región registrada. |
+| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
+| `medio_pago` | Medio de pago preferido o configurado. |
+| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
+| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
+| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
+| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
+| `fecha_vencimiento_codigo_turismo` | Fecha de vencimiento del registro de turismo. |
+| `codigo_turismo` | Código del registro de turismo. |
+| `alias` | Nombre corto o comercial alternativo. |
+| `horario` | Horario asociado al tercero; la estructura depende del dato almacenado. |
+| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
+| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
+| `genera_bonos` | Habilita la generación o acumulación de bonos. |
+| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
+| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
+| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
+| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
+| `tipo_identificacion` | Datos relacionados del tipo de identificación. |
+| `tipo_persona` | Datos relacionados de la clasificación de persona. |
+| `estado_civil` | Datos relacionados del estado civil. |
+| `estrato_social` | Datos relacionados del estrato social. |
 
 **Ejemplo de argumentos:**
 
 ```json
 {
   "pagina": 0,
-  "cantidad_registros": 100,
-  "id_cliente": 1179,
-  "tipo_documento": "1,9",
-  "es_ingreso": 1,
+  "cantidad_registros": 30,
+  "tipo_tercero": 1,
   "body": {
-    "grupos": [
-      "producto",
-      "cantidades",
-      "totales",
-      "impuestos",
-      "costos",
-      "fechas"
+    "columnas": [
+      "id_cliente",
+      "nombre_cliente",
+      "identificacion",
+      "telefonos",
+      "correos"
     ]
   }
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'productos', resultados: ProductoComprado[] }.
+**Respuesta esperada:** { pagina: integer, cantidad: integer, terceros: Tercero[] }.
 
 **Ejemplo de respuesta:**
 
@@ -1571,153 +3515,25 @@ Para `grupos`:
 {
   "pagina": 0,
   "cantidad": 0,
-  "tipo_consulta": "productos",
-  "resultados": []
+  "terceros": []
 }
 ```
 
-- Los resultados se consolidan por id_producto.
-- Las transacciones anuladas se excluyen de forma predeterminada.
-- id_cliente es obligatorio.
-- grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo.
+- telefonos y correos se proyectan como arreglos; las columnas de relaciones se proyectan como objetos.
+- No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché.
+- cantidad_registros es obligatorio según el contrato actual del servidor.
+- El cuerpo debe contener únicamente un arreglo columnas no vacío y sin duplicados.
+- Se rechazan las columnas desconocidas.
 
-**Peticiones habituales:** Productos comprados por cliente.
+**Peticiones habituales:** Clientes.
 
-### `buscarDescuentos`: Buscar descuentos
+### `terceros-crear`: Guardar tercero
 
-**Para qué sirve:** Buscar descuentos. Su resultado principal es `resultados`.
+**Para qué sirve:** Guardar tercero.
 
-**Tipo:** Consulta.
+**Método:** `POST`.
 
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `nivel` | No | `encabezado`, `detalle`; valor habitual `encabezado` |
-| `id_cliente` | No | número entero |
-| `id_empleado` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
-| `es_ingreso` | No | `0`, `1` |
-| `es_nula` | No | `0`, `1` |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-
-**Bloques de información que puedes pedir**
-
-- `grupos` cuando `nivel=encabezado`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `empleado`, `totales`, `impuestos`.
-- `grupos` cuando `nivel=detalle`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `cliente`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 100,
-  "nivel": "encabezado",
-  "es_ingreso": 1,
-  "body": {
-    "grupos": [
-      "transaccion",
-      "cliente",
-      "empleado",
-      "totales",
-      "impuestos"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'descuentos', resultados: Descuento[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "descuentos",
-  "resultados": []
-}
-```
-
-- Las transacciones anuladas se excluyen de forma predeterminada.
-- Los dos niveles son configuraciones predefinidas de un solo punto de acceso, no rutas independientes.
-- nivel debe ser encabezado o detalle.
-- Los grupos seleccionados deben pertenecer al nivel seleccionado.
-
-**Peticiones habituales:** Descuentos de factura; Descuentos de producto.
-
-### `buscarConsolidado`: Buscar historial consolidado
-
-**Para qué sirve:** Buscar historial consolidado. Su resultado principal es `resultados`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `agrupar_por` | No | `cliente`, `empleado`, `vendedor`; valor habitual `cliente` |
-| `id_cliente` | No | número entero |
-| `id_empleado` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `tipo_documento` | No | lista de números separados por comas |
-| `es_ingreso` | No | `0`, `1` |
-| `es_nula` | No | `0`, `1` |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `agrupacion`, `cantidad`, `totales`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 100,
-  "agrupar_por": "cliente",
-  "es_ingreso": 1,
-  "body": {
-    "grupos": [
-      "agrupacion",
-      "cantidad",
-      "totales"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'consolidado', resultados: FilaConsolidada[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "tipo_consulta": "consolidado",
-  "resultados": []
-}
-```
-
-- Las transacciones anuladas se excluyen de forma predeterminada, salvo que se proporcione es_nula=1.
-- agrupar_por debe ser cliente, empleado o vendedor.
-- grupos no debe estar vacío y debe contener valores únicos.
-
-**Peticiones habituales:** Por cliente; Por empleado; Por vendedor.
-
-### `grabarDocumentoSimple`: Crear factura, compra, gasto o remisión
-
-**Para qué sirve:** Crear factura, compra, gasto o remisión.
+**Ruta:** `/api/v1/terceros`.
 
 **Tipo:** Acción que modifica datos.
 
@@ -1725,110 +3541,261 @@ Para `grupos`:
 
 **Datos que acepta la acción**
 
-| Dato | Obligatorio | Valores que acepta | Significado |
-| --- | --- | --- | --- |
-| `tipoDocumento` | Sí | `1` (factura), `7` (compra o gasto), `9` (remisión o prefactura) | 1 factura, 7 compra/gasto, 9 remisión/prefactura. |
-| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
-| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
-| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
-| `nota` | Sí | texto | Nota general del documento. |
-| `observacion` | Sí | texto | Observación general del documento. |
-| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
-| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
-| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
-| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
-| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
-| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
-| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
-| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
-| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
-| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
-| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
+| Dato | Significado |
+| --- | --- |
+| `nombre_cliente` | Nombre completo o razón social del tercero. |
+| `id_tipo_persona` | Clasificación de persona requerida en creación. |
+| `identificacion` | Documento requerido en creación. |
+| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
+| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
+| `primer_nombre` | Primer nombre de una persona natural. |
+| `segundo_nombre` | Segundo nombre de una persona natural. |
+| `primer_apellido` | Primer apellido de una persona natural. |
+| `segundo_apellido` | Segundo apellido de una persona natural. |
+| `direccion` | Dirección principal del tercero. |
+| `sitio_web` | Sitio web registrado. |
+| `facebook` | Perfil o referencia de Facebook. |
+| `twitter` | Perfil o referencia de X/Twitter. |
+| `instagram` | Perfil o referencia de Instagram. |
+| `snapchat` | Perfil o referencia de Snapchat. |
+| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
+| `nota` | Observaciones internas sobre el tercero. |
+| `es_activo` | Estado operativo del tercero. |
+| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
+| `id_lista_precios` | Lista de precios asignada al tercero. |
+| `id_ruta_despacho` | Ruta de despacho asociada. |
+| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
+| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
+| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
+| `zona` | Zona comercial, logística o geográfica asociada. |
+| `contacto` | Nombre o referencia del contacto principal. |
+| `codigo_interno` | Código interno asignado por la empresa. |
+| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
+| `id_estado_civil` | Identificador del estado civil seleccionado. |
+| `id_estrato_social` | Identificador del estrato social seleccionado. |
+| `id_clase_cliente` | Clasificación comercial del cliente. |
+| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
+| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
+| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
+| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
+| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
+| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
+| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
+| `cupo_cartera` | Límite de crédito autorizado. |
+| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
+| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
+| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
+| `id_sucursal` | Sucursal principal o de creación del tercero. |
+| `id_vendedor` | Vendedor asignado. |
+| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
+| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
+| `pais` | País registrado. |
+| `departamento` | Departamento, estado o región registrada. |
+| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
+| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
+| `medio_pago` | Medio de pago preferido o configurado. |
+| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
+| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
+| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
+| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
+| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
+| `codigo_turismo` | Código del registro de turismo. |
+| `alias` | Nombre corto o comercial alternativo. |
+| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
+| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
+| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
+| `genera_bonos` | Habilita la generación o acumulación de bonos. |
+| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
+| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
+| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
+| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
 
-- Una solicitud contiene un solo documento.
-- tipoDocumento 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
-- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
-- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
-- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
-- Para gasto, tipoDocumento=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
+Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
+Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
 
 **Ejemplo de argumentos:**
 
 ```json
 {
   "body": {
-    "tipoDocumento": 1,
-    "type_match_producto": 1,
-    "id_consecutivo": 3,
-    "codigo_unico": "001",
-    "nota": "",
-    "observacion": "",
-    "id_sucursal": 1,
-    "id_bodega": 1,
-    "id_vendedor": 1,
-    "id_empleado": 1,
-    "objClienteMini": {
-      "id_cliente": 1179,
-      "nombre_cliente": "Cliente de ejemplo",
-      "identificacion": "",
-      "telefono1": "",
-      "telefono2": "",
-      "email1": "",
-      "direccion": "",
-      "id_tipo_persona": 1,
-      "es_cliente": 1,
-      "es_proveedor": 0,
-      "departamento": "",
-      "pais": "",
-      "ciudad": "",
-      "zona": ""
-    },
-    "objDetalle": [
-      {
-        "cantidad": 1,
-        "descripcion": "Producto",
-        "total": 10000,
-        "cambiar_precio_compra": false,
-        "id_producto": 25
-      }
+    "nombre_cliente": "Tercero de ejemplo",
+    "identificacion": "<id-documento>",
+    "id_tipo_persona": 1,
+    "es_cliente": 1,
+    "telefonos": [
+      "<teléfono>"
     ],
-    "lstPagos": []
+    "correos": [
+      "<correo>"
+    ]
   }
 }
 ```
 
-**Respuesta esperada:** Mensaje { type: integer, message: string, retorno: string, id_transacion: integer, url_interna: string, url_externa: string }.
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
 
 **Ejemplo de respuesta:**
 
 ```json
 {
+  "message": "guardar",
   "type": 1,
-  "message": "save",
-  "retorno": "opaque-value",
-  "id_transacion": 511903,
-  "url_interna": "...",
-  "url_externa": "..."
+  "retorno": "<route-fixed-selector>"
 }
 ```
 
-- lstPagos vacío representa una operación a crédito.
-- Los campos sin información de objClienteMini se envían como string vacío.
-- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
-- codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
-- No mezcle detalles de inventario y gasto en el mismo documento.
-- retorno es opaco y no debe analizarse.
-- No se reintentan automáticamente documentos sin idempotencia comprobada.
+- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
+- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
+- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
+- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
 
-**Peticiones habituales:** Factura de inventario.
+**Peticiones habituales:** Crear; Actualización parcial.
+
+**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+
+### `terceros-actualizar`: Guardar tercero
+
+**Para qué sirve:** Guardar tercero.
+
+**Método:** `PUT`.
+
+**Ruta:** `/api/v1/terceros/{id_tercero}`.
+
+**Tipo:** Acción que modifica datos.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_tercero` | Sí | número entero; mínimo `1` |
+
+**Datos que acepta la acción**
+
+| Dato | Significado |
+| --- | --- |
+| `nombre_cliente` | Nombre completo o razón social del tercero. |
+| `id_tipo_persona` | Clasificación de persona requerida en creación. |
+| `identificacion` | Documento requerido en creación. |
+| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
+| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
+| `primer_nombre` | Primer nombre de una persona natural. |
+| `segundo_nombre` | Segundo nombre de una persona natural. |
+| `primer_apellido` | Primer apellido de una persona natural. |
+| `segundo_apellido` | Segundo apellido de una persona natural. |
+| `direccion` | Dirección principal del tercero. |
+| `sitio_web` | Sitio web registrado. |
+| `facebook` | Perfil o referencia de Facebook. |
+| `twitter` | Perfil o referencia de X/Twitter. |
+| `instagram` | Perfil o referencia de Instagram. |
+| `snapchat` | Perfil o referencia de Snapchat. |
+| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
+| `nota` | Observaciones internas sobre el tercero. |
+| `es_activo` | Estado operativo del tercero. |
+| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
+| `id_lista_precios` | Lista de precios asignada al tercero. |
+| `id_ruta_despacho` | Ruta de despacho asociada. |
+| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
+| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
+| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
+| `zona` | Zona comercial, logística o geográfica asociada. |
+| `contacto` | Nombre o referencia del contacto principal. |
+| `codigo_interno` | Código interno asignado por la empresa. |
+| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
+| `id_estado_civil` | Identificador del estado civil seleccionado. |
+| `id_estrato_social` | Identificador del estrato social seleccionado. |
+| `id_clase_cliente` | Clasificación comercial del cliente. |
+| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
+| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
+| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
+| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
+| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
+| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
+| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
+| `cupo_cartera` | Límite de crédito autorizado. |
+| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
+| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
+| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
+| `id_sucursal` | Sucursal principal o de creación del tercero. |
+| `id_vendedor` | Vendedor asignado. |
+| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
+| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
+| `pais` | País registrado. |
+| `departamento` | Departamento, estado o región registrada. |
+| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
+| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
+| `medio_pago` | Medio de pago preferido o configurado. |
+| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
+| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
+| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
+| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
+| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
+| `codigo_turismo` | Código del registro de turismo. |
+| `alias` | Nombre corto o comercial alternativo. |
+| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
+| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
+| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
+| `genera_bonos` | Habilita la generación o acumulación de bonos. |
+| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
+| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
+| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
+| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
+
+Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
+Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "nombre_cliente": "Tercero de ejemplo",
+    "identificacion": "<id-documento>",
+    "id_tipo_persona": 1,
+    "es_cliente": 1,
+    "telefonos": [
+      "<teléfono>"
+    ],
+    "correos": [
+      "<correo>"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "guardar",
+  "type": 1,
+  "retorno": "<route-fixed-selector>"
+}
+```
+
+- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
+- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
+- Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
+- Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
+
+**Peticiones habituales:** Crear; Actualización parcial.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
 
 ## Cartera
 
-### `buscarCartera`: Buscar cuentas por cobrar y por pagar
+### `finanzas-cartera-cobrar-busquedas`: Buscar cuentas por cobrar y por pagar
 
 **Para qué sirve:** Buscar cuentas por cobrar y por pagar. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -1842,7 +3809,6 @@ Para `grupos`:
 | `id_cliente` | No | número entero |
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
-| `es_ingreso` | Sí | `0` (por pagar), `1` (por cobrar) |
 | `tipo_documento` | No | lista de números separados por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -1858,7 +3824,6 @@ Para `grupos`:
 {
   "pagina": 0,
   "cantidad_registros": 100,
-  "es_ingreso": 1,
   "body": {
     "grupos": [
       "transaccion",
@@ -1894,14 +3859,18 @@ Para `grupos`:
 - Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
 - Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
 - Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
-- es_ingreso es obligatorio y debe ser 0 o 1.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
 **Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
 
-### `buscarResumenTerceros`: Resumir saldos por tercero
+### `finanzas-cartera-pagar-busquedas`: Buscar cuentas por cobrar y por pagar
 
-**Para qué sirve:** Resumir saldos por tercero. Su resultado principal es `resultados`.
+**Para qué sirve:** Buscar cuentas por cobrar y por pagar. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -1915,7 +3884,81 @@ Para `grupos`:
 | `id_cliente` | No | número entero |
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
-| `es_ingreso` | Sí | `0`, `1` |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `vencida` | No | `0`, `1` |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `transaccion`, `fechas`, `sucursal`, `tercero`, `vendedor`, `saldo`, `estado`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "body": {
+    "grupos": [
+      "transaccion",
+      "fechas",
+      "sucursal",
+      "tercero",
+      "vendedor",
+      "saldo",
+      "estado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'cartera', resultados: DocumentoCartera[], totales: { total_deuda: number, total_abono: number, total_pendiente: number } }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "cartera",
+  "resultados": [],
+  "totales": {
+    "total_deuda": 0,
+    "total_abono": 0,
+    "total_pendiente": 0
+  }
+}
+```
+
+- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
+- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
+- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
+
+### `finanzas-resumen-cobrar-busquedas`: Resumir saldos por tercero
+
+**Para qué sirve:** Resumir saldos por tercero. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/resumenes-por-tercero/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
 | `tipo_documento` | No | lista de números separados por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -1931,7 +3974,6 @@ Para `grupos`:
 {
   "pagina": 0,
   "cantidad_registros": 100,
-  "es_ingreso": 1,
   "body": {
     "grupos": [
       "tercero",
@@ -1957,16 +3999,85 @@ Para `grupos`:
 
 - Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
 - Las cuentas por cobrar y por pagar nunca se mezclan.
-- es_ingreso es obligatorio y debe ser 0 o 1.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
+- grupos no debe estar vacío y debe contener valores únicos.
+
+**Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
+
+### `finanzas-resumen-pagar-busquedas`: Resumir saldos por tercero
+
+**Para qué sirve:** Resumir saldos por tercero. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/resumenes-por-tercero/busquedas`.
+
+**Tipo:** Consulta.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
+| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
+| `id_transacion` | No | número entero |
+| `id_cliente` | No | número entero |
+| `id_vendedor` | No | número entero |
+| `id_sucursal` | No | número entero |
+| `tipo_documento` | No | lista de números separados por comas |
+| `fecha_desde` | No | fecha y hora en milisegundos Unix |
+| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `vencida` | No | `0`, `1` |
+
+**Bloques de información que puedes pedir**
+
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `tercero`, `documentos`, `saldo`.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 100,
+  "body": {
+    "grupos": [
+      "tercero",
+      "documentos",
+      "saldo"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, tipo_consulta: 'resumen_terceros', resultados: SaldoTercero[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 0,
+  "tipo_consulta": "resumen_terceros",
+  "resultados": []
+}
+```
+
+- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
+- Las cuentas por cobrar y por pagar nunca se mezclan.
+- route-fixed-selector es obligatorio y debe ser 0 o 1.
 - grupos no debe estar vacío y debe contener valores únicos.
 
 **Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
 
 ## Comandas
 
-### `obtenerComandas`: Obtener comandas de cocina
+### `restaurante-comandas-busquedas`: Obtener comandas de cocina
 
 **Para qué sirve:** Obtener comandas de cocina. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/restaurante/comandas/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -2073,9 +4184,13 @@ Para `grupos`:
 
 **Peticiones habituales:** Comandas activas de la sucursal.
 
-### `platosEliminados`: Buscar platos eliminados
+### `restaurante-platos-eliminados-busquedas`: Buscar platos eliminados
 
 **Para qué sirve:** Buscar platos eliminados. Su resultado principal es `resultados`.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/restaurante/comandas/platos-eliminados/busquedas`.
 
 **Tipo:** Consulta.
 
@@ -2153,283 +4268,3 @@ Para `grupos`:
 - grupos no debe estar vacío y debe contener valores únicos.
 
 **Peticiones habituales:** Auditoría de eliminaciones por sucursal.
-
-## Documentos comerciales
-
-### `buscarDocumentosComerciales`: Buscar documentos comerciales
-
-**Para qué sirve:** Buscar documentos comerciales. Su resultado principal es `documentos`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_documento` | No | número entero; mínimo `1` |
-| `n_documento` | No | número entero |
-| `id_cliente` | No | número entero |
-| `id_empleado` | No | número entero |
-| `id_vendedor` | No | número entero |
-| `id_sucursal` | No | número entero |
-| `id_ruta_despacho` | No | número entero |
-| `id_transacion` | No | número entero |
-| `id_canal` | No | número entero |
-| `es_facturado` | No | `0`, `1` |
-| `es_facturado_manual` | No | `0`, `1` |
-| `es_nula` | No | `0`, `1` |
-| `es_activo` | No | `0`, `1` |
-| `pago_realizado` | No | `0`, `1` |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-| `fecha_documento_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
-| `ultimo_id` | No | número entero |
-| `ultima_fecha` | No | fecha y hora en milisegundos Unix |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
-- `detalle`: Bloques de información de las líneas del documento. Valores: `codigos`, `producto`, `cantidades`, `precios`, `descuento`, `impuestos`, `totales`, `presentacion`, `configuracion`, `producto_ampliado`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "es_facturado": 1,
-  "es_nula": 0,
-  "body": {
-    "grupos": [
-      "codigos",
-      "fechas",
-      "sucursal",
-      "cliente",
-      "empleado",
-      "vendedor",
-      "totales",
-      "bodegas",
-      "ruta_despacho",
-      "logistica",
-      "estado",
-      "documento",
-      "nota"
-    ],
-    "detalle": [
-      "codigos",
-      "producto",
-      "cantidades",
-      "precios",
-      "descuento",
-      "impuestos",
-      "totales",
-      "presentacion",
-      "configuracion",
-      "producto_ampliado"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "documentos": []
-}
-```
-
-- detalle es opcional y conserva el orden de los grupos solicitados.
-- Las respuestas no exponen credenciales ni claves internas.
-- Los grupos desconocidos, duplicados o vacíos se rechazan.
-- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
-
-**Peticiones habituales:** Facturas activas.
-
-### `buscarProductosDocumentosComerciales`: Buscar productos de documentos comerciales
-
-**Para qué sirve:** Buscar productos de documentos comerciales. Su resultado principal es `productos`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_cliente` | No | número entero; mínimo `1` |
-| `id_vendedor` | No | número entero; mínimo `1` |
-| `id_sucursal` | No | número entero; mínimo `1` |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `cantidades`, `totales`, `costos`, `fechas`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "id_cliente": 1179,
-  "body": {
-    "grupos": [
-      "producto",
-      "cantidades",
-      "totales",
-      "costos",
-      "fechas"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, productos: ProductoDocumento[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "productos": []
-}
-```
-
-- Los productos se agrupan por id_producto y respetan la paginación.
-- No se permite mezclar políticas de buscarProductosComprados.
-- Debe especificar id_cliente o id_vendedor.
-- Los filtros de fecha son inclusivos y usan epoch-milliseconds.
-
-**Peticiones habituales:** Productos por cliente.
-
-### `buscarDescuentosDocumentosComerciales`: Buscar descuentos de documentos comerciales
-
-**Para qué sirve:** Buscar descuentos de documentos comerciales. Su resultado principal es `descuentos`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_documento` | No | número entero; mínimo `1` |
-| `id_cliente` | No | número entero; mínimo `1` |
-| `id_empleado` | No | número entero; mínimo `1` |
-| `id_vendedor` | No | número entero; mínimo `1` |
-| `id_sucursal` | No | número entero; mínimo `1` |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `documento`, `cliente`, `empleado`, `vendedor`, `producto`, `cantidades`, `precios`, `descuento`, `totales`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "grupos": [
-      "documento",
-      "cliente",
-      "empleado",
-      "vendedor",
-      "producto",
-      "cantidades",
-      "precios",
-      "descuento",
-      "totales"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, descuentos: DescuentoDocumento[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "descuentos": []
-}
-```
-
-- Los grupos producto, cantidades o precios solicitan el modo detalle.
-- Los resultados solo incluyen documentos con descuentos.
-- Los grupos incompatibles con el detalle solicitado se rechazan.
-- Los filtros de fecha son inclusivos y usan epoch-milliseconds.
-
-**Peticiones habituales:** Descuentos por documento.
-
-### `buscarConsolidadoDocumentosComerciales`: Consolidar documentos comerciales
-
-**Para qué sirve:** Consolidar documentos comerciales. Su resultado principal es `consolidado`.
-
-**Tipo:** Consulta.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `agrupar_por` | No | `cliente`, `empleado`, `vendedor`, `sucursal`; valor habitual `cliente` |
-| `id_cliente` | No | número entero; mínimo `1` |
-| `id_empleado` | No | número entero; mínimo `1` |
-| `id_vendedor` | No | número entero; mínimo `1` |
-| `id_sucursal` | No | número entero; mínimo `1` |
-| `tipo_documento` | No | lista de números separados por comas |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
-
-**Bloques de información que puedes pedir**
-
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `agrupacion`, `cantidad`, `totales`.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "agrupar_por": "cliente",
-  "body": {
-    "grupos": [
-      "agrupacion",
-      "cantidad",
-      "totales"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, consolidado: ConsolidadoDocumento[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 0,
-  "consolidado": []
-}
-```
-
-- El consolidado agrupa documentos por la dimensión seleccionada.
-- Los rangos de fecha incluyen ambos extremos y usan epoch-milliseconds.
-- agrupar_por debe ser cliente, empleado, vendedor o sucursal.
-- Los grupos deben ser únicos y no vacíos.
-
-**Peticiones habituales:** Consolidado por cliente.

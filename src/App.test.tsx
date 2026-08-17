@@ -97,7 +97,7 @@ describe('documentation application', () => {
     ).toHaveAttribute('aria-expanded', 'false');
     expect(
       within(navigation).queryByRole('button', {
-        name: /Buscar transacciones/i,
+        name: /^POSTBuscar transacciones$/i,
       }),
     ).not.toBeInTheDocument();
 
@@ -106,11 +106,11 @@ describe('documentation application', () => {
     );
     expect(
       within(navigation).getByRole('button', {
-        name: /Buscar transacciones/i,
+        name: /^POSTBuscar transacciones$/i,
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '28 operaciones' }),
+      screen.getByRole('heading', { name: '45 operaciones' }),
     ).toBeVisible();
   });
 
@@ -125,7 +125,7 @@ describe('documentation application', () => {
 
     const displayedRoute = document.querySelector('.route-bar code');
     expect(displayedRoute).toHaveTextContent(
-      '/com/j4ErpPro/server/inv/categoria/buscarCategorias',
+      '/v1/catalogo/categorias/busquedas',
     );
     expect(displayedRoute).not.toHaveTextContent('/jServerj4ErpPro');
   });
@@ -175,20 +175,20 @@ describe('documentation application', () => {
     );
   });
 
-  it('keeps the API base at the service root for /api routes', async () => {
+  it('keeps the API base at the public /api root', async () => {
     const user = userEvent.setup();
     render(<App />);
 
     await openCategory(user, 'Facturas e historiales');
     await user.click(
       screen.getByRole('button', {
-        name: /Crear factura, compra, gasto o remisión/i,
+        name: /^POSTCrear factura, compra, gasto o remisión$/i,
       }),
     );
 
     const apiBase = document.querySelector('.server-indicator code');
-    expect(apiBase).toHaveTextContent(/\/jServerj4ErpPro$/);
-    expect(apiBase).not.toHaveTextContent('/api/token/grabarDocumentoSimple');
+    expect(apiBase).toHaveTextContent(/\/api$/);
+    expect(apiBase).not.toHaveTextContent('/jServerj4ErpPro');
   });
 
   it('shows human-readable body formats instead of regular expressions', async () => {
@@ -198,7 +198,7 @@ describe('documentation application', () => {
     await openCategory(user, 'Facturas e historiales');
     await user.click(
       screen.getByRole('button', {
-        name: /Crear factura, compra, gasto o remisión/i,
+        name: /^POSTCrear factura, compra, gasto o remisión$/i,
       }),
     );
 
@@ -214,11 +214,11 @@ describe('documentation application', () => {
     await openCategory(user, 'Cartera');
     await user.click(
       screen.getByRole('button', {
-        name: /Buscar cuentas por cobrar y pagar/i,
+        name: /^POSTBuscar cuentas por cobrar y pagar$/i,
       }),
     );
     expect(new URLSearchParams(window.location.search).get('endpoint')).toBe(
-      'buscarCartera',
+      'finanzas-cartera-cobrar-busquedas',
     );
     expect(
       screen.getByRole('heading', {
@@ -227,7 +227,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
 
-    window.history.pushState({}, '', '?endpoint=buscarCategorias');
+    window.history.pushState({}, '', '?endpoint=catalogo-categorias-busquedas');
     window.dispatchEvent(new PopStateEvent('popstate'));
     expect(
       await screen.findByRole('heading', {
@@ -291,7 +291,7 @@ describe('documentation application', () => {
     await openCategory(user, 'Facturas e historiales');
     await user.click(
       screen.getByRole('button', {
-        name: /Crear factura, compra, gasto o remisión/i,
+        name: /^POSTCrear factura, compra, gasto o remisión$/i,
       }),
     );
 
@@ -483,6 +483,9 @@ describe('documentation application', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Aceptar' }));
 
     expect(sendButton).toBeEnabled();
+    expect(document.querySelector('.credentials-status')).toHaveClass(
+      'credentials-status-ready',
+    );
     expect(
       screen.queryByText(
         'Configura las credenciales desde el candado para habilitar el envío.',
@@ -507,7 +510,7 @@ describe('documentation application', () => {
         name: 'Probar consulta',
       }),
     ).toBeVisible();
-    expect(screen.getByText(/\/jServerj4ErpPro$/)).toBeVisible();
+    expect(screen.getByText(/\/api$/)).toBeVisible();
     expect(
       screen.getAllByText(/Los filtros y columnas desconocidos se rechazan/),
     ).not.toHaveLength(0);

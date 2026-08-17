@@ -191,10 +191,18 @@ const categoryAliases: Record<string, EndpointCategory> = {
   maestros: categories[3],
   masters: categories[3],
   transacciones: categories[4],
+  operativas: categories[7],
+  ventas: categories[4],
   facturas: categories[4],
   historiales: categories[4],
   'facturas-e-historiales': categories[4],
   'invoices-and-history': categories[4],
+  catalogo: categories[0],
+  tributario: categories[1],
+  finanzas: categories[5],
+  organizacion: categories[3],
+  facturacion: categories[3],
+  restaurante: categories[6],
   cartera: categories[5],
   'accounts-receivable': categories[5],
   comandas: categories[6],
@@ -379,7 +387,7 @@ const headerDescriptions: Record<string, string> = {
 
 const defaultHeaders = (method: HttpMethod): HeaderSpec[] => {
   const headers: HeaderSpec[] = [...globalHeaders];
-  if (method === 'POST') {
+  if (method !== 'GET') {
     headers.unshift({
       name: 'Content-Type',
       description: 'Cuerpo JSON.',
@@ -583,6 +591,105 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
   return [];
 };
 
+const cloneRecord = (value: UnknownRecord): UnknownRecord =>
+  JSON.parse(JSON.stringify(value)) as UnknownRecord;
+
+const removeKeys = (value: unknown, hidden: Set<string>): unknown => {
+  if (Array.isArray(value))
+    return value.map((item) => removeKeys(item, hidden));
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as UnknownRecord)
+        .filter(([key]) => !hidden.has(key))
+        .map(([key, item]) => [key, removeKeys(item, hidden)]),
+    );
+  }
+  return value;
+};
+
+const redactTerms = (value: unknown, hidden: Set<string>): unknown => {
+  if (Array.isArray(value))
+    return value.map((item) => redactTerms(item, hidden));
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as UnknownRecord).map(([key, item]) => [
+        key,
+        redactTerms(item, hidden),
+      ]),
+    );
+  }
+  if (typeof value === 'string') {
+    return [...hidden]
+      .sort((left, right) => right.length - left.length)
+      .reduce(
+        (text, term) => text.split(term).join('route-fixed-selector'),
+        value,
+      );
+  }
+  return value;
+};
+
+const projectPublicRoute = (
+  contract: UnknownRecord,
+  route: UnknownRecord,
+): UnknownRecord => {
+  const projected = cloneRecord(contract);
+  const translation = asRecord(route.translation);
+  const hiddenQuery = new Set(Object.keys(asRecord(translation.fixedQuery)));
+  const hiddenBody = new Set(Object.keys(asRecord(translation.fixedBody)));
+  const pathToBody = asRecord(translation.pathToBody);
+  for (const name of Object.values(pathToBody)) hiddenBody.add(asString(name));
+  const hiddenPath = new Set(Object.keys(asRecord(translation.fixedPath)));
+  const hidden = new Set([...hiddenQuery, ...hiddenBody, ...hiddenPath]);
+  const params = asRecord(
+    first(projected, ['params', 'parameters', 'parametros']),
+  );
+  const query = asArray(first(params, ['query', 'consulta'])).filter(
+    (parameter) =>
+      !hidden.has(
+        asString(first(asRecord(parameter), ['name', 'nombre', 'key'])),
+      ),
+  );
+  const path = asArray(first(params, ['path', 'ruta'])).filter(
+    (parameter) =>
+      !hiddenPath.has(
+        asString(first(asRecord(parameter), ['name', 'nombre', 'key'])),
+      ),
+  );
+  const pathNames = new Set(
+    path.map((parameter) =>
+      asString(first(asRecord(parameter), ['name', 'nombre', 'key'])),
+    ),
+  );
+  for (const name of asString(route.path).matchAll(/\{([^{}]+)\}/g)) {
+    if (!pathNames.has(name[1]))
+      path.push({ name: name[1], type: 'integer', required: true, minimum: 1 });
+  }
+  projected.params = { ...params, query, path };
+  const body = asRecord(projected.body);
+  if (Object.keys(body).length) {
+    body.fields = asArray(body.fields).filter(
+      (field) =>
+        !hiddenBody.has(
+          asString(first(asRecord(field), ['name', 'nombre', 'key'])),
+        ),
+    );
+    body.example = removeKeys(body.example, hiddenBody);
+    projected.body = body;
+  }
+  if (projected.presets !== undefined)
+    projected.presets = removeKeys(projected.presets, hidden);
+  if (projected.tryIt !== undefined)
+    projected.tryIt = removeKeys(projected.tryIt, hidden);
+  projected.id = asString(route.routeId);
+  projected.contractId = asString(route.contract);
+  projected.method = asString(route.method).toUpperCase();
+  projected.path = asString(route.path);
+  projected.publicRoute = true;
+  projected.descriptionId = asString(route.contract);
+  return redactTerms(projected, hidden) as UnknownRecord;
+};
+
 const normalizeErrors = (value: unknown): ErrorSpec[] =>
   asArray(value).map((entry) => {
     if (typeof entry === 'string')
@@ -695,6 +802,7 @@ const normalizeEndpoint = (
   const path = asString(first(item, ['path', 'route', 'ruta']));
   const name = asString(first(item, ['name', 'title', 'nombre']));
   const endpointId = asString(item.id, slugify(name));
+  const contractId = asString(item.contractId, endpointId);
   const method = asString(
     first(item, ['method', 'httpMethod', 'metodo']),
   ).toUpperCase() as HttpMethod;
@@ -709,10 +817,10 @@ const normalizeEndpoint = (
   const groups = normalizeGroups(first(item, ['groups', 'grupos']));
   const explicitPresets = normalizePresets(
     first(item, ['presets', 'variations', 'variaciones']),
-    endpointId,
+    contractId,
   );
 
-  if (!path || !name || !['GET', 'POST'].includes(method)) {
+  if (!path || !name || !['GET', 'POST', 'PATCH', 'PUT'].includes(method)) {
     throw new Error(
       `Operación canónica incompleta: ${name || path || '(sin identificador)'}`,
     );
@@ -752,7 +860,7 @@ const normalizeEndpoint = (
     }
   }
   if (
-    method === 'POST' &&
+    method !== 'GET' &&
     !mergedHeaders.some(
       (header) => header.name.toLowerCase() === 'content-type',
     )
@@ -775,7 +883,7 @@ const normalizeEndpoint = (
   const creationRequired = new Set(
     strings(body.createRequired).map((rule) => rule.split('=')[0].trim()),
   );
-  if (endpointId === 'guardarTercero') {
+  if (contractId === 'guardarTercero') {
     if (strings(body.createRequired).some((rule) => /teléfono/i.test(rule))) {
       creationRequired.add('telefonos');
     }
@@ -798,7 +906,7 @@ const normalizeEndpoint = (
     )
       return false;
     if (
-      path.endsWith('/platosEliminados') &&
+      contractId === 'platosEliminados' &&
       normalizedNote.includes(omittedDishField)
     )
       return false;
@@ -809,11 +917,18 @@ const normalizeEndpoint = (
     asString(first(item, ['summary', 'description', 'descripcion'])) ||
     notes[0] ||
     `${kind === 'query' ? 'Consulta' : 'Operación'} del contrato Cuenti para ${(
-      endpointTitles[endpointId] ?? name
+      asString(item.publicTitle) ||
+        (endpointTitles[contractId] ?? endpointTitles[endpointId] ?? name)
     ).toLocaleLowerCase('es')}.`;
+  const displayName =
+    asString(item.publicTitle) ||
+    endpointTitles[contractId] ||
+    endpointTitles[endpointId] ||
+    name;
   return {
     id: endpointId,
-    name: endpointTitles[endpointId] ?? name,
+    contractId,
+    name: displayName,
     summary,
     method,
     path,
@@ -863,7 +978,7 @@ const normalizeEndpoint = (
     presets: explicitPresets.length ? explicitPresets : fallbackPresets(path),
     guidance:
       normalizeGuidance(first(item, ['guidance', 'documentation'])) ||
-      documentMatchingGuidance(endpointId),
+      documentMatchingGuidance(contractId),
     errors: publicErrors(
       normalizeErrors(
         first(item, ['errors', 'errores', 'validations', 'validaciones']),
@@ -901,9 +1016,41 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
   const headerDefinitions = asRecord(
     first(root, ['headerDefinitions', 'headers']),
   );
-  const endpoints = asArray(first(root, ['endpoints', 'routes', 'rutas'])).map(
-    (endpoint) => normalizeEndpoint(endpoint, headerDefinitions),
+  const contracts = new Map(
+    asArray(root.endpoints).map((endpoint) => {
+      const item = asRecord(endpoint);
+      return [asString(item.id), item] as const;
+    }),
   );
+  const routes = asArray(root.routes);
+  const source = routes.length
+    ? routes.map((route) => {
+        const item = asRecord(route);
+        const contract = contracts.get(asString(item.contract));
+        if (!contract) {
+          throw new Error(
+            `Contrato público no encontrado: ${asString(item.contract)}`,
+          );
+        }
+        return projectPublicRoute(contract, item);
+      })
+    : asArray(first(root, ['endpoints', 'rutas']));
+  const routeOccurrences = new Map<string, number>();
+  const endpoints = source.map((endpoint) => {
+    const item = asRecord(endpoint);
+    const contractId = asString(item.contractId);
+    const occurrence = routeOccurrences.get(contractId) ?? 0;
+    routeOccurrences.set(contractId, occurrence + 1);
+    if (item.publicRoute && occurrence > 0) {
+      const title = endpointTitles[contractId] ?? asString(item.name);
+      const pathParts = asString(item.path).split('/').filter(Boolean);
+      const routeLabel = pathParts[pathParts.length - 1];
+      item.publicTitle = `${title} (${routeLabel})`;
+    } else if (item.publicRoute) {
+      item.publicTitle = endpointTitles[contractId] ?? asString(item.name);
+    }
+    return normalizeEndpoint(item, headerDefinitions);
+  });
   for (const endpoint of endpoints) {
     for (const group of endpoint.groups) {
       const purpose = asString(groupDescriptions[group.name]);
@@ -915,9 +1062,9 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
         .join(' ');
     }
   }
-  if (endpoints.length !== 28) {
+  if (endpoints.length !== 45) {
     throw new Error(
-      `El registro canónico debe contener 28 operaciones; contiene ${endpoints.length}.`,
+      `El registro público debe contener 45 rutas; contiene ${endpoints.length}.`,
     );
   }
   if (

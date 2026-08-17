@@ -92,7 +92,10 @@ export const CredentialsModal = ({
                 id="global-company"
                 value={draft.company}
                 onChange={(event) =>
-                  setDraft({ ...draft, company: event.target.value })
+                  setDraft((current) => ({
+                    ...current,
+                    company: event.target.value,
+                  }))
                 }
                 autoComplete="off"
                 autoFocus
@@ -126,7 +129,10 @@ export const CredentialsModal = ({
                 type="password"
                 value={draft.token}
                 onChange={(event) =>
-                  setDraft({ ...draft, token: event.target.value })
+                  setDraft((current) => ({
+                    ...current,
+                    token: event.target.value,
+                  }))
                 }
                 autoComplete="off"
               />
@@ -143,7 +149,10 @@ export const CredentialsModal = ({
                 id="global-branch"
                 value={draft.branch}
                 onChange={(event) =>
-                  setDraft({ ...draft, branch: event.target.value })
+                  setDraft((current) => ({
+                    ...current,
+                    branch: event.target.value,
+                  }))
                 }
                 autoComplete="off"
               />
@@ -160,7 +169,10 @@ export const CredentialsModal = ({
                 id="global-employee"
                 value={draft.employee}
                 onChange={(event) =>
-                  setDraft({ ...draft, employee: event.target.value })
+                  setDraft((current) => ({
+                    ...current,
+                    employee: event.target.value,
+                  }))
                 }
                 autoComplete="off"
               />

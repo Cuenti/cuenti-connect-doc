@@ -13,6 +13,14 @@ export const serverApiUrl = (endpoint: EndpointDoc, origin: string) => {
   return `${origin.replace(/\/+$/, '')}${basePath}`;
 };
 
+export const serverApiPath = (endpoint: EndpointDoc) => {
+  const baseSegment = endpoint.path.split('/').filter(Boolean)[0];
+  const basePath = baseSegment ? `/${baseSegment}` : '';
+  return basePath && endpoint.path.startsWith(basePath)
+    ? endpoint.path.slice(basePath.length) || '/'
+    : endpoint.path;
+};
+
 export const isTryItEnabled = (
   configuredValue: string | undefined,
   development: boolean,

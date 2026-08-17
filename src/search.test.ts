@@ -4,12 +4,12 @@ import { filterEndpoints } from './search';
 
 describe('endpoint search', () => {
   it.each([
-    ['platosEliminados', 'platosEliminados'],
-    ['POST', 'buscarCategorias'],
-    ['id_auditoria', 'platosEliminados'],
-    ['cantidad_registros', 'buscarCategorias'],
-    ['producto_ampliado', 'buscarTransacciones'],
-    ['Categorías e impuestos', 'buscarCategorias'],
+    ['platos-eliminados', 'restaurante-platos-eliminados-busquedas'],
+    ['POST', 'catalogo-categorias-busquedas'],
+    ['id_auditoria', 'restaurante-platos-eliminados-busquedas'],
+    ['cantidad_registros', 'catalogo-categorias-busquedas'],
+    ['producto_ampliado', 'ventas-facturas-busquedas'],
+    ['Categorías e impuestos', 'catalogo-categorias-busquedas'],
   ])('finds %s across route metadata', (query, expectedId) => {
     expect(
       filterEndpoints(registry.endpoints, query).map((endpoint) => endpoint.id),

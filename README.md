@@ -12,13 +12,13 @@ La interfaz web incluye la sección independiente **Catálogos y valores**, con 
 2. Inicia la aplicación con `pnpm run dev` y abre `http://localhost:3000`.
 3. Selecciona una operación, ingresa empresa, sucursal, empleado y token, y pulsa **Enviar al proxy**.
 
-Durante el desarrollo, las solicitudes del navegador permanecen en el mismo origen. Rsbuild reenvía `/jServerj4ErpPro/**` a `ERP_PROXY_TARGET`.
+Durante el desarrollo, las solicitudes del navegador permanecen en el mismo origen. Rsbuild reenvía `/api/v1/**` y `/jServerj4ErpPro/**` a `ERP_PROXY_TARGET`.
 
 El indicador **Servidor API** muestra `PUBLIC_PROXY_BASE_URL` seguido del prefijo `/jServerj4ErpPro`. Si esa variable está vacía durante el desarrollo, muestra el fallback `http://localhost:8081/jServerj4ErpPro`.
 
 ## Probar consultas
 
-En desarrollo, `pnpm run dev` habilita la ejecución interactiva y usa Envoy en `http://127.0.0.1:8081` sin configuración adicional.
+En desarrollo, `pnpm run dev` habilita la ejecución interactiva y usa Envoy en `http://127.0.0.1:8081` sin configuración adicional. Mantén `PUBLIC_PROXY_BASE_URL` vacío para que el navegador use el proxy same-origin de Rsbuild y no active un preflight CORS contra Envoy.
 
 Para cambiar el destino local o habilitar la ejecución en una compilación desplegada, define únicamente las variables necesarias:
 

@@ -20,7 +20,7 @@ export default defineConfig({
     port: 4000,
     proxy: [
       {
-        pathFilter: '/jServerj4ErpPro',
+        pathFilter: ['/api/v1', '/jServerj4ErpPro'],
         target: process.env.ERP_PROXY_TARGET ?? 'http://127.0.0.1:8081',
       },
     ],

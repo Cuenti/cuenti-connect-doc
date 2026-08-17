@@ -58,16 +58,18 @@ const FieldTooltip = ({
 );
 
 const columnDescription = (endpoint: EndpointDoc, column: string) =>
-  getFieldDescription(endpoint.id, column);
+  getFieldDescription(endpoint.contractId ?? endpoint.id, column);
 
 export const EndpointDetail = ({
   endpoint,
+  routePath,
   enabled,
   proxyBaseUrl,
   curlBaseUrl,
   credentials,
 }: {
   endpoint: EndpointDoc;
+  routePath: string;
   enabled: boolean;
   proxyBaseUrl: string;
   curlBaseUrl: string;
@@ -92,7 +94,7 @@ export const EndpointDetail = ({
       </div>
       <div className="route-bar">
         {methodBadge(endpoint.method)}
-        <code>{endpoint.path.replace(/^\/jServerj4ErpPro/, '')}</code>
+        <code>{routePath}</code>
       </div>
       <EndpointQuickStart
         endpoint={endpoint}

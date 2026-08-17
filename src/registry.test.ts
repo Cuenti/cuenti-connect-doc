@@ -3,35 +3,138 @@ import { hasFieldDescription, hasGroupDescription } from './fieldDescriptions';
 import { categories, upcomingCapabilities } from './model';
 import { registry } from './registry';
 
+const findEndpoint = (id: string) =>
+  registry.endpoints.find(
+    (endpoint) =>
+      endpoint.id === id ||
+      (endpoint as { contractId?: string }).contractId === id,
+  );
+
 describe('canonical documentation registry', () => {
-  it('exposes exactly 28 implemented endpoints in eight categories', () => {
-    expect(registry.endpoints).toHaveLength(28);
+  it('exposes all 45 approved public method/path tuples', () => {
+    const tuples = registry.endpoints.map(
+      (endpoint) => `${endpoint.method} ${endpoint.path}`,
+    );
+    expect(new Set(tuples)).toEqual(
+      new Set([
+        'POST /api/v1/transacciones/ventas/facturas/busquedas',
+        'POST /api/v1/transacciones/ventas/planes-separe/busquedas',
+        'POST /api/v1/transacciones/ventas/otros-ingresos/busquedas',
+        'POST /api/v1/transacciones/ventas/compras-gastos/busquedas',
+        'POST /api/v1/transacciones/ventas/remisiones/busquedas',
+        'POST /api/v1/transacciones/ventas/facturas',
+        'POST /api/v1/transacciones/ventas/compras-gastos',
+        'POST /api/v1/transacciones/ventas/remisiones',
+        'POST /api/v1/transacciones/ventas/productos-comprados/busquedas',
+        'POST /api/v1/transacciones/ventas/descuentos/busquedas',
+        'POST /api/v1/transacciones/ventas/consolidados/busquedas',
+        'POST /api/v1/transacciones/operativas/pedidos/busquedas',
+        'POST /api/v1/transacciones/operativas/cotizaciones/busquedas',
+        'POST /api/v1/transacciones/operativas/despachos/busquedas',
+        'POST /api/v1/transacciones/operativas/despachos-agrupados/busquedas',
+        'POST /api/v1/transacciones/operativas/ordenes-produccion/busquedas',
+        'POST /api/v1/transacciones/operativas/devoluciones-ajustes/busquedas',
+        'POST /api/v1/transacciones/operativas/traslados-internos/busquedas',
+        'POST /api/v1/transacciones/operativas/ordenes-compra/busquedas',
+        'POST /api/v1/transacciones/operativas/recepciones-mercancia/busquedas',
+        'POST /api/v1/transacciones/operativas/productos/busquedas',
+        'POST /api/v1/transacciones/operativas/descuentos/busquedas',
+        'POST /api/v1/transacciones/operativas/consolidados/busquedas',
+        'POST /api/v1/catalogo/productos/busquedas',
+        'POST /api/v1/catalogo/categorias/busquedas',
+        'PATCH /api/v1/catalogo/productos/impuestos-licores',
+        'GET /api/v1/catalogo/marcas',
+        'GET /api/v1/catalogo/marcas/{id_marca}',
+        'POST /api/v1/inventario/conteos',
+        'POST /api/v1/terceros/busquedas',
+        'POST /api/v1/terceros',
+        'PUT /api/v1/terceros/{id_tercero}',
+        'POST /api/v1/tributario/impuestos/busquedas',
+        'GET /api/v1/tributario/impuestos/{id_impuesto}',
+        'POST /api/v1/finanzas/bancos/busquedas',
+        'POST /api/v1/finanzas/medios-pago/busquedas',
+        'POST /api/v1/finanzas/cartera/cuentas-por-cobrar/busquedas',
+        'POST /api/v1/finanzas/cartera/cuentas-por-pagar/busquedas',
+        'POST /api/v1/finanzas/cartera/cuentas-por-cobrar/resumenes-por-tercero/busquedas',
+        'POST /api/v1/finanzas/cartera/cuentas-por-pagar/resumenes-por-tercero/busquedas',
+        'POST /api/v1/organizacion/sucursales/busquedas',
+        'POST /api/v1/organizacion/empleados/busquedas',
+        'POST /api/v1/facturacion/consecutivos/busquedas',
+        'POST /api/v1/restaurante/comandas/busquedas',
+        'POST /api/v1/restaurante/comandas/platos-eliminados/busquedas',
+      ]),
+    );
+    expect(tuples).toHaveLength(45);
+    expect(tuples.every((tuple) => tuple.includes('/api/v1/'))).toBe(true);
+    expect(JSON.stringify(registry)).not.toContain('/jServerj4ErpPro');
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
   });
 
-  it('keeps the expected cache and mutation split', () => {
+  it('keeps the public query and mutation split', () => {
+    expect(registry.endpoints).toHaveLength(45);
+    expect(
+      new Set(registry.endpoints.map((endpoint) => endpoint.category)),
+    ).toEqual(new Set(categories));
     expect(
       registry.endpoints.filter(
         (endpoint) => endpoint.cache.mode === 'cacheable',
       ),
-    ).toHaveLength(24);
+    ).toHaveLength(38);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
-    ).toHaveLength(4);
+    ).toHaveLength(7);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(4);
+    ).toHaveLength(7);
   });
 
-  it('provides an example and response contract for every route', () => {
+  it('provides public examples and response contracts for every route', () => {
     for (const endpoint of registry.endpoints) {
-      expect(endpoint.path).toMatch(/^\/jServerj4ErpPro\//);
+      expect(endpoint.path).toMatch(/^\/api\/v1\//);
       expect(endpoint.responseExample).toBeDefined();
       expect(endpoint.summary).not.toContain('como parte de una integración');
       if (endpoint.bodyRequired) expect(endpoint.requestExample).toBeDefined();
     }
+  });
+
+  it('projects public request surfaces without upstream paths or fixed selectors', () => {
+    expect(
+      new Set(registry.endpoints.map((endpoint) => endpoint.method)),
+    ).toEqual(new Set(['GET', 'POST', 'PATCH', 'PUT']));
+    expect(
+      registry.endpoints
+        .map(({ pathParams, queryParams, bodyFields, presets, tryIt }) =>
+          JSON.stringify({
+            pathParams,
+            queryParams,
+            bodyFields,
+            presets,
+            tryIt,
+          }),
+        )
+        .join('\n'),
+    ).not.toMatch(/jServerj4ErpPro/);
+    expect(
+      registry.endpoints
+        .find((endpoint) => endpoint.id === 'ventas-facturas-busquedas')
+        ?.queryParams.map(({ name }) => name),
+    ).not.toContain('tipo_documento');
+    expect(
+      registry.endpoints
+        .find((endpoint) => endpoint.id === 'catalogo-marcas')
+        ?.queryParams.map(({ name }) => name),
+    ).not.toContain('es_activo');
+    expect(
+      registry.endpoints
+        .find((endpoint) => endpoint.id === 'terceros-crear')
+        ?.bodyFields.map(({ name }) => name),
+    ).not.toContain('id_cliente');
+    expect(
+      registry.endpoints.find((endpoint) => endpoint.id === 'terceros-crear')
+        ?.queryParams,
+    ).toEqual([]);
   });
 
   it('describes every projected group and field', () => {
@@ -46,7 +149,7 @@ describe('canonical documentation registry', () => {
       }
       for (const column of endpoint.columns) {
         expect(
-          hasFieldDescription(endpoint.id, column),
+          hasFieldDescription(endpoint.contractId ?? endpoint.id, column),
           `${endpoint.id}.${column}`,
         ).toBe(true);
       }
@@ -54,9 +157,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('exposes typed fields for JSON bodies, including nested creation fields', () => {
-    const movement = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'grabarMovimientoArr',
-    );
+    const movement = findEndpoint('grabarMovimientoArr');
     expect(movement?.bodyType).toBe('array');
     expect(movement?.bodyFields).toEqual(
       expect.arrayContaining([
@@ -80,9 +181,7 @@ describe('canonical documentation registry', () => {
       ]),
     );
 
-    const document = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'grabarDocumentoSimple',
-    );
+    const document = findEndpoint('grabarDocumentoSimple');
     const details = document?.bodyFields.find(
       (field) => field.name === 'objDetalle',
     );
@@ -108,9 +207,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('documents guardarTercero required creation fields and transport types', () => {
-    const thirdParty = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'guardarTercero',
-    );
+    const thirdParty = findEndpoint('guardarTercero');
     const fields = new Map(
       thirdParty?.bodyFields.map((field) => [field.name, field]) ?? [],
     );
@@ -189,9 +286,7 @@ describe('canonical documentation registry', () => {
     expect(renderedRegistry).not.toContain(retiredKitchenWrite);
     expect(renderedRegistry).not.toContain(retiredTaxFlag);
 
-    const deletedDishes = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'platosEliminados',
-    );
+    const deletedDishes = findEndpoint('platosEliminados');
     expect(JSON.stringify(deletedDishes)).not.toContain(
       ['id', 'transacion'].join('_'),
     );
@@ -207,9 +302,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('documents the four recently updated query contracts', () => {
-    const products = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'buscarProductosCatalogo',
-    );
+    const products = findEndpoint('buscarProductosCatalogo');
     expect(products?.queryParams).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ name: 'id_producto', required: false }),
@@ -241,21 +334,16 @@ describe('canonical documentation registry', () => {
       'buscarDescuentosDocumentosComerciales',
       'buscarConsolidadoDocumentosComerciales',
     ]) {
-      expect(registry.endpoints).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: endpointId,
-            category: 'Documentos comerciales',
-            kind: 'query',
-            cache: expect.objectContaining({ mode: 'cacheable', ttl: '60 s' }),
-          }),
-        ]),
+      expect(findEndpoint(endpointId)).toEqual(
+        expect.objectContaining({
+          contractId: endpointId,
+          kind: 'query',
+          cache: expect.objectContaining({ mode: 'cacheable', ttl: '60 s' }),
+        }),
       );
     }
 
-    const banks = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'buscarBancos',
-    );
+    const banks = findEndpoint('buscarBancos');
     expect(banks?.columns).toContain('config');
     expect(banks?.summary).toContain(
       'config se devuelve como arreglo u objeto cuando contiene JSON valido',
@@ -264,9 +352,7 @@ describe('canonical documentation registry', () => {
       bancos: [{ config: { lstEmpleados: [1, 2, 3, 5, 6, 8, 11] } }],
     });
 
-    const categories = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'buscarCategorias',
-    );
+    const categories = findEndpoint('buscarCategorias');
     expect(categories?.columns).toContain('sucursales');
     expect(categories?.responseExample).toMatchObject({
       categorias: [
@@ -277,9 +363,7 @@ describe('canonical documentation registry', () => {
       ],
     });
 
-    const employees = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'buscarEmpleados',
-    );
+    const employees = findEndpoint('buscarEmpleados');
     expect(employees?.columns).toEqual([
       'id_empleado',
       'id_usuario_portal',
@@ -366,7 +450,7 @@ describe('canonical documentation registry', () => {
       'buscarEmpleados',
     ];
     const catalogEndpoints = catalogIds.map((id) => {
-      const endpoint = registry.endpoints.find((item) => item.id === id);
+      const endpoint = findEndpoint(id);
       if (!endpoint) throw new Error(`Missing endpoint ${id}`);
       return endpoint;
     });
@@ -398,9 +482,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('documents the complete consecutivos catalog without disabled columns', () => {
-    const consecutivos = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'buscarConsecutivos',
-    );
+    const consecutivos = findEndpoint('buscarConsecutivos');
     const columns = [
       'id_consecutivo',
       'nombre_consecutivo',
@@ -440,9 +522,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('documents the updated branch and payment-method contracts', () => {
-    const branches = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'buscarSucursales',
-    );
+    const branches = findEndpoint('buscarSucursales');
     const requestedBranchColumns = [
       'id_sucursal',
       'nombre_sucursal',
@@ -466,9 +546,7 @@ describe('canonical documentation registry', () => {
     expect(branches?.notes.join(' ')).toContain('reondeoTotales');
     expect(branches?.notes.join(' ')).toContain('modificicar_');
 
-    const paymentMethods = registry.endpoints.find(
-      (endpoint) => endpoint.id === 'buscarMediosPago',
-    );
+    const paymentMethods = findEndpoint('buscarMediosPago');
     expect(paymentMethods?.columns).toContain('config');
     expect(paymentMethods?.tryIt?.body).toEqual({
       grupos: ['medio_pago', 'sucursal', 'configuracion'],

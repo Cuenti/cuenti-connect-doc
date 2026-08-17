@@ -5,7 +5,7 @@ import { endpointCurl } from './code';
 describe('documentation snippets', () => {
   it('uses the canonical group projection in the cURL snippet', () => {
     const endpoint = registry.endpoints.find(
-      (item) => item.id === 'buscarCategorias',
+      (item) => item.contractId === 'buscarCategorias',
     );
     if (!endpoint) throw new Error('Category endpoint was not found.');
 

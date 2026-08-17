@@ -10,7 +10,7 @@ export const categories = [
 ] as const;
 
 export type EndpointCategory = (typeof categories)[number];
-export type HttpMethod = 'GET' | 'POST';
+export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT';
 export type EndpointKind = 'query' | 'mutation';
 
 export interface ParameterSpec {
@@ -88,6 +88,7 @@ export interface CachePolicy {
 
 export interface EndpointDoc {
   id: string;
+  contractId?: string;
   name: string;
   summary: string;
   method: HttpMethod;

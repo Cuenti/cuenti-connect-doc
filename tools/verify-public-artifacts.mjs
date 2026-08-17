@@ -19,6 +19,9 @@ const publicFiles = [
 
 const registry = JSON.parse(readFileSync(registryPath, 'utf8'));
 const endpointIds = registry.endpoints.map((endpoint) => endpoint.id);
+const publishedIds = registry.routes?.length
+  ? registry.routes.map((route) => route.routeId)
+  : endpointIds;
 const markdown = readFileSync(markdownPath, 'utf8');
 const markdownIds = [...markdown.matchAll(/^### `([^`]+)`:/gm)].map(
   ([, id]) => id,
@@ -43,10 +46,10 @@ const sameSet = (left, right) => {
   );
 };
 
-if (!sameSet(endpointIds, markdownIds)) {
-  const missing = endpointIds.filter((id) => !markdownIds.includes(id));
-  const extra = markdownIds.filter((id) => !endpointIds.includes(id));
-  const duplicateRegistryIds = duplicateItems(endpointIds);
+if (!sameSet(publishedIds, markdownIds)) {
+  const missing = publishedIds.filter((id) => !markdownIds.includes(id));
+  const extra = markdownIds.filter((id) => !publishedIds.includes(id));
+  const duplicateRegistryIds = duplicateItems(publishedIds);
   const duplicateMarkdownIds = duplicateItems(markdownIds);
   throw new Error(
     [
@@ -92,5 +95,5 @@ for (const file of publicFiles) {
 }
 
 console.log(
-  `Public artifacts verified: ${endpointIds.length} endpoints, ${publicFiles.length} ZIP files.`,
+  `Public artifacts verified: ${publishedIds.length} routes, ${publicFiles.length} ZIP files.`,
 );
