@@ -15,7 +15,9 @@ import {
   getGroupDescription,
 } from '../../fieldDescriptions';
 import type { EndpointDoc } from '../../model';
+import { useEffect, useState } from 'react';
 import type { Credentials } from '../../request';
+import { projectResponseExample } from '../../responseProjection';
 import { TryIt } from '../../TryIt';
 import { JsonBlock } from '../shared/code';
 import { EndpointGuidance } from './EndpointGuidance';
@@ -40,8 +42,9 @@ const FieldTooltip = ({
   label: string;
   description: string;
   className?: string;
-}) => (
-  <Tooltip>
+}) => {
+  return (
+    <Tooltip>
     <TooltipTrigger asChild>
       <button
         type="button"
@@ -54,8 +57,9 @@ const FieldTooltip = ({
     <TooltipContent className="field-tooltip-content" side="top">
       {description}
     </TooltipContent>
-  </Tooltip>
-);
+    </Tooltip>
+  );
+};
 
 const columnDescription = (endpoint: EndpointDoc, column: string) =>
   getFieldDescription(endpoint.contractId ?? endpoint.id, column);
@@ -74,7 +78,30 @@ export const EndpointDetail = ({
   proxyBaseUrl: string;
   curlBaseUrl: string;
   credentials: Credentials;
-}) => (
+}) => {
+  const [requestText, setRequestText] = useState(() =>
+    JSON.stringify(endpoint.requestExample ?? {}, null, 2),
+  );
+  const [requestValue, setRequestValue] = useState(endpoint.requestExample);
+  const [requestError, setRequestError] = useState('');
+
+  useEffect(() => {
+    setRequestText(JSON.stringify(endpoint.requestExample ?? {}, null, 2));
+    setRequestValue(endpoint.requestExample);
+    setRequestError('');
+  }, [endpoint]);
+
+  const updateRequest = (value: string) => {
+    setRequestText(value);
+    try {
+      setRequestValue(JSON.parse(value));
+      setRequestError('');
+    } catch {
+      setRequestError('El JSON de ejemplo todavía no es válido.');
+    }
+  };
+
+  return (
   <article className="endpoint-detail">
     <header className="endpoint-hero">
       <nav className="breadcrumb" aria-label="Ubicación">
@@ -252,10 +279,27 @@ export const EndpointDetail = ({
               <CardTitle>Solicitud</CardTitle>
             </CardHeader>
             <CardContent className="example-card-content">
-              <JsonBlock
-                value={endpoint.requestExample}
-                fallback="Usa los parámetros documentados sin cuerpo adicional."
-              />
+              {endpoint.method === 'GET' || endpoint.requestExample == null ? (
+                <JsonBlock
+                  value={endpoint.requestExample}
+                  fallback="Usa los parámetros documentados sin cuerpo adicional."
+                />
+              ) : (
+                <>
+                  <textarea
+                    className="body-editor documentation-example-editor"
+                    aria-label="Solicitud JSON de ejemplo"
+                    value={requestText}
+                    onChange={(event) => updateRequest(event.target.value)}
+                    rows={12}
+                    spellCheck={false}
+                  />
+                  <p className={requestError ? 'form-error' : 'example-note'}>
+                    {requestError ||
+                      'La respuesta ilustrativa se actualiza al cambiar grupos o detalle.'}
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
           <Card as="section" className="example-card response-card">
@@ -269,7 +313,10 @@ export const EndpointDetail = ({
                   <code>{endpoint.responseContract}</code>
                 </div>
               ) : null}
-              <JsonBlock value={endpoint.responseExample} />
+              <JsonBlock
+                value={projectResponseExample(endpoint, requestValue)}
+                fallback="No hay un ejemplo de respuesta documentado para esta operación."
+              />
             </CardContent>
           </Card>
         </div>
@@ -320,4 +367,5 @@ export const EndpointDetail = ({
       />
     </div>
   </article>
-);
+  );
+};

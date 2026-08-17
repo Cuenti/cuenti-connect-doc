@@ -488,11 +488,16 @@ describe('canonical documentation registry', () => {
 
     const banks = findEndpoint('buscarBancos');
     expect(banks?.columns).toEqual([]);
-    expect(banks?.summary).toContain(
-      'config se devuelve como arreglo u objeto cuando contiene JSON valido',
-    );
+    expect(banks?.summary).toContain('Consulta las cuentas bancarias');
     expect(banks?.responseExample).toMatchObject({
-      bancos: [{ config: { lstEmpleados: [1, 2, 3, 5, 6, 8, 11] } }],
+      bancos: [
+        {
+          banco: { id_banco: 1 },
+          sucursal: { id_sucursal: 1 },
+          contabilidad: { id_plan_cuenta: 1 },
+          configuracion: { config: '{}' },
+        },
+      ],
     });
 
     const categories = findEndpoint('buscarCategorias');
@@ -500,8 +505,10 @@ describe('canonical documentation registry', () => {
     expect(categories?.responseExample).toMatchObject({
       categorias: [
         {
-          sucursales: [1, 2, 4],
-          subcategorias: [{ sucursales: [1, 4] }],
+          categoria: { id_categoria: 1 },
+          tienda: { visible_tienda: 1 },
+          imagen: { id_imagen: 1 },
+          sucursales: { sucursales: [1] },
         },
       ],
     });
@@ -542,11 +549,11 @@ describe('canonical documentation registry', () => {
     expect(employees?.responseExample).toMatchObject({
       empleados: [
         {
-          sucursal_adicional: {
-            bodegas_vender: [],
-            bodegas_trasladar: [],
-            sucursales_permitidas: [],
-          },
+          empleado: { id_empleado: 1 },
+          sucursal: { id_sucursal: 1 },
+          consecutivo: { id_consecutivo: 1 },
+          permisos_caja: { cierra_caja: 1 },
+          roles: { es_tienda: 1 },
         },
       ],
     });
@@ -645,7 +652,13 @@ describe('canonical documentation registry', () => {
       'JsonValue | string | null',
     );
     expect(paymentMethods?.responseExample).toMatchObject({
-      medios_pago: [{ config: { lstBancos: [] } }],
+      medios_pago: [
+        {
+          medio_pago: { id_medio_pago: 1 },
+          sucursal: { id_sucursal: 1 },
+          configuracion: { config: '{}' },
+        },
+      ],
     });
   });
 });

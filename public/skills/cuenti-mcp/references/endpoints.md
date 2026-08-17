@@ -124,7 +124,75 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "transacciones": []
+  "transacciones": [
+    {
+      "codigos": {
+        "id_transacion": 1,
+        "n_transacion": 1,
+        "n_factura": "1",
+        "prefijo": "DOC",
+        "numeracion": 1,
+        "tipo_documento": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0,
+        "total_costo": 7000,
+        "total_utilidad": 3000,
+        "total_abono": 11900,
+        "saldo_pendiente": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo",
+        "direccion": "Dirección ejemplo",
+        "ciudad": "Ciudad ejemplo",
+        "telefonos": "0000000000",
+        "correos": "cliente@example.invalid"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_factura": 1735689600000,
+        "fecha_registro": 1735689600000,
+        "fecha_vencimiento": 1738281600000
+      },
+      "ruta_despacho": {
+        "id_ruta": 1,
+        "nombre": "Ruta ejemplo"
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          },
+          "impuestos": {
+            "total_impuesto": 1900
+          },
+          "descuento": {
+            "descuento": 0
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -228,7 +296,75 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "transacciones": []
+  "transacciones": [
+    {
+      "codigos": {
+        "id_transacion": 1,
+        "n_transacion": 1,
+        "n_factura": "1",
+        "prefijo": "DOC",
+        "numeracion": 1,
+        "tipo_documento": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0,
+        "total_costo": 7000,
+        "total_utilidad": 3000,
+        "total_abono": 11900,
+        "saldo_pendiente": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo",
+        "direccion": "Dirección ejemplo",
+        "ciudad": "Ciudad ejemplo",
+        "telefonos": "0000000000",
+        "correos": "cliente@example.invalid"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_factura": 1735689600000,
+        "fecha_registro": 1735689600000,
+        "fecha_vencimiento": 1738281600000
+      },
+      "ruta_despacho": {
+        "id_ruta": 1,
+        "nombre": "Ruta ejemplo"
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          },
+          "impuestos": {
+            "total_impuesto": 1900
+          },
+          "descuento": {
+            "descuento": 0
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -332,7 +468,75 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "transacciones": []
+  "transacciones": [
+    {
+      "codigos": {
+        "id_transacion": 1,
+        "n_transacion": 1,
+        "n_factura": "1",
+        "prefijo": "DOC",
+        "numeracion": 1,
+        "tipo_documento": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0,
+        "total_costo": 7000,
+        "total_utilidad": 3000,
+        "total_abono": 11900,
+        "saldo_pendiente": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo",
+        "direccion": "Dirección ejemplo",
+        "ciudad": "Ciudad ejemplo",
+        "telefonos": "0000000000",
+        "correos": "cliente@example.invalid"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_factura": 1735689600000,
+        "fecha_registro": 1735689600000,
+        "fecha_vencimiento": 1738281600000
+      },
+      "ruta_despacho": {
+        "id_ruta": 1,
+        "nombre": "Ruta ejemplo"
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          },
+          "impuestos": {
+            "total_impuesto": 1900
+          },
+          "descuento": {
+            "descuento": 0
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -436,7 +640,75 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "transacciones": []
+  "transacciones": [
+    {
+      "codigos": {
+        "id_transacion": 1,
+        "n_transacion": 1,
+        "n_factura": "1",
+        "prefijo": "DOC",
+        "numeracion": 1,
+        "tipo_documento": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0,
+        "total_costo": 7000,
+        "total_utilidad": 3000,
+        "total_abono": 11900,
+        "saldo_pendiente": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo",
+        "direccion": "Dirección ejemplo",
+        "ciudad": "Ciudad ejemplo",
+        "telefonos": "0000000000",
+        "correos": "cliente@example.invalid"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_factura": 1735689600000,
+        "fecha_registro": 1735689600000,
+        "fecha_vencimiento": 1738281600000
+      },
+      "ruta_despacho": {
+        "id_ruta": 1,
+        "nombre": "Ruta ejemplo"
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          },
+          "impuestos": {
+            "total_impuesto": 1900
+          },
+          "descuento": {
+            "descuento": 0
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -540,7 +812,75 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "transacciones": []
+  "transacciones": [
+    {
+      "codigos": {
+        "id_transacion": 1,
+        "n_transacion": 1,
+        "n_factura": "1",
+        "prefijo": "DOC",
+        "numeracion": 1,
+        "tipo_documento": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0,
+        "total_costo": 7000,
+        "total_utilidad": 3000,
+        "total_abono": 11900,
+        "saldo_pendiente": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo",
+        "direccion": "Dirección ejemplo",
+        "ciudad": "Ciudad ejemplo",
+        "telefonos": "0000000000",
+        "correos": "cliente@example.invalid"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_factura": 1735689600000,
+        "fecha_registro": 1735689600000,
+        "fecha_vencimiento": 1738281600000
+      },
+      "ruta_despacho": {
+        "id_ruta": 1,
+        "nombre": "Ruta ejemplo"
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          },
+          "impuestos": {
+            "total_impuesto": 1900
+          },
+          "descuento": {
+            "descuento": 0
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -644,11 +984,11 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "type": 1,
-  "message": "save",
-  "retorno": "opaque-value",
+  "message": "guardar",
+  "retorno": "resultado-ejemplo",
   "id_transacion": 511903,
-  "url_interna": "...",
-  "url_externa": "..."
+  "url_interna": "https://ejemplo.invalid/documento",
+  "url_externa": "https://ejemplo.invalid/documento"
 }
 ```
 
@@ -755,11 +1095,11 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "type": 1,
-  "message": "save",
-  "retorno": "opaque-value",
+  "message": "guardar",
+  "retorno": "resultado-ejemplo",
   "id_transacion": 511903,
-  "url_interna": "...",
-  "url_externa": "..."
+  "url_interna": "https://ejemplo.invalid/documento",
+  "url_externa": "https://ejemplo.invalid/documento"
 }
 ```
 
@@ -866,11 +1206,11 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "type": 1,
-  "message": "save",
-  "retorno": "opaque-value",
+  "message": "guardar",
+  "retorno": "resultado-ejemplo",
   "id_transacion": 511903,
-  "url_interna": "...",
-  "url_externa": "..."
+  "url_interna": "https://ejemplo.invalid/documento",
+  "url_externa": "https://ejemplo.invalid/documento"
 }
 ```
 
@@ -943,7 +1283,28 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "productos": []
+  "productos": [
+    {
+      "producto": {
+        "id_producto": 25,
+        "sku": "SKU-001",
+        "nombre_producto": "Producto ejemplo"
+      },
+      "cantidades": {
+        "cantidad": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "total_neto": 11900
+      },
+      "costos": {
+        "costo_unitario": 7000
+      },
+      "fechas": {
+        "fecha_registro": 1735689600000
+      }
+    }
+  ]
 }
 ```
 
@@ -1012,7 +1373,29 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "descuentos": []
+  "descuentos": [
+    {
+      "transaccion": {
+        "id_transacion": 1,
+        "n_factura": "DOC-001"
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "producto": {
+        "id_producto": 25,
+        "nombre": "Producto ejemplo"
+      },
+      "descuento": {
+        "descuento": 1000,
+        "porcentaje_descuento": 10
+      },
+      "totales": {
+        "total_neto": 9000
+      }
+    }
+  ]
 }
 ```
 
@@ -1078,7 +1461,23 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "consolidado": []
+  "consolidado": [
+    {
+      "agrupacion": {
+        "id": 1,
+        "nombre": "Cliente ejemplo"
+      },
+      "cantidad": {
+        "cantidad": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0
+      }
+    }
+  ]
 }
 ```
 
@@ -1173,8 +1572,54 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "documentos": []
+  "cantidad": 1,
+  "documentos": [
+    {
+      "codigos": {
+        "id_documento": 1,
+        "n_documento": "DOC-001",
+        "tipo_documento": 4
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_documento": 1735689600000,
+        "fecha_registro": 1735689600000
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -1268,8 +1713,54 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "documentos": []
+  "cantidad": 1,
+  "documentos": [
+    {
+      "codigos": {
+        "id_documento": 1,
+        "n_documento": "DOC-001",
+        "tipo_documento": 4
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_documento": 1735689600000,
+        "fecha_registro": 1735689600000
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -1363,8 +1854,54 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "documentos": []
+  "cantidad": 1,
+  "documentos": [
+    {
+      "codigos": {
+        "id_documento": 1,
+        "n_documento": "DOC-001",
+        "tipo_documento": 4
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "fechas": {
+        "fecha_documento": 1735689600000,
+        "fecha_registro": 1735689600000
+      },
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "cantidad": 1
+          },
+          "precios": {
+            "precio_unitario": 10000
+          },
+          "totales": {
+            "subtotal": 10000,
+            "total_neto": 11900
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -1426,8 +1963,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "productos": []
+  "cantidad": 1,
+  "productos": [
+    {
+      "producto": {
+        "id_producto": 25,
+        "sku": "SKU-001",
+        "nombre_producto": "Producto ejemplo"
+      },
+      "cantidades": {
+        "cantidad": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "total_neto": 11900
+      },
+      "fechas": {
+        "fecha_registro": 1735689600000
+      }
+    }
+  ]
 }
 ```
 
@@ -1494,8 +2049,29 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "descuentos": []
+  "cantidad": 1,
+  "descuentos": [
+    {
+      "documento": {
+        "id_documento": 1,
+        "n_documento": "DOC-001"
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "producto": {
+        "id_producto": 25,
+        "nombre": "Producto ejemplo"
+      },
+      "descuento": {
+        "descuento": 1000
+      },
+      "totales": {
+        "total_neto": 9000
+      }
+    }
+  ]
 }
 ```
 
@@ -1556,8 +2132,24 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "consolidado": []
+  "cantidad": 1,
+  "consolidado": [
+    {
+      "agrupacion": {
+        "id": 1,
+        "nombre": "Cliente ejemplo"
+      },
+      "cantidad": {
+        "cantidad": 1
+      },
+      "totales": {
+        "subtotal": 10000,
+        "impuesto": 1900,
+        "total_neto": 11900,
+        "descuento": 0
+      }
+    }
+  ]
 }
 ```
 
@@ -1642,11 +2234,78 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
     {
       "producto": {
         "id_producto": 25,
-        "nombre": "Producto",
-        "sku": "SKU-25"
+        "nombre": "Producto ejemplo",
+        "sku": "SKU-001",
+        "codigo_barras": "000000000001",
+        "nota": "Descripción de ejemplo",
+        "es_servicio": 0,
+        "es_ingrediente": 0,
+        "mostrar_tienda": 1,
+        "alias": "Producto",
+        "metadata": "{}"
+      },
+      "sucursal": {
+        "id_producto_sucursal": 1,
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal",
+        "ubicacion": "Ubicación ejemplo",
+        "es_activo": 1
+      },
+      "precios": {
+        "precio_venta": 10000,
+        "precio_compra": 7000,
+        "costo": 7000,
+        "costo_fijo": 7000,
+        "precio_venta_minimo": 9000,
+        "precio_venta_online": 10000,
+        "precio_promocion_sito": 9500,
+        "precio_promocion_online": 9500,
+        "descuento_maximo": 10
       },
       "inventario": {
-        "existencias": 10
+        "existencias": 10,
+        "stock_minimo": 2,
+        "vende_sin_existencia": 0,
+        "maneja_lote": 0,
+        "maneja_seriales": 0
+      },
+      "categoria": {
+        "id_categoria": 1,
+        "nombre_categoria": "Categoría ejemplo"
+      },
+      "marca": {
+        "id_marca": 1,
+        "nombre_marca": "Marca ejemplo"
+      },
+      "impuestos": {
+        "id_impuesto": 1,
+        "nombre_impuesto": "Impuesto ejemplo",
+        "valor_impuesto": 19,
+        "tipo_impuesto": "porcentaje",
+        "clasificacion_tributaria": "gravado",
+        "total_estampilla": 0,
+        "total_impoconsumo": 0
+      },
+      "medida": {
+        "id_tipo_medida": 1,
+        "nombre_medida": "Unidad",
+        "tipo_medida": "UND"
+      },
+      "imagen": {
+        "id_imagen": 1,
+        "ext1": "jpg",
+        "ext2": "webp",
+        "url_imagen": "https://example.invalid/producto-200.jpg",
+        "url_imagen_400": "https://example.invalid/producto-400.jpg"
+      },
+      "configuracion": {
+        "invima": "REGISTRO-EJEMPLO",
+        "cum": null,
+        "cups": null,
+        "codigo_producto_dian": "00000000",
+        "tiempo_preparacion": 0,
+        "ncm": "0000.00.00",
+        "fecha_registro": 1735689600000
       }
     }
   ]
@@ -1714,24 +2373,33 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
   "cantidad": 1,
   "categorias": [
     {
-      "id_categoria": 17,
-      "nombre_categoria": "Productos Alimenticios",
-      "sucursales": [
-        1,
-        2,
-        4
-      ],
-      "subcategorias": [
-        {
-          "id_categoria": 18,
-          "nombre_categoria": "Bebidas",
-          "sucursales": [
-            1,
-            4
-          ],
-          "subcategorias": []
-        }
-      ]
+      "categoria": {
+        "id_categoria": 1,
+        "nombre_categoria": "Categoría ejemplo",
+        "alias": "Categoría",
+        "codigo_dian": "CAT-001",
+        "id_categoria_padre": 0,
+        "es_activo": 1,
+        "fecha_registro": 1735689600000
+      },
+      "tienda": {
+        "visible_tienda": 1,
+        "mostrar_tienda_linea": 1,
+        "mostrar_catalogo_linea": 1,
+        "metadata": "{}"
+      },
+      "imagen": {
+        "id_imagen": 1,
+        "formato": "png",
+        "url": "https://example.invalid/categoria.png"
+      },
+      "sucursales": {
+        "sucursales": [
+          1
+        ],
+        "alerta_vencimiento_lotes": 0,
+        "visible_produccion": 0
+      }
     }
   ]
 }
@@ -1950,7 +2618,7 @@ Envía una lista con entre 1 y 1000 elementos.
 
 ```json
 {
-  "message": "save",
+  "message": "guardar",
   "type": 1,
   "retorno": ""
 }
@@ -2026,8 +2694,106 @@ Envía una lista con entre 1 y 1000 elementos.
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "clientes": []
+  "cantidad": 1,
+  "clientes": [
+    {
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "tipo_identificacion": {
+          "id": 1,
+          "nombre": "Tipo de documento",
+          "pais": "País ejemplo"
+        },
+        "tipo_persona": {
+          "id": 1,
+          "nombre": "Persona ejemplo"
+        },
+        "nombre_cliente": "Cliente ejemplo",
+        "primer_nombre": "Nombre",
+        "segundo_nombre": null,
+        "primer_apellido": "Apellido",
+        "segundo_apellido": null,
+        "alias": "Cliente",
+        "fecha_nacimiento": null,
+        "sexo": "N/A",
+        "estado_civil": null,
+        "estrato_social": null,
+        "es_cliente": 1,
+        "es_proveedor": 0,
+        "es_consumidor_final": 0,
+        "es_activo": 1,
+        "fecha_registro": 1735689600000,
+        "fecha_actualizacion": 1735689600000
+      },
+      "contacto": {
+        "telefonos": [
+          "0000000000"
+        ],
+        "correos": [
+          "cliente@example.invalid"
+        ],
+        "direccion": "Dirección ejemplo",
+        "ciudad": "Ciudad ejemplo",
+        "departamento": "Departamento ejemplo",
+        "pais": "País ejemplo",
+        "zona": "Zona ejemplo",
+        "contacto": "Contacto ejemplo",
+        "sitio_web": "https://example.invalid",
+        "facebook": null,
+        "twitter": null,
+        "instagram": null,
+        "snapchat": null
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal",
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo",
+        "id_lista_precios": 1,
+        "nombre_lista_precios": "Lista general",
+        "id_ruta_despacho": 1,
+        "nombre_ruta_despacho": "Ruta ejemplo",
+        "id_centro_costo": 1
+      },
+      "cartera_cliente": {
+        "permite_cartera": 1,
+        "cupo_cartera": 1000000,
+        "dias_vencimiento_cartera_cliente": 30,
+        "permite_cartera_vencida": 0,
+        "permite_saldo_cartera": 1,
+        "saldo_bono": 0,
+        "puntos_acumulados": 0,
+        "genera_bonos": 0,
+        "envioSmsCartera": 0,
+        "envioSmsProducto": 0,
+        "medio_pago": 1
+      },
+      "tributaria": {
+        "regimen": 1,
+        "regimenImpuesto": 1,
+        "legalidad": 1,
+        "tipoOperacion": "10",
+        "id_tipo_retencion_ventas": 1,
+        "id_tipo_retencion_compra": 1,
+        "id_clase_cliente": 1,
+        "id_tipo_cliente": 1
+      },
+      "configuracion": {
+        "codigo_interno": "CLI-001",
+        "numero_matricula": "MATRICULA-EJEMPLO",
+        "cliente_predeterminado": 0,
+        "solo_remision2": 0,
+        "codigo_turismo": null,
+        "fecha_vencimiento_codigo_turismo": null,
+        "nota": "Nota de ejemplo",
+        "horario": "Horario de ejemplo",
+        "id_empresa_portal": 1,
+        "id_usuario_portal": 1,
+        "tiene_documentos_asociados": 0
+      }
+    }
+  ]
 }
 ```
 
@@ -2350,8 +3116,35 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "impuestos": []
+  "cantidad": 1,
+  "impuestos": [
+    {
+      "impuesto": {
+        "id_impuesto": 1,
+        "nombre_impuesto": "Impuesto ejemplo",
+        "valor_impuesto": 19,
+        "tipo_impuesto": "01",
+        "clasificacion_tributaria": "Gravado",
+        "codigo": "IMP-001",
+        "codigo_tipo_impuesto": "01",
+        "nombre_codigo_impuesto": "Impuesto ejemplo",
+        "pais": "País ejemplo",
+        "es_activo": 1,
+        "fecha_registro": 1735689600000
+      },
+      "contabilidad": {
+        "id_plan_cuentas_venta": 1,
+        "id_plan_cuentas_pasivo": 2,
+        "id_plan_cuentas_activo": 3,
+        "id_plan_cuentas_compra": 4,
+        "id_plan_cuenta_imp_venta_devolucion": 5,
+        "id_plan_cuenta_imp_compa_devolucion": 6,
+        "id_plan_cuenta_imp_gasto_devolucion": 7,
+        "id_plan_cuentas_gasto": 8,
+        "id_plan_cuenta_compra_item": 9
+      }
+    }
+  ]
 }
 ```
 
@@ -2463,20 +3256,24 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
   "cantidad": 1,
   "bancos": [
     {
-      "id_banco": 1,
-      "nombre": "Caja General",
-      "numero_cuenta": "11050101",
-      "saldo": 500000,
-      "config": {
-        "lstEmpleados": [
-          1,
-          2,
-          3,
-          5,
-          6,
-          8,
-          11
-        ]
+      "banco": {
+        "id_banco": 1,
+        "nombre": "Cuenta ejemplo",
+        "numero_cuenta": "CUENTA-EJEMPLO",
+        "saldo": 100000,
+        "descripcion": "Cuenta de ejemplo",
+        "es_activo": 1
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal"
+      },
+      "contabilidad": {
+        "id_plan_cuenta": 1,
+        "codigo": "11000001"
+      },
+      "configuracion": {
+        "config": "{}"
       }
     }
   ]
@@ -2544,10 +3341,21 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
   "cantidad": 1,
   "medios_pago": [
     {
-      "id_medio_pago": 1,
-      "nombre_medio_pago": "Efectivo",
-      "config": {
-        "lstBancos": []
+      "medio_pago": {
+        "id_medio_pago": 1,
+        "nombre_medio_pago": "Medio de pago ejemplo",
+        "nota": "Nota de ejemplo",
+        "codigo": "MP-001",
+        "comision": 0,
+        "codigo_pago_fisco": "01",
+        "es_activo": 1
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal"
+      },
+      "configuracion": {
+        "config": "{}"
       }
     }
   ]
@@ -2620,11 +3428,37 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 {
   "pagina": 0,
   "totales": {
-    "total_deuda": 0,
-    "total_abono": 0,
-    "total_pendiente": 0
+    "total_deuda": 100,
+    "total_abono": 20,
+    "total_pendiente": 80
   },
-  "cartera": []
+  "cartera": [
+    {
+      "transaccion": {
+        "id_transacion": 1,
+        "n_factura": 1,
+        "prefijo": "DOC"
+      },
+      "saldo": {
+        "total_factura": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      },
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "estado": {
+        "estado_cartera": "Pendiente",
+        "dias_vencidos": 0
+      }
+    }
+  ]
 }
 ```
 
@@ -2693,11 +3527,37 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 {
   "pagina": 0,
   "totales": {
-    "total_deuda": 0,
-    "total_abono": 0,
-    "total_pendiente": 0
+    "total_deuda": 100,
+    "total_abono": 20,
+    "total_pendiente": 80
   },
-  "cartera": []
+  "cartera": [
+    {
+      "transaccion": {
+        "id_transacion": 1,
+        "n_factura": 1,
+        "prefijo": "DOC"
+      },
+      "saldo": {
+        "total_factura": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      },
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "estado": {
+        "estado_cartera": "Pendiente",
+        "dias_vencidos": 0
+      }
+    }
+  ]
 }
 ```
 
@@ -2761,7 +3621,23 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 ```json
 {
   "pagina": 0,
-  "resumen_terceros": []
+  "resumen_terceros": [
+    {
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "documentos": {
+        "total_documentos": 1
+      },
+      "saldo": {
+        "total_deuda": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      }
+    }
+  ]
 }
 ```
 
@@ -2824,7 +3700,23 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 ```json
 {
   "pagina": 0,
-  "resumen_terceros": []
+  "resumen_terceros": [
+    {
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "documentos": {
+        "total_documentos": 1
+      },
+      "saldo": {
+        "total_deuda": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      }
+    }
+  ]
 }
 ```
 
@@ -2889,8 +3781,41 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "sucursales": []
+  "cantidad": 1,
+  "sucursales": [
+    {
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal",
+        "nota": "Nota de ejemplo",
+        "codigo_sucursal": "SUC-001",
+        "es_bodega": 0,
+        "id_padre": 0,
+        "es_activo": 1,
+        "fecha_registro": 1735689600000
+      },
+      "pos": {
+        "vender_con_impuestos": 1,
+        "numero_mesas": 0,
+        "digitos_decimales": 2,
+        "reondeoTotales": 1
+      },
+      "politicas_precios": {
+        "modificicar_precio_minimos_otras_sucursales": 0,
+        "modificicar_descuento_maximo_otras_sucursales": 0,
+        "actualizarPrecioVentaSucursales": 1,
+        "actualizarPrecioCostoSucursales": 1
+      },
+      "licores": {
+        "activar_venta_compra_licores": 0,
+        "vender_ip_estampilla": 0
+      },
+      "moneda": {
+        "id_moneda": 1,
+        "simbolo_moneda": "$"
+      }
+    }
+  ]
 }
 ```
 
@@ -3015,12 +3940,69 @@ Para `grupos`:
   "cantidad": 1,
   "empleados": [
     {
-      "id_empleado": 1,
-      "nombre_completo": "Empleado de ejemplo",
-      "sucursal_adicional": {
-        "bodegas_vender": [],
-        "bodegas_trasladar": [],
-        "sucursales_permitidas": []
+      "empleado": {
+        "id_empleado": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_completo": "Empleado ejemplo",
+        "codigo_empleado": "EMP-001",
+        "tipo_usuario": 1,
+        "es_activo": 1,
+        "fecha_registro": 1735689600000,
+        "id_usuario_portal": 1
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal",
+        "id_bodega": 1,
+        "nombre_bodega": "Bodega principal",
+        "sucursales_adicionales": [
+          1
+        ],
+        "vendedor_multi_sucursal": 0,
+        "solo_bodegas_sucursal": 1
+      },
+      "consecutivo": {
+        "id_consecutivo": 1,
+        "nombre_consecutivo": "Consecutivo ejemplo",
+        "prefijo_consecutivo": "DOC"
+      },
+      "precios": {
+        "id_lista_precios": 1,
+        "nombre_lista_precios": "Lista general"
+      },
+      "comision": {
+        "comision": 2,
+        "tipo_comision": 1,
+        "comision_antes_iva": 0
+      },
+      "permisos_caja": {
+        "modePosDefecto": 1,
+        "cierra_caja": 1,
+        "obligar_apertura_caja": 1,
+        "cerrar_session_cierre": 0,
+        "ventas_solo_credito": 0
+      },
+      "restaurante": {
+        "mostrar_mesa": 0
+      },
+      "roles": {
+        "es_contador": 0,
+        "es_tienda": 1,
+        "sincroniazar_datos": 1
+      },
+      "horario": {
+        "horario_ingreso_cuenti": 1735689600000,
+        "horario_salida_cuenti": 1735722000000,
+        "config_horario": "{}"
+      },
+      "app_movil": {
+        "puede_ingresar_app_nube": 1,
+        "pueden_ingresar_app_local": 1
+      },
+      "ventas_ext": {
+        "mostrar_vendedor_ventas": 1,
+        "vendedor_multi_sucursal_ext": 0,
+        "impresora_factura": "Impresora ejemplo"
       }
     }
   ]
@@ -3094,8 +4076,43 @@ Para `grupos`:
 ```json
 {
   "pagina": 0,
-  "cantidad": 0,
-  "consecutivos": []
+  "cantidad": 1,
+  "consecutivos": [
+    {
+      "consecutivo": {
+        "id_consecutivo": 1,
+        "nombre_consecutivo": "Consecutivo ejemplo",
+        "prefijo": "DOC",
+        "numero": 1,
+        "resolucion": "RESOLUCION-EJEMPLO",
+        "tipo_consecutivo": 1,
+        "es_activo": 1,
+        "fecha_registro": 1735689600000
+      },
+      "factura_electronica": {
+        "es_factura_electronica": 1,
+        "technicalKey2": "CLAVE-EJEMPLO",
+        "facturaOnline": 1,
+        "es_contingencia": 0
+      },
+      "rangos": {
+        "inicia": 1,
+        "finaliza": 1000,
+        "fecha_vencimiento": 1767225600000,
+        "alertar_numero": 900,
+        "nRelleno": 4,
+        "es_tirilla_pos": 0
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal",
+        "predeterminado": 1
+      },
+      "configuracion": {
+        "multi_moneda": 0
+      }
+    }
+  ]
 }
 ```
 
@@ -3211,7 +4228,29 @@ Para `grupos`:
 ```json
 {
   "pagina": 0,
-  "comandas": []
+  "comandas": [
+    {
+      "codigos": {
+        "id_transacion_mesa": 1,
+        "id_transacion": 1
+      },
+      "mesa": {
+        "numero_mesa": 1,
+        "nombre_mesa": "Mesa ejemplo",
+        "comensales": 2
+      },
+      "producto": {
+        "id_producto": 25,
+        "nombre": "Producto ejemplo",
+        "cantidad": 1,
+        "precio": 10000
+      },
+      "estado": {
+        "estado": 1,
+        "es_activo": 1
+      }
+    }
+  ]
 }
 ```
 
@@ -3293,7 +4332,23 @@ Para `grupos`:
 ```json
 {
   "pagina": 0,
-  "platos_eliminados": []
+  "platos_eliminados": [
+    {
+      "codigos": {
+        "id_auditoria": 1
+      },
+      "fecha": {
+        "fecha_registro": 1735689600000
+      },
+      "producto": {
+        "nombre_producto": "Producto ejemplo",
+        "cantidad": 1
+      },
+      "motivo": {
+        "nota": "Motivo de ejemplo"
+      }
+    }
+  ]
 }
 ```
 

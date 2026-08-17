@@ -983,7 +983,8 @@ const normalizeEndpoint = (
     return true;
   });
   const summary =
-    asString(first(item, ['summary', 'description', 'descripcion'])) ||
+    asString(first(item, ['summary'])) ||
+    asString(first(item, ['description', 'descripcion'])) ||
     notes[0] ||
     `${kind === 'query' ? 'Consulta' : 'Operación'} del contrato Cuenti para ${(
       asString(item.publicTitle) ||
