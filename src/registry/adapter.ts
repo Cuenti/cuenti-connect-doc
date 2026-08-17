@@ -406,7 +406,7 @@ const normalizeGroups = (value: unknown): FieldGroup[] => {
       .map((entry) => {
         if (typeof entry === 'string') return { name: entry, fields: [] };
         const item = asRecord(entry);
-        const level = asString(item.level) as FieldGroup['level'];
+        const level = asString(item.level);
         return {
           name: asString(first(item, ['name', 'nombre', 'group', 'grupo'])),
           fields: strings(
@@ -414,7 +414,9 @@ const normalizeGroups = (value: unknown): FieldGroup[] => {
           ),
           description:
             asString(first(item, ['description', 'descripcion'])) || undefined,
-          level: ['header', 'detail', 'both'].includes(level) ? level : undefined,
+          level: ['header', 'detail', 'both'].includes(level)
+            ? (level as FieldGroup['level'])
+            : undefined,
         };
       })
       .filter((group) => group.name);
@@ -1125,11 +1127,31 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
       ]
         .filter(Boolean)
         .join(' ');
+    if (
+      endpoint.contractId === 'buscarDescuentos' ||
+      endpoint.contractId === 'buscarDescuentosDocumentosComerciales'
+    ) {
+      const levels: Record<string, FieldGroup['level']> = {
+        documento: 'both',
+        transaccion: 'both',
+        cliente: 'both',
+        totales: 'both',
+        empleado: 'header',
+        vendedor: 'header',
+        producto: 'detail',
+        cantidades: 'detail',
+        precios: 'detail',
+        descuento: 'detail',
+      };
+      for (const group of endpoint.groups) {
+        group.level = levels[group.name] ?? group.level;
+      }
     }
   }
-  if (endpoints.length !== 45) {
+  }
+  if (endpoints.length !== 39) {
     throw new Error(
-      `El registro público debe contener 45 rutas; contiene ${endpoints.length}.`,
+      `El registro público debe contener 39 rutas; contiene ${endpoints.length}.`,
     );
   }
   if (

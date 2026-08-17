@@ -112,7 +112,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '45 operaciones' }),
+      screen.getByRole('heading', { name: '39 operaciones' }),
     ).toBeVisible();
   });
 
