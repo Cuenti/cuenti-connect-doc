@@ -626,7 +626,9 @@ const fallbackPresets = (path: string): EndpointPreset[] => {
         name: 'Descuentos por documento',
         description: 'Descuentos agregados por documento.',
         query: {},
-        body: { grupos: ['documento', 'cliente', 'empleado', 'vendedor', 'totales'] },
+        body: {
+          grupos: ['documento', 'cliente', 'empleado', 'vendedor', 'totales'],
+        },
       },
     ];
   }
@@ -1165,27 +1167,27 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
       ]
         .filter(Boolean)
         .join(' ');
-    if (
-      endpoint.contractId === 'buscarDescuentos' ||
-      endpoint.contractId === 'buscarDescuentosDocumentosComerciales'
-    ) {
-      const levels: Record<string, FieldGroup['level']> = {
-        documento: 'both',
-        transaccion: 'both',
-        cliente: 'both',
-        totales: 'both',
-        empleado: 'header',
-        vendedor: 'header',
-        producto: 'detail',
-        cantidades: 'detail',
-        precios: 'detail',
-        descuento: 'detail',
-      };
-      for (const group of endpoint.groups) {
-        group.level = levels[group.name] ?? group.level;
+      if (
+        endpoint.contractId === 'buscarDescuentos' ||
+        endpoint.contractId === 'buscarDescuentosDocumentosComerciales'
+      ) {
+        const levels: Record<string, FieldGroup['level']> = {
+          documento: 'both',
+          transaccion: 'both',
+          cliente: 'both',
+          totales: 'both',
+          empleado: 'header',
+          vendedor: 'header',
+          producto: 'detail',
+          cantidades: 'detail',
+          precios: 'detail',
+          descuento: 'detail',
+        };
+        for (const group of endpoint.groups) {
+          group.level = levels[group.name] ?? group.level;
+        }
       }
     }
-  }
   }
   if (endpoints.length !== 40) {
     throw new Error(

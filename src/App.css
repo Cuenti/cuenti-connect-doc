@@ -2772,17 +2772,19 @@ html[data-theme="dark"] .credentials-modal input:read-only {
   border-color: var(--brand-yellow-600);
 }
 
-.curl-copy-button {
+.quick-start-footer .curl-copy-button,
+.try-actions .curl-copy-button {
   flex: none;
-  color: var(--brand-primary-900) !important;
-  background: var(--brand-yellow-500) !important;
-  border-color: var(--brand-yellow-500) !important;
+  color: var(--brand-primary-900);
+  background: var(--brand-yellow-500);
+  border-color: var(--brand-yellow-500);
   font-weight: 700;
 }
 
-.curl-copy-button:hover {
-  background: var(--brand-yellow-600) !important;
-  border-color: var(--brand-yellow-600) !important;
+.quick-start-footer .curl-copy-button:hover,
+.try-actions .curl-copy-button:hover {
+  background: var(--brand-yellow-600);
+  border-color: var(--brand-yellow-600);
 }
 
 .detail-sections {

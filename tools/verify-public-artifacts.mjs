@@ -55,10 +55,7 @@ const sameSet = (left, right) => {
   );
 };
 
-if (
-  !sameSet(publishedIds, markdownIds) ||
-  unknownMarkdownIds.length > 0
-) {
+if (!sameSet(publishedIds, markdownIds) || unknownMarkdownIds.length > 0) {
   const missing = publishedIds.filter((id) => !markdownIds.includes(id));
   const extra = unknownMarkdownIds;
   const duplicateRegistryIds = duplicateItems(publishedIds);

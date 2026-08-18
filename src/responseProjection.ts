@@ -9,7 +9,9 @@ const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
 const selectedGroups = (body: unknown, key: string) => {
   if (!isObject(body) || !Array.isArray(body[key])) return null;
-  return new Set(body[key].filter((item): item is string => typeof item === 'string'));
+  return new Set(
+    body[key].filter((item): item is string => typeof item === 'string'),
+  );
 };
 
 const groupFields = (endpoint: EndpointDoc) =>
@@ -26,7 +28,8 @@ const projectGroupRecord = (
       .filter(([key]) => (knownGroups.has(key) ? selected.has(key) : true))
       .map(([key, groupValue]) => {
         const fields = fieldsByGroup.get(key);
-        if (!fields || !isObject(groupValue) || fields.size === 0) return [key, groupValue];
+        if (!fields || !isObject(groupValue) || fields.size === 0)
+          return [key, groupValue];
         return [
           key,
           Object.fromEntries(
@@ -84,9 +87,19 @@ export const projectResponseExample = (
 
   result[collection] = example[collection].map((item) => {
     if (!isObject(item)) return item;
-    const projected = projectGroupRecord(item, groups, knownGroups, fieldsByGroup);
+    const projected = projectGroupRecord(
+      item,
+      groups,
+      knownGroups,
+      fieldsByGroup,
+    );
     if (detail && Array.isArray(item.detalle)) {
-      projected.detalle = projectDetails(item.detalle, detail, knownGroups, fieldsByGroup);
+      projected.detalle = projectDetails(
+        item.detalle,
+        detail,
+        knownGroups,
+        fieldsByGroup,
+      );
     }
     return projected;
   });
