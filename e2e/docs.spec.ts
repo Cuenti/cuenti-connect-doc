@@ -421,7 +421,7 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
     page.getByRole('heading', { name: 'Probar consulta' }),
   ).toBeVisible();
   await expect(page.locator('.quick-start')).toContainText(
-    'http://localhost:8081/api',
+    '/api/v1/tributario/impuestos/{{id_impuesto}}',
   );
   await expect(
     page.getByText(/id_impuesto debe ser mayor que cero/).first(),
