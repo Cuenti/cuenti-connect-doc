@@ -4,12 +4,15 @@ import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const registryPath = resolve(root, 'contracts/j4/endpoints.json');
+const externalToolsPath = resolve(root, 'contracts/mcp/external-tools.json');
 const markdownPath = resolve(
   root,
   'public/skills/cuenti-mcp/references/endpoints.md',
 );
 const archivePath = resolve(root, 'public/skills/cuenti-mcp.zip');
 const archiveRoot = 'cuenti-mcp/';
+const externalRegistry = JSON.parse(readFileSync(externalToolsPath, 'utf8'));
+const externalToolIds = externalRegistry.tools.map((tool) => tool.id);
 const publicFiles = [
   'SKILL.md',
   'references/endpoints.md',
@@ -19,12 +22,18 @@ const publicFiles = [
 
 const registry = JSON.parse(readFileSync(registryPath, 'utf8'));
 const endpointIds = registry.endpoints.map((endpoint) => endpoint.id);
-const publishedIds = registry.routes?.length
-  ? registry.routes.map((route) => route.routeId)
-  : endpointIds;
+const publishedIds = [
+  ...(registry.routes?.length
+    ? registry.routes.map((route) => route.routeId)
+    : endpointIds),
+  ...externalToolIds,
+];
 const markdown = readFileSync(markdownPath, 'utf8');
 const markdownIds = [...markdown.matchAll(/^### `([^`]+)`:/gm)].map(
   ([, id]) => id,
+);
+const unknownMarkdownIds = markdownIds.filter(
+  (id) => !publishedIds.includes(id),
 );
 
 const sameItems = (left, right) =>
@@ -46,9 +55,12 @@ const sameSet = (left, right) => {
   );
 };
 
-if (!sameSet(publishedIds, markdownIds)) {
+if (
+  !sameSet(publishedIds, markdownIds) ||
+  unknownMarkdownIds.length > 0
+) {
   const missing = publishedIds.filter((id) => !markdownIds.includes(id));
-  const extra = markdownIds.filter((id) => !publishedIds.includes(id));
+  const extra = unknownMarkdownIds;
   const duplicateRegistryIds = duplicateItems(publishedIds);
   const duplicateMarkdownIds = duplicateItems(markdownIds);
   throw new Error(

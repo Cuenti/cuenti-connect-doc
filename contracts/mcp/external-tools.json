@@ -1,0 +1,80 @@
+{
+  "tools": [
+    {
+      "id": "restaurante-comandas-crear",
+      "category": "Restaurante",
+      "title": "Crear comanda de restaurante",
+      "purpose": "Registra una comanda en la API central de sincronización para cocina y POS.",
+      "method": "POST",
+      "path": "/api/v1/restaurante/comandas",
+      "operation": "mutation",
+      "cachePolicy": "bypass",
+      "requiredHeaders": [
+        "Content-Type",
+        "X-Auth-Token-empresa",
+        "X-Auth-Token-sucursal",
+        "X-Id-Empleado",
+        "X-gtm",
+        "Authorization"
+      ],
+      "body": {
+        "type": "object",
+        "required": true,
+        "description": "Body mínimo: solo datos de negocio del pedido. La API completa los campos técnicos, de auditoría y compatibilidad.",
+        "fields": [
+          {
+            "name": "items",
+            "type": "array",
+            "required": true,
+            "minimumItems": 1,
+            "description": "Ítems de negocio de la comanda.",
+            "items": {
+              "fields": [
+                {"name": "sync_uuid", "type": "UUID v4", "required": true, "description": "Identificador idempotente del plato."},
+                {"name": "gui_pedido", "type": "UUID v4", "required": true, "description": "Identificador común de la comanda."},
+                {"name": "numero_mesa", "type": "integer", "nullable": true, "required": true, "description": "Mesa física o null para domicilio o para llevar."},
+                {"name": "domicilio", "type": "entero 0 o 1", "required": false, "default": 0, "description": "1 para domicilio o recoger; la API usa 0 si se omite."},
+                {"name": "id_sucursal", "type": "entero positivo", "required": false, "default": 1, "description": "Sucursal de origen; la API usa 1 si se omite."},
+                {"name": "id_producto", "type": "string", "required": true, "description": "Código o ID del producto."},
+                {"name": "nombre", "type": "string", "required": true, "description": "Nombre descriptivo del producto."},
+                {"name": "precio", "type": "number", "required": true, "description": "Precio unitario de venta."},
+                {"name": "cantidad", "type": "number positivo", "required": true, "description": "Número de porciones."},
+                {"name": "nota", "type": "string", "required": true, "description": "Modificaciones o instrucciones de cocina."},
+                {"name": "id_empleado", "type": "entero positivo", "required": false, "default": 1, "description": "Empleado responsable; la API usa 1 si se omite."},
+                {"name": "id_cocina", "type": "entero positivo", "required": false, "description": "Estación de destino, por ejemplo cocina o bar."},
+                {"name": "comensales", "type": "entero positivo", "required": false, "default": 1, "description": "Cantidad de personas; la API usa 1 si se omite."},
+                {"name": "es_activo", "type": "entero 0 o 1", "required": false, "default": 1, "description": "Enviar 0 únicamente para cancelar o anular un plato."}
+              ]
+            }
+          }
+        ],
+        "example": {
+          "items": [
+            {
+              "sync_uuid": "6a5e5f6a-1d5c-4f43-bf55-0c8f94c00b01",
+              "gui_pedido": "e4c6a3e8-7d8b-4c2e-8c3b-3e0b5a7c6d11",
+              "numero_mesa": 10,
+              "id_producto": "burger-1",
+              "nombre": "Hamburguesa",
+              "precio": 25000,
+              "cantidad": 1,
+              "nota": "Sin cebolla"
+            }
+          ]
+        }
+      },
+      "response": {
+        "shape": "{ inserted_count: integer }",
+        "example": {"inserted_count": 1}
+      },
+      "notes": [
+        "Los clientes REST deben enviar únicamente los datos de negocio del ejemplo mínimo; no deben construir campos técnicos o de compatibilidad.",
+        "La API autocompleta `estado=1`, `es_activo=1`, `impreso=1`, los tiempos técnicos, los flags de compatibilidad, las listas de precio, `gtm`, `fecha_registro`, `pago_realizado=0`, `domicilio=0`, `comensales=1`, los identificadores de empleado y sucursal, y `marca`.",
+        "Para domicilio o para llevar, envía `numero_mesa: null` y `domicilio: 1`.",
+        "`sync_uuid` identifica cada plato y `gui_pedido` agrupa los platos de una misma orden. Los clientes REST deben enviarlos.",
+        "Los datos comerciales del plato se confían al cliente de sincronización y no se consultan contra el ERP.",
+        "La operación no utiliza cache porque modifica datos."
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import rawRegistry from '../../contracts/j4/endpoints.json';
+import externalTools from '../../contracts/mcp/external-tools.json';
 import { getGroupDescription } from '../fieldDescriptions';
 import {
   type CachePolicy,
@@ -1026,6 +1027,7 @@ const normalizeEndpoint = (
     bodyFields,
     bodyDescription:
       asString(first(item, ['bodyDescription', 'descripcionBody'])) ||
+      asString(first(body, ['description', 'descripcion'])) ||
       (asBoolean(first(body, ['required', 'obligatorio']))
         ? 'El cuerpo JSON es obligatorio y debe respetar los campos o grupos documentados.'
         : undefined),
@@ -1079,6 +1081,32 @@ const normalizeEndpoint = (
   };
 };
 
+const externalToolEndpoint = (value: unknown): UnknownRecord => {
+  const tool = asRecord(value);
+  const id = asString(tool.id);
+  const body = asRecord(tool.body);
+  return {
+    id,
+    contractId: id,
+    publicRoute: true,
+    publicTitle: asString(tool.title),
+    title: asString(tool.title),
+    name: asString(tool.title),
+    summary: asString(tool.purpose),
+    method: asString(tool.method).toUpperCase(),
+    path: asString(tool.path),
+    category: asString(tool.category),
+    operation: asString(tool.operation, 'mutation'),
+    requiredHeaders: asArray(tool.requiredHeaders),
+    params: { path: [], query: [] },
+    cache: { policy: asString(tool.cachePolicy, 'bypass') },
+    body,
+    response: asRecord(tool.response),
+    notes: asArray(tool.notes),
+    tryIt: { path: {}, query: {}, body: body.example },
+  };
+};
+
 export const adaptRegistry = (value: unknown): CanonicalRegistry => {
   const root = asRecord(value);
   const documentation = asRecord(root.documentation);
@@ -1105,8 +1133,11 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
         return projectPublicRoute(contract, item);
       })
     : asArray(first(root, ['endpoints', 'rutas']));
+  const externalSource = asArray(asRecord(externalTools).tools).map(
+    externalToolEndpoint,
+  );
   const routeOccurrences = new Map<string, number>();
-  const endpoints = source.map((endpoint) => {
+  const endpoints = [...source, ...externalSource].map((endpoint) => {
     const item = asRecord(endpoint);
     const contractId = asString(item.contractId);
     const occurrence = routeOccurrences.get(contractId) ?? 0;
@@ -1150,9 +1181,9 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
     }
   }
   }
-  if (endpoints.length !== 39) {
+  if (endpoints.length !== 40) {
     throw new Error(
-      `El registro público debe contener 39 rutas; contiene ${endpoints.length}.`,
+      `El registro público debe contener 40 operaciones; contiene ${endpoints.length}.`,
     );
   }
   if (

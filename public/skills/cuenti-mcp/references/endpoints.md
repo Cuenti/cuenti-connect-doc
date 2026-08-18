@@ -1,6 +1,6 @@
 # Catálogo funcional de Cuenti MCP
 
-<!-- Generated from contracts/j4/endpoints.json. Do not edit manually. -->
+<!-- Generated from contracts/j4/endpoints.json and contracts/mcp/external-tools.json. Do not edit manually. -->
 
 Usa este catálogo para traducir una necesidad de negocio a la herramienta correcta y pedir únicamente la información necesaria.
 
@@ -30,6 +30,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | Organización | `organizacion-sucursales-busquedas`, `organizacion-empleados-busquedas` |
 | Facturación | `facturacion-consecutivos-busquedas` |
 | Restaurante | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas` |
+| Restaurante | `restaurante-comandas-crear` |
 
 ## Transacciones
 
@@ -4358,3 +4359,90 @@ Para `grupos`:
 - grupos no debe estar vacío y debe contener valores únicos.
 
 **Peticiones habituales:** Auditoría de eliminaciones por sucursal.
+
+## Restaurante
+
+### `restaurante-comandas-crear`: Crear comanda de restaurante
+
+**Para qué sirve:** Registra una comanda en la API central de sincronización para cocina y POS.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/restaurante/comandas` a través de Envoy.
+
+**Tipo:** Mutación idempotente; requiere confirmación explícita.
+
+**Datos que acepta la acción**
+
+| Dato | Obligatorio | Valores que acepta | Significado |
+| --- | --- | --- | --- |
+| `numero_mesa` | No | entero o null; valor habitual `null para domicilio o para llevar` | Mesa física del restaurante. Si es null, domicilio se normaliza a 1. |
+| `domicilio` | No | entero 0 o 1; valor habitual `0` | Indica si el pedido es de domicilio. La API usa 0 si se omite. |
+| `id_sucursal` | No | entero positivo; valor habitual `1` | Sucursal o restaurante que origina la comanda. La API usa 1 si se omite. |
+| `id_empleado` | No | entero positivo; valor habitual `1` | Empleado o agente responsable, si el flujo lo conoce. |
+| `comensales` | No | entero positivo; valor habitual `1` | Cantidad de personas en la mesa. |
+| `gui_pedido` | No | UUID; valor habitual `se genera si falta` | Identificador de la orden que agrupa sus platos. |
+| `platos` | Sí | lista de objetos; valor habitual `mínimo 1 elemento` | Platos recibidos del cliente con sus datos de negocio. |
+
+**Respuesta esperada:** Confirmación con `inserted_count`.
+
+**Contrato REST mínimo:**
+
+Los clientes REST deben enviar únicamente los datos de negocio, incluidos `gui_pedido` y `sync_uuid`. La API completa los campos técnicos, de auditoría y compatibilidad; el MCP genera los UUIDs si recibe una entrada sin ellos.
+
+**Ejemplo REST:**
+
+```json
+{
+  "items": [
+    {
+      "sync_uuid": "6a5e5f6a-1d5c-4f43-bf55-0c8f94c00b01",
+      "gui_pedido": "e4c6a3e8-7d8b-4c2e-8c3b-3e0b5a7c6d11",
+      "numero_mesa": 10,
+      "id_producto": "burger-1",
+      "nombre": "Hamburguesa",
+      "precio": 25000,
+      "cantidad": 1,
+      "nota": "Sin cebolla"
+    }
+  ]
+}
+```
+
+**Respuesta REST:** { inserted_count: integer }
+
+**Campos que autocompleta la API:**
+
+| Campo | Valor predeterminado | Significado |
+| --- | --- | --- |
+| `estado` | 1 | Estado inicial. |
+| `es_activo` | 1 | Activo por defecto. |
+| `impreso` | 1 | Compatibilidad con impresión local. |
+| `tiempo_preparacion_plato` | -1 | Valor técnico de compatibilidad. |
+| `tiempo_entrega` | -1 | Valor técnico de compatibilidad. |
+| `tiempo_preparacion_producto` | 0 | Valor técnico de compatibilidad. |
+| `id_transacion_mesa` | 0 | Compatibilidad con SQLite local. |
+| `es_mysql` | 0 | Compatibilidad histórica. |
+| `es_nube` | 0 | Compatibilidad histórica. |
+| `id_lista_precio_global` | -1 | Sin lista especial. |
+| `id_lista_precio` | -1 | Sin lista especial. |
+| `gtm` | GMT-0500 | Zona horaria del registro. |
+| `fecha_registro` | timestamp actual en milisegundos | Fecha de registro asignada por la API. |
+| `pago_realizado` | 0 | El pedido nace como no pagado. |
+| `domicilio` | 0 | Valor predeterminado para consumo en local. |
+| `comensales` | 1 | Valor predeterminado. |
+| `id_empleado` | 1 | Valor predeterminado. |
+| `id_empleado_fijo` | 1 | Valor técnico predeterminado. |
+| `id_empleado_comanda` | 1 | Valor técnico predeterminado. |
+| `id_sucursal` | 1 | Valor predeterminado. |
+| `marca` | idEmpresa-idSucursal-guiPedido | Marca interna generada por la API. |
+
+- Los clientes REST deben enviar únicamente los datos de negocio del ejemplo mínimo; no deben construir campos técnicos o de compatibilidad.
+- `sync_uuid` identifica cada plato y `gui_pedido` agrupa los platos de una misma orden. Los clientes REST deben enviarlos; MCP los genera si faltan.
+- Para domicilio o para llevar, envía `numero_mesa: null` y `domicilio: 1`.
+- Los datos comerciales del plato se confían al cliente de sincronización y no se consultan contra el ERP.
+- No repitas manualmente la tool si la respuesta es incierta; la operación conserva sus UUIDs durante el reintento.
+- La ruta pública se alcanza a través de Envoy y se traduce internamente al servicio de sincronización.
+- La operación no utiliza cache porque modifica datos.
+
+**Antes de ejecutarla:** explica el destino y pide confirmación con `restaurante/confirmation=confirm:restaurante-comandas-crear`.

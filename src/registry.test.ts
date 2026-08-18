@@ -11,7 +11,7 @@ const findEndpoint = (id: string) =>
   );
 
 describe('canonical documentation registry', () => {
-  it('exposes all 39 approved public method/path tuples', () => {
+  it('exposes all 40 approved public method/path tuples', () => {
     const tuples = registry.endpoints.map(
       (endpoint) => `${endpoint.method} ${endpoint.path}`,
     );
@@ -56,9 +56,10 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/facturacion/consecutivos/busquedas',
         'POST /api/v1/restaurante/comandas/busquedas',
         'POST /api/v1/restaurante/comandas/platos-eliminados/busquedas',
+        'POST /api/v1/restaurante/comandas',
       ]),
     );
-    expect(tuples).toHaveLength(39);
+    expect(tuples).toHaveLength(40);
     expect(tuples.every((tuple) => tuple.includes('/api/v1/'))).toBe(true);
     expect(JSON.stringify(registry)).not.toContain('/jServerj4ErpPro');
     expect(
@@ -67,7 +68,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('keeps the public query and mutation split', () => {
-    expect(registry.endpoints).toHaveLength(39);
+    expect(registry.endpoints).toHaveLength(40);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -78,10 +79,10 @@ describe('canonical documentation registry', () => {
     ).toHaveLength(32);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
-    ).toHaveLength(7);
+    ).toHaveLength(8);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(7);
+    ).toHaveLength(8);
   });
 
   it('keeps the flat public service distribution', () => {
@@ -102,7 +103,7 @@ describe('canonical documentation registry', () => {
       'Finanzas y cartera': 6,
       Organización: 2,
       Facturación: 1,
-      Restaurante: 2,
+      Restaurante: 3,
     });
   });
 
@@ -257,6 +258,43 @@ describe('canonical documentation registry', () => {
         expect.objectContaining({ name: 'email1', type: 'string' }),
       ]),
     );
+  });
+
+  it('documents the restaurant command business payload and API defaults', () => {
+    const command = findEndpoint('restaurante-comandas-crear');
+    const items = command?.bodyFields.find((field) => field.name === 'items');
+    const itemFields = new Map(
+      items?.itemFields?.map((field) => [field.name, field]) ?? [],
+    );
+
+    expect(command?.bodyDescription).toContain('datos de negocio');
+    expect(items?.required).toBe(true);
+    expect(itemFields.get('sync_uuid')).toEqual(
+      expect.objectContaining({ required: true }),
+    );
+    expect(itemFields.get('gui_pedido')).toEqual(
+      expect.objectContaining({ required: true }),
+    );
+    expect(itemFields.get('numero_mesa')).toEqual(
+      expect.objectContaining({ required: true, nullable: true }),
+    );
+    expect(itemFields.get('estado')).toBeUndefined();
+    expect(itemFields.get('fecha_registro')).toBeUndefined();
+    expect(command?.tryIt?.body).toEqual({
+      items: [
+        {
+          sync_uuid: '6a5e5f6a-1d5c-4f43-bf55-0c8f94c00b01',
+          gui_pedido: 'e4c6a3e8-7d8b-4c2e-8c3b-3e0b5a7c6d11',
+          numero_mesa: 10,
+          id_producto: 'burger-1',
+          nombre: 'Hamburguesa',
+          precio: 25000,
+          cantidad: 1,
+          nota: 'Sin cebolla',
+        },
+      ],
+    });
+    expect(command?.notes.join(' ')).toContain('autocompleta');
   });
 
   it('documents guardarTercero required creation fields and transport types', () => {
