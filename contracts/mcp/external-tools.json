@@ -7,8 +7,10 @@
       "purpose": "Registra una comanda en la API central de sincronización para cocina y POS.",
       "method": "POST",
       "path": "/api/v1/restaurante/comandas",
+      "upstreamPath": "/api/v2/sync/push",
       "operation": "mutation",
       "cachePolicy": "bypass",
+      "type": "Mutación idempotente; requiere confirmación explícita.",
       "requiredHeaders": [
         "Content-Type",
         "X-Auth-Token-empresa",
@@ -16,6 +18,15 @@
         "X-Id-Empleado",
         "X-gtm",
         "Authorization"
+      ],
+      "input": [
+        {
+          "name": "confirmation",
+          "type": "string",
+          "required": false,
+          "default": "confirm:restaurante-comandas-crear",
+          "meaning": "Inclúyelo únicamente después de la aprobación explícita del usuario."
+        }
       ],
       "body": {
         "type": "object",
@@ -67,6 +78,29 @@
         "shape": "{ inserted_count: integer }",
         "example": {"inserted_count": 1}
       },
+      "autocompletedFields": [
+        {"name": "estado", "value": 1, "description": "Estado inicial."},
+        {"name": "es_activo", "value": 1, "description": "Activo por defecto."},
+        {"name": "impreso", "value": 1, "description": "Compatibilidad con impresión local."},
+        {"name": "tiempo_preparacion_plato", "value": -1, "description": "Valor técnico de compatibilidad."},
+        {"name": "tiempo_entrega", "value": -1, "description": "Valor técnico de compatibilidad."},
+        {"name": "tiempo_preparacion_producto", "value": 0, "description": "Valor técnico de compatibilidad."},
+        {"name": "id_transacion_mesa", "value": 0, "description": "Compatibilidad con SQLite local."},
+        {"name": "es_mysql", "value": 0, "description": "Compatibilidad histórica."},
+        {"name": "es_nube", "value": 0, "description": "Compatibilidad histórica."},
+        {"name": "id_lista_precio_global", "value": -1, "description": "Sin lista especial."},
+        {"name": "id_lista_precio", "value": -1, "description": "Sin lista especial."},
+        {"name": "gtm", "value": "GMT-0500", "description": "Zona horaria del registro."},
+        {"name": "fecha_registro", "value": "timestamp actual en milisegundos", "description": "Fecha de registro asignada por la API."},
+        {"name": "pago_realizado", "value": 0, "description": "El pedido nace como no pagado."},
+        {"name": "domicilio", "value": 0, "description": "Valor predeterminado para consumo en local."},
+        {"name": "comensales", "value": 1, "description": "Valor predeterminado."},
+        {"name": "id_empleado", "value": 1, "description": "Valor predeterminado."},
+        {"name": "id_empleado_fijo", "value": 1, "description": "Valor técnico predeterminado."},
+        {"name": "id_empleado_comanda", "value": 1, "description": "Valor técnico predeterminado."},
+        {"name": "id_sucursal", "value": 1, "description": "Valor predeterminado."},
+        {"name": "marca", "value": "idEmpresa-idSucursal-guiPedido", "description": "Marca interna generada por la API."}
+      ],
       "notes": [
         "Los clientes REST deben enviar únicamente los datos de negocio del ejemplo mínimo; no deben construir campos técnicos o de compatibilidad.",
         "La API autocompleta `estado=1`, `es_activo=1`, `impreso=1`, los tiempos técnicos, los flags de compatibilidad, las listas de precio, `gtm`, `fecha_registro`, `pago_realizado=0`, `domicilio=0`, `comensales=1`, los identificadores de empleado y sucursal, y `marca`.",

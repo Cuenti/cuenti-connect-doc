@@ -183,6 +183,13 @@ const PortalApp = () => {
         />
 
         <main id="main-content" tabIndex={-1}>
+          <div className="availability-alert" role="alert">
+            <strong>Disponibilidad de servicios</strong>
+            <span>
+              Algunos servicios se encuentran temporalmente fuera de línea y
+              estarán activos más adelante.
+            </span>
+          </div>
           {page.kind === 'catalog' ? (
             <CatalogGuide />
           ) : page.kind === 'mcp' ? (

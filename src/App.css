@@ -985,6 +985,28 @@ main:focus {
   outline: none;
 }
 
+.availability-alert {
+  display: flex;
+  gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.85rem clamp(1.25rem, 4vw, 4.25rem);
+  color: #704e00;
+  background: var(--warning-surface);
+  border-bottom: 1px solid var(--warning-border);
+  line-height: 1.5;
+}
+
+.availability-alert strong {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.availability-alert span {
+  font-size: 0.88rem;
+}
+
 .mcp-guide-hero {
   padding: 3rem clamp(1.25rem, 4vw, 4.25rem) 2.5rem;
   color: var(--text-strong);
@@ -2377,6 +2399,12 @@ html[data-theme="dark"] .credentials-modal input:read-only {
 
   .breadcrumb {
     margin-bottom: 1.25rem;
+  }
+
+  .availability-alert {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.15rem;
   }
 
   .hero-title-row {

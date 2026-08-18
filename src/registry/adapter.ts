@@ -1084,7 +1084,13 @@ const normalizeEndpoint = (
 const externalToolEndpoint = (value: unknown): UnknownRecord => {
   const tool = asRecord(value);
   const id = asString(tool.id);
-  const body = asRecord(tool.body);
+  const rest = asRecord(tool.rest);
+  const body = Object.keys(rest).length
+    ? asRecord(rest.body)
+    : asRecord(tool.body);
+  const response = Object.keys(rest).length
+    ? asRecord(rest.response)
+    : asRecord(tool.response);
   return {
     id,
     contractId: id,
@@ -1101,7 +1107,7 @@ const externalToolEndpoint = (value: unknown): UnknownRecord => {
     params: { path: [], query: [] },
     cache: { policy: asString(tool.cachePolicy, 'bypass') },
     body,
-    response: asRecord(tool.response),
+    response,
     notes: asArray(tool.notes),
     tryIt: { path: {}, query: {}, body: body.example },
   };

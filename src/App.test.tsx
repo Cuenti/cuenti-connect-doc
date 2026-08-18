@@ -22,6 +22,14 @@ describe('documentation application', () => {
     document.documentElement.removeAttribute('data-theme');
   });
 
+  it('shows the service availability alert', () => {
+    render(<App />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Algunos servicios se encuentran temporalmente fuera de línea y estarán activos más adelante.',
+    );
+  });
+
   it('uses light mode by default and persists the dark preference', async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -112,7 +120,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-       screen.getByRole('heading', { name: '40 operaciones' }),
+      screen.getByRole('heading', { name: '40 operaciones' }),
     ).toBeVisible();
   });
 
