@@ -67,7 +67,7 @@ test('muestra cURL y distingue la proyección por grupos en catálogos', async (
   await expect(page.locator('.quick-start')).toContainText('"grupos"');
   await expect(page.locator('.quick-start')).not.toContainText('"columnas"');
 
-  const body = page.locator('#request-body');
+  const body = page.getByRole('textbox', { name: 'Solicitud JSON de ejemplo' });
   await body.fill('{}');
   await expect(body).toHaveValue('{}');
 
@@ -80,6 +80,23 @@ test('muestra cURL y distingue la proyección por grupos en catálogos', async (
   ).toBeVisible();
   await expect(page.locator('.projection-grid')).toContainText('empleado');
   await expect(page.locator('.projection-grid')).toContainText('ventas_ext');
+});
+
+test('documenta las listas embebidas y proyecta archivos como adjuntos', async ({
+  page,
+}) => {
+  await page.goto('/?endpoint=ventas-facturas-busquedas');
+
+  await expect(page.locator('.projection-grid')).toContainText('comentarios');
+  await expect(page.locator('.projection-grid')).toContainText('adjuntos');
+  await expect(page.locator('.projection-grid')).toContainText('archivos');
+
+  const completeById = page
+    .locator('.preset-docs details')
+    .filter({ hasText: 'Factura completa por ID' });
+  await completeById.locator('summary').click();
+  await expect(completeById).toContainText('adjuntos');
+  await expect(completeById).not.toContainText('archivos');
 });
 
 test('mantiene el inicio rápido después del título entre 1100 y 1250 px', async ({

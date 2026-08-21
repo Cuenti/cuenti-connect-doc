@@ -207,6 +207,9 @@ export const EndpointDetail = ({
                     ) : null}
                     <span className="projection-fields">
                       {group.description || getGroupDescription(group.name)}
+                      {group.aliases?.length
+                        ? ` Alias: ${group.aliases.join(', ')}.`
+                        : ''}
                     </span>
                   </div>
                 ))}

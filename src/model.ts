@@ -38,8 +38,11 @@ export interface HeaderSpec extends ParameterSpec {
 export interface FieldGroup {
   name: string;
   fields: string[];
+  itemFields?: string[];
+  aliases?: string[];
   description?: string;
   level?: 'header' | 'detail' | 'both';
+  type?: 'object' | 'array';
 }
 
 export interface CompatibilityMetadata {

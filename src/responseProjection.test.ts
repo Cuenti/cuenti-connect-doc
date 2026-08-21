@@ -90,4 +90,63 @@ describe('projectResponseExample', () => {
       { producto: { id_producto: 25, nombre: 'Producto', sku: 'SKU-25' } },
     ]);
   });
+
+  it('projects embedded header lists using the requested archivos alias', () => {
+    const endpoint = endpointFor('buscarTransacciones');
+    const response = projectResponseExample(endpoint, {
+      grupos: ['archivos'],
+    }) as { transacciones: Array<Record<string, unknown>> };
+
+    expect(response.transacciones[0]).toHaveProperty('archivos');
+    expect(response.transacciones[0]).not.toHaveProperty('adjuntos');
+    expect(response.transacciones[0]).not.toHaveProperty('comentarios');
+    expect(response.transacciones[0].archivos).toEqual([
+      {
+        id_adjunto: 1,
+        nombre_real: 'factura-ejemplo.pdf',
+        tipo: 'application/pdf',
+        etiqueta: 'Documento',
+        ruta: 'https://example.invalid/archivos/factura-ejemplo.pdf',
+        fecha_registro: 1735689600000,
+      },
+    ]);
+  });
+
+  it('prefers adjuntos when both attachment aliases are requested', () => {
+    const endpoint = endpointFor('buscarTransacciones');
+    const response = projectResponseExample(endpoint, {
+      grupos: ['archivos', 'adjuntos'],
+    }) as { transacciones: Array<Record<string, unknown>> };
+
+    expect(response.transacciones[0]).toHaveProperty('adjuntos');
+    expect(response.transacciones[0]).not.toHaveProperty('archivos');
+  });
+
+  it('projects fields inside selected embedded lists', () => {
+    const endpoint = {
+      ...endpointFor('buscarDocumentosComerciales'),
+      groups: [
+        {
+          name: 'comentarios' as const,
+          fields: [],
+          itemFields: ['id_comentario'],
+          type: 'array' as const,
+        },
+      ],
+      responseExample: {
+        documentos: [
+          {
+            comentarios: [
+              { id_comentario: 1, comentario: 'Visible', fecha_registro: 2 },
+            ],
+          },
+        ],
+      },
+    };
+
+    const response = projectResponseExample(endpoint, {
+      grupos: ['comentarios'],
+    }) as { documentos: Array<Record<string, unknown>> };
+    expect(response.documentos[0].comentarios).toEqual([{ id_comentario: 1 }]);
+  });
 });

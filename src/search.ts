@@ -15,7 +15,12 @@ const searchableText = (endpoint: EndpointDoc) =>
       parameter.name,
       parameter.description,
     ]),
-    ...endpoint.groups.flatMap((group) => [group.name, ...group.fields]),
+    ...endpoint.groups.flatMap((group) => [
+      group.name,
+      ...(group.aliases ?? []),
+      ...group.fields,
+      ...(group.itemFields ?? []),
+    ]),
     ...endpoint.columns,
   ]
     .join(' ')

@@ -430,6 +430,76 @@ describe('canonical documentation registry', () => {
     );
   });
 
+  it('documents embedded header lists and the archivos alias', () => {
+    for (const endpointId of [
+      'buscarTransacciones',
+      'buscarDocumentosComerciales',
+    ]) {
+      const endpoint = findEndpoint(endpointId);
+      const comments = endpoint?.groups.find(
+        (group) => group.name === 'comentarios',
+      );
+      const attachments = endpoint?.groups.find(
+        (group) => group.name === 'adjuntos',
+      );
+      expect(comments).toEqual(
+        expect.objectContaining({
+          name: 'comentarios',
+          level: 'header',
+          type: 'array',
+        }),
+      );
+      expect(attachments).toEqual(
+        expect.objectContaining({
+          name: 'adjuntos',
+          level: 'header',
+          type: 'array',
+          aliases: ['archivos'],
+        }),
+      );
+      expect(endpoint?.groups.map((group) => group.name)).not.toContain(
+        'archivos',
+      );
+      expect(endpoint?.tryIt?.body).not.toHaveProperty(
+        'grupos',
+        expect.arrayContaining(['comentarios', 'adjuntos', 'archivos']),
+      );
+
+      const completeById = endpoint?.presets.find(
+        (preset) => preset.id === 'full-by-id',
+      );
+      expect(completeById?.body).toEqual(
+        expect.objectContaining({
+          grupos: expect.arrayContaining(['comentarios', 'adjuntos']),
+        }),
+      );
+      const commentsAndFiles = endpoint?.presets.find(
+        (preset) => preset.id === 'with-comments-and-files',
+      );
+      expect(commentsAndFiles?.body).toEqual({
+        grupos: ['codigos', 'comentarios', 'archivos'],
+      });
+      const collection = endpoint?.responseExample as
+        | {
+            transacciones?: Array<Record<string, unknown>>;
+            documentos?: Array<Record<string, unknown>>;
+          }
+        | undefined;
+      const first =
+        collection?.transacciones?.[0] ?? collection?.documentos?.[0];
+      expect(first?.comentarios).toEqual(expect.any(Array));
+      expect(first?.adjuntos).toEqual(expect.any(Array));
+      expect(first).not.toHaveProperty('archivos');
+    }
+
+    const publicInvoiceRoute = findEndpoint('ventas-facturas-busquedas');
+    expect(publicInvoiceRoute?.responseExample).toMatchObject({
+      transacciones: [
+        { comentarios: expect.any(Array), adjuntos: expect.any(Array) },
+      ],
+    });
+  });
+
   it('hides route-owned selectors and keeps public request examples valid', () => {
     const routeSelectors = new Map([
       ['catalogo-marcas', ['es_activo']],

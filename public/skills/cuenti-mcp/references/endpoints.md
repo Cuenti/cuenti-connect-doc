@@ -66,7 +66,48 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `impuestos`.
+- `estado`.
+- `qr`.
+- `nota`.
+- `documento`.
+- `moneda`.
+- `estado_electronico`.
+- `pagos`.
+- `retenciones`.
+- `notas_credito`.
+- `facturacion_electronica`.
+- `consecutivo`.
+- `impresion`.
+- `cartera_cliente`.
+- `empresa`.
+- `sucursal_configuracion`.
+- `taller`.
+- `acta_entrega`.
+- `ruta_despacho`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -104,7 +145,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "sucursal_configuracion",
       "taller",
       "acta_entrega",
-      "ruta_despacho"
+      "ruta_despacho",
+      "comentarios",
+      "adjuntos"
     ],
     "detalle": [
       "producto",
@@ -118,7 +161,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }; Transaccion.comentarios?: Comentario[]; Transaccion.adjuntos?: Adjunto[]; Transaccion.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -167,6 +210,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "id_ruta": 1,
         "nombre": "Ruta ejemplo"
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "factura-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/factura-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -200,11 +263,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
+- La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
 - La paginación está limitada a 1..1000 registros.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
-**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas; Factura con comentarios y archivos.
 
 ### `ventas-planes-separe-busquedas`: Buscar plan separe
 
@@ -238,7 +304,48 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `impuestos`.
+- `estado`.
+- `qr`.
+- `nota`.
+- `documento`.
+- `moneda`.
+- `estado_electronico`.
+- `pagos`.
+- `retenciones`.
+- `notas_credito`.
+- `facturacion_electronica`.
+- `consecutivo`.
+- `impresion`.
+- `cartera_cliente`.
+- `empresa`.
+- `sucursal_configuracion`.
+- `taller`.
+- `acta_entrega`.
+- `ruta_despacho`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -276,7 +383,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "sucursal_configuracion",
       "taller",
       "acta_entrega",
-      "ruta_despacho"
+      "ruta_despacho",
+      "comentarios",
+      "adjuntos"
     ],
     "detalle": [
       "producto",
@@ -290,7 +399,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }; Transaccion.comentarios?: Comentario[]; Transaccion.adjuntos?: Adjunto[]; Transaccion.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -339,6 +448,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "id_ruta": 1,
         "nombre": "Ruta ejemplo"
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "factura-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/factura-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -372,11 +501,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
+- La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
 - La paginación está limitada a 1..1000 registros.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
-**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas; Factura con comentarios y archivos.
 
 ### `ventas-otros-ingresos-busquedas`: Buscar otros ingresos
 
@@ -410,7 +542,48 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `impuestos`.
+- `estado`.
+- `qr`.
+- `nota`.
+- `documento`.
+- `moneda`.
+- `estado_electronico`.
+- `pagos`.
+- `retenciones`.
+- `notas_credito`.
+- `facturacion_electronica`.
+- `consecutivo`.
+- `impresion`.
+- `cartera_cliente`.
+- `empresa`.
+- `sucursal_configuracion`.
+- `taller`.
+- `acta_entrega`.
+- `ruta_despacho`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -448,7 +621,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "sucursal_configuracion",
       "taller",
       "acta_entrega",
-      "ruta_despacho"
+      "ruta_despacho",
+      "comentarios",
+      "adjuntos"
     ],
     "detalle": [
       "producto",
@@ -462,7 +637,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }; Transaccion.comentarios?: Comentario[]; Transaccion.adjuntos?: Adjunto[]; Transaccion.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -511,6 +686,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "id_ruta": 1,
         "nombre": "Ruta ejemplo"
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "factura-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/factura-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -544,11 +739,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
+- La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
 - La paginación está limitada a 1..1000 registros.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
-**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas; Factura con comentarios y archivos.
 
 ### `ventas-compras-gastos-busquedas`: Buscar compra/gasto
 
@@ -582,7 +780,48 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `impuestos`.
+- `estado`.
+- `qr`.
+- `nota`.
+- `documento`.
+- `moneda`.
+- `estado_electronico`.
+- `pagos`.
+- `retenciones`.
+- `notas_credito`.
+- `facturacion_electronica`.
+- `consecutivo`.
+- `impresion`.
+- `cartera_cliente`.
+- `empresa`.
+- `sucursal_configuracion`.
+- `taller`.
+- `acta_entrega`.
+- `ruta_despacho`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -620,7 +859,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "sucursal_configuracion",
       "taller",
       "acta_entrega",
-      "ruta_despacho"
+      "ruta_despacho",
+      "comentarios",
+      "adjuntos"
     ],
     "detalle": [
       "producto",
@@ -634,7 +875,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }; Transaccion.comentarios?: Comentario[]; Transaccion.adjuntos?: Adjunto[]; Transaccion.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -683,6 +924,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "id_ruta": 1,
         "nombre": "Ruta ejemplo"
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "factura-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/factura-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -716,11 +977,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
+- La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
 - La paginación está limitada a 1..1000 registros.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
-**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas; Factura con comentarios y archivos.
 
 ### `ventas-remisiones-busquedas`: Buscar remisiones
 
@@ -754,7 +1018,48 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `impuestos`, `estado`, `qr`, `nota`, `documento`, `moneda`, `estado_electronico`, `pagos`, `retenciones`, `notas_credito`, `facturacion_electronica`, `consecutivo`, `impresion`, `cartera_cliente`, `empresa`, `sucursal_configuracion`, `taller`, `acta_entrega`, `ruta_despacho`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `impuestos`.
+- `estado`.
+- `qr`.
+- `nota`.
+- `documento`.
+- `moneda`.
+- `estado_electronico`.
+- `pagos`.
+- `retenciones`.
+- `notas_credito`.
+- `facturacion_electronica`.
+- `consecutivo`.
+- `impresion`.
+- `cartera_cliente`.
+- `empresa`.
+- `sucursal_configuracion`.
+- `taller`.
+- `acta_entrega`.
+- `ruta_despacho`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -792,7 +1097,9 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
       "sucursal_configuracion",
       "taller",
       "acta_entrega",
-      "ruta_despacho"
+      "ruta_despacho",
+      "comentarios",
+      "adjuntos"
     ],
     "detalle": [
       "producto",
@@ -806,7 +1113,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }.
+**Respuesta esperada:** { pagina: integer, transacciones: Transaccion[] }; Transaccion.comentarios?: Comentario[]; Transaccion.adjuntos?: Adjunto[]; Transaccion.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -855,6 +1162,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "id_ruta": 1,
         "nombre": "Ruta ejemplo"
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "factura-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/factura-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -888,11 +1215,14 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
+- La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Se rechazan los arreglos de grupos desconocidos, repetidos o vacíos.
 - La paginación está limitada a 1..1000 registros.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
-**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas.
+**Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas; Factura con comentarios y archivos.
 
 ### `ventas-facturas`: Crear factura
 
@@ -1004,6 +1334,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Peticiones habituales:** Factura de inventario.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+Después incluye `confirmation=confirm:ventas-facturas` en los argumentos.
 
 ### `ventas-compras-gastos`: Crear compra/gasto
 
@@ -1115,6 +1446,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Peticiones habituales:** Factura de inventario.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+Después incluye `confirmation=confirm:ventas-compras-gastos` en los argumentos.
 
 ### `ventas-remisiones`: Crear remisión
 
@@ -1226,6 +1558,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 **Peticiones habituales:** Factura de inventario.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+Después incluye `confirmation=confirm:ventas-remisiones` en los argumentos.
 
 ### `ventas-productos-comprados-busquedas`: Buscar productos comprados
 
@@ -1529,7 +1862,35 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `bodegas`.
+- `ruta_despacho`.
+- `logistica`.
+- `estado`.
+- `documento`.
+- `nota`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -1566,7 +1927,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }; Documento.comentarios?: Comentario[]; Documento.adjuntos?: Adjunto[]; Documento.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -1600,6 +1961,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "fecha_documento": 1735689600000,
         "fecha_registro": 1735689600000
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "pedido-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/pedido-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -1626,10 +2007,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 - detalle es opcional y conserva el orden de los grupos solicitados.
 - Las respuestas no exponen credenciales ni claves internas.
+- La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Los grupos desconocidos, duplicados o vacíos se rechazan.
 - Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
 
-**Peticiones habituales:** Facturas activas.
+**Peticiones habituales:** Facturas activas; Documento con comentarios y archivos; Documento completo por ID.
 
 ### `operativas-cotizaciones-busquedas`: Buscar cotizaciones
 
@@ -1670,7 +2054,35 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `bodegas`.
+- `ruta_despacho`.
+- `logistica`.
+- `estado`.
+- `documento`.
+- `nota`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -1707,7 +2119,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }; Documento.comentarios?: Comentario[]; Documento.adjuntos?: Adjunto[]; Documento.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -1741,6 +2153,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "fecha_documento": 1735689600000,
         "fecha_registro": 1735689600000
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "pedido-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/pedido-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -1767,10 +2199,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 - detalle es opcional y conserva el orden de los grupos solicitados.
 - Las respuestas no exponen credenciales ni claves internas.
+- La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Los grupos desconocidos, duplicados o vacíos se rechazan.
 - Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
 
-**Peticiones habituales:** Facturas activas.
+**Peticiones habituales:** Facturas activas; Documento con comentarios y archivos; Documento completo por ID.
 
 ### `operativas-despachos-busquedas`: Buscar despachos
 
@@ -1811,7 +2246,35 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`.
+Para `grupos`:
+- `codigos`.
+- `fechas`.
+- `sucursal`.
+- `cliente`.
+- `empleado`.
+- `vendedor`.
+- `totales`.
+- `bodegas`.
+- `ruta_despacho`.
+- `logistica`.
+- `estado`.
+- `documento`.
+- `nota`.
+- `comentarios`: Comentarios asociados al documento; se entregan como una lista embebida de cabecera. Incluye `id_comentario`, `comentario`, `id_empleado`, `empleado`, `leido`, `fecha_registro`.
+  - `id_comentario`: Identificador del comentario asociado al documento.
+  - `comentario`: Texto del comentario asociado al documento.
+  - `id_empleado`: Identificador interno del empleado.
+  - `empleado`: Empleado asociado al comentario o a la operación.
+  - `leido`: Indica si el comentario fue marcado como leído.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `adjuntos`: Archivos adjuntos asociados al documento; la respuesta los entrega como una lista embebida. Incluye `id_adjunto`, `nombre_real`, `tipo`, `etiqueta`, `ruta`, `fecha_registro`. Alias: `archivos`.
+  - `id_adjunto`: Identificador del archivo adjunto asociado al documento.
+  - `nombre_real`: Nombre real del archivo adjunto.
+  - `tipo`: Tipo MIME o clasificación del archivo adjunto.
+  - `etiqueta`: Etiqueta visible del archivo adjunto.
+  - `ruta`: Ruta o URL del archivo adjunto.
+  - `fecha_registro`: Fecha de creación del tercero.
+- `archivos`.
 - `detalle`: Bloques de información de las líneas del documento. Valores: `producto`, `cantidades`, `precios`, `impuestos`, `descuento`, `totales`.
 
 **Ejemplo de argumentos:**
@@ -1848,7 +2311,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 }
 ```
 
-**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }.
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }; Documento.comentarios?: Comentario[]; Documento.adjuntos?: Adjunto[]; Documento.archivos?: Archivo[].
 
 **Ejemplo de respuesta:**
 
@@ -1882,6 +2345,26 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
         "fecha_documento": 1735689600000,
         "fecha_registro": 1735689600000
       },
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "pedido-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/pedido-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
       "detalle": [
         {
           "producto": {
@@ -1908,10 +2391,13 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 - detalle es opcional y conserva el orden de los grupos solicitados.
 - Las respuestas no exponen credenciales ni claves internas.
+- La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
 - Los grupos desconocidos, duplicados o vacíos se rechazan.
 - Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
 
-**Peticiones habituales:** Facturas activas.
+**Peticiones habituales:** Facturas activas; Documento con comentarios y archivos; Documento completo por ID.
 
 ### `operativas-productos-busquedas`: Buscar productos de documentos comerciales
 
@@ -2473,6 +2959,7 @@ Envía una lista con entre 1 y 1000 elementos.
 **Peticiones habituales:** Actualización parcial de impuestos.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+Después incluye `confirmation=confirm:catalogo-productos-impuestos-licores` en los argumentos.
 
 ### `catalogo-marcas`: Consultar marcas activas
 
@@ -2637,6 +3124,7 @@ Envía una lista con entre 1 y 1000 elementos.
 **Peticiones habituales:** Conteo de un producto.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+Después incluye `confirmation=confirm:inventario-conteos` en los argumentos.
 
 ## Terceros
 
@@ -2933,6 +3421,7 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 **Peticiones habituales:** Crear; Actualización parcial.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+Después incluye `confirmation=confirm:terceros-crear` en los argumentos.
 
 ### `terceros-actualizar`: Actualizar tercero
 
@@ -3065,6 +3554,7 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 **Peticiones habituales:** Crear; Actualización parcial.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
+Después incluye `confirmation=confirm:terceros-actualizar` en los argumentos.
 
 ## Impuestos
 
@@ -3854,7 +4344,7 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 **Bloques de información que puedes pedir**
 
 Para `grupos`:
-- `empleado`: Empleado que registró o gestionó la operación. Incluye `id_empleado`, `identificacion`, `nombre_completo`, `codigo_empleado`, `tipo_usuario`, `es_activo`, `fecha_registro`, `id_usuario_portal`.
+- `empleado`: Empleado asociado al comentario o a la operación. Incluye `id_empleado`, `identificacion`, `nombre_completo`, `codigo_empleado`, `tipo_usuario`, `es_activo`, `fecha_registro`, `id_usuario_portal`.
   - `id_empleado`: Identificador interno del empleado.
   - `identificacion`: Documento de identificación del empleado.
   - `nombre_completo`: Nombre completo para visualización.
@@ -4174,7 +4664,7 @@ Para `grupos`:
   - `nota`: Instrucción u observación de preparación.
   - `formato_presentacion`: Formato comercial de presentación.
   - `configuracion_plato`: Adiciones o variantes configuradas para el plato.
-- `empleado`: Empleado que registró o gestionó la operación. Incluye `id_empleado`, `nombre_empleado`.
+- `empleado`: Empleado asociado al comentario o a la operación. Incluye `id_empleado`, `nombre_empleado`.
   - `id_empleado`: Empleado que registró o atiende.
   - `nombre_empleado`: Nombre del empleado.
 - `fecha`: Fecha de registro del evento operativo. Incluye `fecha_registro`.
@@ -4293,7 +4783,7 @@ Para `grupos`:
 - `sucursal`: Sucursal donde se originó o aplica la operación. Incluye `id_sucursal`, `nombre_sucursal`.
   - `id_sucursal`: Sucursal donde ocurrió la eliminación.
   - `nombre_sucursal`: Nombre de la sucursal.
-- `empleado`: Empleado que registró o gestionó la operación. Incluye `id_empleado`, `nombre_empleado`.
+- `empleado`: Empleado asociado al comentario o a la operación. Incluye `id_empleado`, `nombre_empleado`.
   - `id_empleado`: Empleado asociado a la eliminación.
   - `nombre_empleado`: Nombre del empleado.
 - `producto`: Identificación, descripción y presentación del producto. Incluye `nombre_producto`, `cantidad`.
@@ -4376,6 +4866,7 @@ Para `grupos`:
 
 | Dato | Obligatorio | Valores que acepta | Significado |
 | --- | --- | --- | --- |
+| `confirmation` | No | string; valor habitual `confirm:restaurante-comandas-crear` | Inclúyelo únicamente después de la aprobación explícita del usuario. |
 | `numero_mesa` | No | entero o null; valor habitual `null para domicilio o para llevar` | Mesa física del restaurante. Si es null, domicilio se normaliza a 1. |
 | `domicilio` | No | entero 0 o 1; valor habitual `0` | Indica si el pedido es de domicilio. La API usa 0 si se omite. |
 | `id_sucursal` | No | entero positivo; valor habitual `1` | Sucursal o restaurante que origina la comanda. La API usa 1 si se omite. |
@@ -4445,4 +4936,4 @@ Los clientes REST deben enviar únicamente los datos de negocio, incluidos `gui_
 - La ruta pública se alcanza a través de Envoy y se traduce internamente al servicio de sincronización.
 - La operación no utiliza cache porque modifica datos.
 
-**Antes de ejecutarla:** explica el destino y pide confirmación con `restaurante/confirmation=confirm:restaurante-comandas-crear`.
+**Antes de ejecutarla:** explica el destino y pide confirmación. Después incluye `confirmation=confirm:restaurante-comandas-crear` en los argumentos.

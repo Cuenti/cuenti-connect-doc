@@ -130,6 +130,7 @@ const presetTitles: Record<string, Record<string, string>> = {
   buscarTransacciones: {
     'sales-history': 'Historial de ventas',
     'full-by-id': 'Factura completa por ID',
+    'with-comments-and-files': 'Factura con comentarios y archivos',
     voided: 'Facturas anuladas',
   },
   buscarProductosComprados: {
@@ -157,7 +158,11 @@ const presetTitles: Record<string, Record<string, string>> = {
   platosEliminados: {
     'branch-audit': 'Auditoría de eliminaciones por sucursal',
   },
-  buscarDocumentosComerciales: { sales: 'Facturas activas' },
+  buscarDocumentosComerciales: {
+    sales: 'Facturas activas',
+    'full-by-id': 'Documento completo por ID',
+    'with-comments-and-files': 'Documento con comentarios y archivos',
+  },
   buscarProductosDocumentosComerciales: {
     'by-customer': 'Productos por cliente',
   },
@@ -402,30 +407,65 @@ const defaultHeaders = (method: HttpMethod): HeaderSpec[] => {
 };
 
 const normalizeGroups = (value: unknown): FieldGroup[] => {
+  const stringList = (entry: unknown) =>
+    typeof entry === 'string' ? [entry] : strings(entry);
+  const normalizeGroup = (
+    entry: unknown,
+    fallbackName?: string,
+  ): FieldGroup => {
+    if (typeof entry === 'string')
+      return { name: entry, fields: [], type: 'object' };
+    const item = asRecord(entry);
+    const declaredName = asString(
+      first(item, ['name', 'nombre', 'group', 'grupo', 'key']),
+      fallbackName ?? '',
+    );
+    const aliasOf = asString(first(item, ['aliasOf', 'alias_of']));
+    const name = aliasOf || declaredName;
+    const aliases = [
+      ...(aliasOf && declaredName && aliasOf !== declaredName
+        ? [declaredName]
+        : []),
+      ...stringList(first(item, ['aliases', 'alias', 'aliasNames'])),
+    ].filter((alias) => alias && alias !== name);
+    const items = asRecord(first(item, ['items', 'elementos']));
+    const fields = strings(
+      first(item, ['fields', 'campos', 'columns', 'columnas']),
+    );
+    const itemFieldsFromEntry = stringList(
+      first(item, ['itemFields', 'item_fields']),
+    );
+    const itemFields = itemFieldsFromEntry.length
+      ? itemFieldsFromEntry
+      : stringList(first(items, ['fields', 'campos', 'columns', 'columnas']));
+    const type = asString(first(item, ['type', 'responseType', 'valueType']));
+    return {
+      name,
+      fields,
+      ...(itemFields.length ? { itemFields } : {}),
+      ...(aliases.length ? { aliases: [...new Set(aliases)] } : {}),
+      description:
+        asString(first(item, ['description', 'descripcion'])) || undefined,
+      level: ['header', 'detail', 'both'].includes(asString(item.level))
+        ? (asString(item.level) as FieldGroup['level'])
+        : undefined,
+      type: type === 'array' || type === 'object' ? type : undefined,
+    };
+  };
+
   if (Array.isArray(value)) {
     return value
-      .map((entry) => {
-        if (typeof entry === 'string') return { name: entry, fields: [] };
-        const item = asRecord(entry);
-        const level = asString(item.level);
-        return {
-          name: asString(first(item, ['name', 'nombre', 'group', 'grupo'])),
-          fields: strings(
-            first(item, ['fields', 'campos', 'columns', 'columnas']),
-          ),
-          description:
-            asString(first(item, ['description', 'descripcion'])) || undefined,
-          level: ['header', 'detail', 'both'].includes(level)
-            ? (level as FieldGroup['level'])
-            : undefined,
-        };
-      })
+      .map((entry) => normalizeGroup(entry))
       .filter((group) => group.name);
   }
-  return Object.entries(asRecord(value)).map(([name, fields]) => ({
-    name,
-    fields: strings(fields),
-  }));
+  return Object.entries(asRecord(value)).map(([name, definition]) =>
+    normalizeGroup(
+      typeof definition === 'string' || Array.isArray(definition)
+        ? { fields: definition }
+        : { ...asRecord(definition), name },
+      name,
+    ),
+  );
 };
 
 const discountGroupLevels: Record<string, FieldGroup['level']> = {
@@ -451,10 +491,24 @@ const classifyDiscountGroups = (groups: FieldGroup[], path: string) =>
 
 const mergeGroups = (groups: FieldGroup[]) => {
   const merged = new Map<string, FieldGroup>();
-  for (const group of groups) {
-    const current = merged.get(group.name);
+  const aliases = new Map(
+    groups.flatMap((group) =>
+      (group.aliases ?? []).map((alias) => [alias, group.name] as const),
+    ),
+  );
+  for (const source of groups) {
+    const canonicalName = aliases.get(source.name) ?? source.name;
+    const group =
+      canonicalName === source.name
+        ? source
+        : {
+            ...source,
+            name: canonicalName,
+            aliases: [...(source.aliases ?? []), source.name],
+          };
+    const current = merged.get(canonicalName);
     if (!current) {
-      merged.set(group.name, { ...group });
+      merged.set(canonicalName, { ...group });
       continue;
     }
     const descriptions = [current.description, group.description].filter(
@@ -462,8 +516,20 @@ const mergeGroups = (groups: FieldGroup[]) => {
     ) as string[];
     current.description = [...new Set(descriptions)].join(' ');
     current.fields = [...new Set([...current.fields, ...group.fields])];
+    current.itemFields = [
+      ...new Set([...(current.itemFields ?? []), ...(group.itemFields ?? [])]),
+    ];
+    current.aliases = [
+      ...new Set([...(current.aliases ?? []), ...(group.aliases ?? [])]),
+    ];
+    current.level ??= group.level;
+    current.type ??= group.type;
   }
-  return [...merged.values()];
+  return [...merged.values()].map((group) => ({
+    ...group,
+    itemFields: group.itemFields?.length ? group.itemFields : undefined,
+    aliases: group.aliases?.length ? group.aliases : undefined,
+  }));
 };
 
 const normalizePresets = (

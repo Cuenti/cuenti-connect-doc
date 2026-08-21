@@ -2688,7 +2688,41 @@
               "sucursal_configuracion",
               "taller",
               "acta_entrega",
-              "ruta_despacho"
+              "ruta_despacho",
+              {
+                "name": "comentarios",
+                "level": "header",
+                "type": "array",
+                "items": {
+                  "fields": [
+                    "id_comentario",
+                    "comentario",
+                    "id_empleado",
+                    "empleado",
+                    "leido",
+                    "fecha_registro"
+                  ]
+                }
+              },
+              {
+                "name": "adjuntos",
+                "level": "header",
+                "type": "array",
+                "aliases": [
+                  "archivos"
+                ],
+                  "items": {
+                    "fields": [
+                      "id_adjunto",
+                      "nombre_real",
+                      "tipo",
+                      "etiqueta",
+                      "ruta",
+                      "fecha_registro"
+                    ]
+                  }
+                },
+                "archivos"
             ]
           },
           {
@@ -2730,17 +2764,19 @@
             "empresa",
             "sucursal_configuracion",
             "taller",
-            "acta_entrega"
+            "acta_entrega",
+            "comentarios",
+            "adjuntos"
           ]
         }
       },
       "expectedCollection": "transacciones",
       "response": {
-        "shape": "{ pagina: integer, transacciones: Transaccion[] }",
+        "shape": "{ pagina: integer, transacciones: Transaccion[] }; Transaccion.comentarios?: Comentario[]; Transaccion.adjuntos?: Adjunto[]; Transaccion.archivos?: Archivo[]",
         "example": {
           "pagina": 0,
           "transacciones": [
-            {"codigos": {"id_transacion": 1, "n_transacion": 1, "n_factura": "1", "prefijo": "DOC", "numeracion": 1, "tipo_documento": 1}, "totales": {"subtotal": 10000, "impuesto": 1900, "total_neto": 11900, "descuento": 0, "total_costo": 7000, "total_utilidad": 3000, "total_abono": 11900, "saldo_pendiente": 0}, "cliente": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo", "direccion": "Dirección ejemplo", "ciudad": "Ciudad ejemplo", "telefonos": "0000000000", "correos": "cliente@example.invalid"}, "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"}, "fechas": {"fecha_factura": 1735689600000, "fecha_registro": 1735689600000, "fecha_vencimiento": 1738281600000}, "ruta_despacho": {"id_ruta": 1, "nombre": "Ruta ejemplo"}, "detalle": [{"producto": {"id_producto": 25, "sku": "SKU-001", "nombre": "Producto ejemplo"}, "cantidades": {"cantidad": 1}, "precios": {"precio_unitario": 10000}, "totales": {"subtotal": 10000, "total_neto": 11900}, "impuestos": {"total_impuesto": 1900}, "descuento": {"descuento": 0}}]}
+            {"codigos": {"id_transacion": 1, "n_transacion": 1, "n_factura": "1", "prefijo": "DOC", "numeracion": 1, "tipo_documento": 1}, "totales": {"subtotal": 10000, "impuesto": 1900, "total_neto": 11900, "descuento": 0, "total_costo": 7000, "total_utilidad": 3000, "total_abono": 11900, "saldo_pendiente": 0}, "cliente": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo", "direccion": "Dirección ejemplo", "ciudad": "Ciudad ejemplo", "telefonos": "0000000000", "correos": "cliente@example.invalid"}, "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"}, "fechas": {"fecha_factura": 1735689600000, "fecha_registro": 1735689600000, "fecha_vencimiento": 1738281600000}, "ruta_despacho": {"id_ruta": 1, "nombre": "Ruta ejemplo"}, "comentarios": [{"id_comentario": 1, "comentario": "Comentario ficticio de integración", "id_empleado": 1, "empleado": "Empleado ejemplo", "leido": 1, "fecha_registro": 1735689600000}], "adjuntos": [{"id_adjunto": 1, "nombre_real": "factura-ejemplo.pdf", "tipo": "application/pdf", "etiqueta": "Documento", "ruta": "https://example.invalid/archivos/factura-ejemplo.pdf", "fecha_registro": 1735689600000}], "detalle": [{"producto": {"id_producto": 25, "sku": "SKU-001", "nombre": "Producto ejemplo"}, "cantidades": {"cantidad": 1}, "precios": {"precio_unitario": 10000}, "totales": {"subtotal": 10000, "total_neto": 11900}, "impuestos": {"total_impuesto": 1900}, "descuento": {"descuento": 0}}]}
           ]
         }
       },
@@ -2829,7 +2865,9 @@
               "sucursal_configuracion",
               "taller",
               "acta_entrega",
-              "ruta_despacho"
+              "ruta_despacho",
+              "comentarios",
+              "adjuntos"
             ],
             "detalle": [
               "producto",
@@ -2838,6 +2876,22 @@
               "impuestos",
               "descuento",
               "totales"
+            ]
+          }
+        },
+        {
+          "id": "with-comments-and-files",
+          "title": "Factura con comentarios y archivos",
+          "query": {
+            "id_transacion": 12345,
+            "pagina": 0,
+            "cantidad_registros": 1
+          },
+          "body": {
+            "grupos": [
+              "codigos",
+              "comentarios",
+              "archivos"
             ]
           }
         },
@@ -2897,7 +2951,10 @@
       "notes": [
         "Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.",
         "detalle.codigos contiene id_detalle_transacion, no id_transacion.",
-        "El grupo impresion devuelve configuración y no genera un PDF."
+        "El grupo impresion devuelve configuración y no genera un PDF.",
+            "La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.",
+            "comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.",
+        "Los ejemplos usan valores ficticios y URLs example.invalid."
       ],
       "tryIt": {
         "enabled": true,
@@ -5793,7 +5850,41 @@
               "logistica",
               "estado",
               "documento",
-              "nota"
+              "nota",
+              {
+               "name": "comentarios",
+               "level": "header",
+               "type": "array",
+               "items": {
+                 "fields": [
+                   "id_comentario",
+                   "comentario",
+                   "id_empleado",
+                   "empleado",
+                   "leido",
+                   "fecha_registro"
+                 ]
+               }
+              },
+              {
+                "name": "adjuntos",
+                "level": "header",
+                "type": "array",
+                "aliases": [
+                  "archivos"
+                ],
+               "items": {
+                 "fields": [
+                   "id_adjunto",
+                   "nombre_real",
+                   "tipo",
+                   "etiqueta",
+                   "ruta",
+                   "fecha_registro"
+                 ]
+               }
+              },
+              "archivos"
             ]
           },
           {
@@ -5822,13 +5913,15 @@
             "logistica",
             "estado",
             "documento",
-            "nota"
+            "nota",
+            "comentarios",
+            "adjuntos"
           ]
         }
       },
       "expectedCollection": "documentos",
       "response": {
-        "shape": "{ pagina: integer, cantidad: integer, documentos: Documento[] }",
+        "shape": "{ pagina: integer, cantidad: integer, documentos: Documento[] }; Documento.comentarios?: Comentario[]; Documento.adjuntos?: Adjunto[]; Documento.archivos?: Archivo[]",
         "example": {
           "pagina": 0,
           "cantidad": 1,
@@ -5839,6 +5932,8 @@
               "cliente": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo"},
               "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"},
               "fechas": {"fecha_documento": 1735689600000, "fecha_registro": 1735689600000},
+              "comentarios": [{"id_comentario": 1, "comentario": "Comentario ficticio de integración", "id_empleado": 1, "empleado": "Empleado ejemplo", "leido": 1, "fecha_registro": 1735689600000}],
+              "adjuntos": [{"id_adjunto": 1, "nombre_real": "pedido-ejemplo.pdf", "tipo": "application/pdf", "etiqueta": "Documento", "ruta": "https://example.invalid/archivos/pedido-ejemplo.pdf", "fecha_registro": 1735689600000}],
               "detalle": [
                 {
                   "producto": {"id_producto": 25, "sku": "SKU-001", "nombre": "Producto ejemplo"},
@@ -5884,6 +5979,58 @@
               "totales"
             ]
           }
+        },
+        {
+          "id": "full-by-id",
+          "title": "Documento completo por ID",
+          "query": {
+            "id_documento": 12345,
+            "pagina": 0,
+            "cantidad_registros": 1
+          },
+          "body": {
+            "grupos": [
+              "codigos",
+              "fechas",
+              "sucursal",
+              "cliente",
+              "empleado",
+              "vendedor",
+              "totales",
+              "bodegas",
+              "ruta_despacho",
+              "logistica",
+              "estado",
+              "documento",
+              "nota",
+              "comentarios",
+              "adjuntos"
+            ],
+            "detalle": [
+              "producto",
+              "cantidades",
+              "precios",
+              "impuestos",
+              "descuento",
+              "totales"
+            ]
+          }
+        },
+        {
+          "id": "with-comments-and-files",
+          "title": "Documento con comentarios y archivos",
+          "query": {
+            "id_documento": 12345,
+            "pagina": 0,
+            "cantidad_registros": 1
+          },
+          "body": {
+            "grupos": [
+              "codigos",
+              "comentarios",
+              "archivos"
+            ]
+          }
         }
       ],
       "errors": [
@@ -5892,7 +6039,10 @@
       ],
       "notes": [
         "detalle es opcional y conserva el orden de los grupos solicitados.",
-        "Las respuestas no exponen credenciales ni claves internas."
+        "Las respuestas no exponen credenciales ni claves internas.",
+            "La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.",
+            "comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.",
+        "Los ejemplos usan valores ficticios y URLs example.invalid."
       ],
       "tryIt": {
         "enabled": true,
