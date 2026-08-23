@@ -183,7 +183,8 @@ const commonFieldDescriptions: Record<string, string> = {
   code: 'SKU o código de barras según type_match_producto.',
   cambiar_precio_compra:
     'Indica si Cuenti actualiza el costo unitario de compra.',
-  tipoDocumento: 'Tipo de documento: factura, compra/gasto o remisión.',
+  tipoDocumento:
+    'Tipo de documento; consulta el catálogo para elegir entre transacciones y documentos comerciales.',
   type_match_producto:
     'Define si el producto se identifica por ID, SKU o código de barras.',
   codigo_unico: 'Código numérico único que conserva los ceros iniciales.',
@@ -552,7 +553,8 @@ const endpointFieldDescriptions: Record<string, Record<string, string>> = {
     id_centro_costo: 'Centro de costo opcional del movimiento.',
   },
   grabarDocumentoSimple: {
-    tipoDocumento: '1 factura, 7 compra/gasto, 9 remisión/prefactura.',
+    tipoDocumento:
+      'Tipo de documento que se va a crear; consulta el catálogo de valores admitidos.',
     type_match_producto: '1 ID de producto, 2 SKU, 3 código de barras.',
     id_consecutivo: 'Consecutivo con el que se registra el documento.',
     codigo_unico: 'Código numérico de 1 a 50 dígitos, sin normalizar.',

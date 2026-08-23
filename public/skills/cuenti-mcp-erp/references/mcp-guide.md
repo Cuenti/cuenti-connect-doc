@@ -1,6 +1,6 @@
-# Guía rápida de Cuenti MCP
+# Guía rápida de Cuenti MCP ERP
 
-Esta guía explica cómo conectar un cliente MCP de forma sencilla y segura.
+Esta guía explica cómo conectar un cliente MCP al servidor ERP de forma sencilla y segura.
 
 ## Conexión
 

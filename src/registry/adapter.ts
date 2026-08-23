@@ -196,15 +196,15 @@ const categoryAliases: Record<string, EndpointCategory> = {
   tributario: 'Impuestos',
   terceros: 'Terceros',
   'third-parties': 'Terceros',
-  transacciones: 'Transacciones',
-  ventas: 'Transacciones',
-  facturas: 'Transacciones',
-  historiales: 'Transacciones',
-  'facturas-e-historiales': 'Transacciones',
-  'invoices-and-history': 'Transacciones',
-  operativas: 'Otros documentos',
-  'documentos-comerciales': 'Otros documentos',
-  'other-documents': 'Otros documentos',
+  transacciones: 'Transacciones y documentos',
+  ventas: 'Transacciones y documentos',
+  facturas: 'Transacciones y documentos',
+  historiales: 'Transacciones y documentos',
+  'facturas-e-historiales': 'Transacciones y documentos',
+  'invoices-and-history': 'Transacciones y documentos',
+  operativas: 'Transacciones y documentos',
+  'documentos-comerciales': 'Transacciones y documentos',
+  'other-documents': 'Transacciones y documentos',
   finanzas: 'Finanzas y cartera',
   cartera: 'Finanzas y cartera',
   'accounts-receivable': 'Finanzas y cartera',
@@ -1255,9 +1255,9 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
       }
     }
   }
-  if (endpoints.length !== 40) {
+  if (endpoints.length !== 38) {
     throw new Error(
-      `El registro público debe contener 40 operaciones; contiene ${endpoints.length}.`,
+      `El registro público debe contener 38 operaciones; contiene ${endpoints.length}.`,
     );
   }
   if (

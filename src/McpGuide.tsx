@@ -11,11 +11,11 @@ const connectionHeaders = [
 export const McpGuide = () => (
   <div className="mcp-guide">
     <header className="mcp-guide-hero">
-      <p className="eyebrow">Guía independiente de endpoints</p>
-      <h1>Conectar y usar Cuenti MCP</h1>
+      <p className="eyebrow">Servidor MCP ERP</p>
+      <h1>Conectar y usar Cuenti MCP ERP</h1>
       <p>
-        Conecta un cliente compatible con MCP y descubre las herramientas de
-        Cuenti de forma segura.
+        Conecta un cliente compatible con MCP y descubre las herramientas del
+        ERP Cuenti de forma segura.
       </p>
       <div className="mcp-route-bar">
         <span>Servidor MCP</span>

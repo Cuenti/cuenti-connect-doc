@@ -193,11 +193,14 @@ export const CatalogGuide = () => (
         />
         <h3>Tipo de documento</h3>
         <p>
-          Cuando un filtro acepta varios documentos, envía los valores separados
-          por comas.
+          Usa estos valores en los filtros y en `documentos-crear`. La creación
+          cubre transacciones como facturas, compras y remisiones, además de
+          documentos comerciales como órdenes de compra, cotizaciones y
+          despachos. Consulta el catálogo ERP para los tipos adicionales
+          habilitados.
         </p>
         <CatalogTable
-          headers={['Valor', 'Significado']}
+          headers={['Valor de ejemplo', 'Significado']}
           rows={[
             ['1', 'Factura'],
             ['7', 'Compra o gasto'],

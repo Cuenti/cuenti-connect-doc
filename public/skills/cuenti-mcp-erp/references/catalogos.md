@@ -131,9 +131,13 @@ Los valores siguen el orden de la configuración mostrada:
 
 ### Tipo de documento
 
-Cuando un filtro acepta varios documentos, envía los valores separados por comas.
+Usa estos valores en los filtros y en `documentos-crear`. La creación cubre
+transacciones como facturas, compras y remisiones, además de documentos
+comerciales como órdenes de compra, cotizaciones y despachos. Consulta el
+catálogo ERP para los tipos adicionales habilitados. Cuando un filtro acepta
+varios documentos, envía los valores separados por comas.
 
-| Valor | Significado |
+| Valor de ejemplo | Significado |
 | --- | --- |
 | `1` | Factura |
 | `7` | Compra o gasto |

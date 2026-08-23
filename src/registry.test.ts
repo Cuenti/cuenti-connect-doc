@@ -11,7 +11,7 @@ const findEndpoint = (id: string) =>
   );
 
 describe('canonical documentation registry', () => {
-  it('exposes all 40 approved public method/path tuples', () => {
+  it('exposes all 38 approved public method/path tuples', () => {
     const tuples = registry.endpoints.map(
       (endpoint) => `${endpoint.method} ${endpoint.path}`,
     );
@@ -22,9 +22,7 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/transacciones/ventas/otros-ingresos/busquedas',
         'POST /api/v1/transacciones/ventas/compras-gastos/busquedas',
         'POST /api/v1/transacciones/ventas/remisiones/busquedas',
-        'POST /api/v1/transacciones/ventas/facturas',
-        'POST /api/v1/transacciones/ventas/compras-gastos',
-        'POST /api/v1/transacciones/ventas/remisiones',
+        'POST /api/v1/documentos',
         'POST /api/v1/transacciones/ventas/productos-comprados/busquedas',
         'POST /api/v1/transacciones/ventas/descuentos/busquedas',
         'POST /api/v1/transacciones/ventas/consolidados/busquedas',
@@ -59,7 +57,7 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/restaurante/comandas',
       ]),
     );
-    expect(tuples).toHaveLength(40);
+    expect(tuples).toHaveLength(38);
     expect(tuples.every((tuple) => tuple.includes('/api/v1/'))).toBe(true);
     expect(JSON.stringify(registry)).not.toContain('/jServerj4ErpPro');
     expect(
@@ -68,7 +66,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('keeps the public query and mutation split', () => {
-    expect(registry.endpoints).toHaveLength(40);
+    expect(registry.endpoints).toHaveLength(38);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -79,10 +77,10 @@ describe('canonical documentation registry', () => {
     ).toHaveLength(32);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
-    ).toHaveLength(8);
+    ).toHaveLength(6);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(8);
+    ).toHaveLength(6);
   });
 
   it('keeps the flat public service distribution', () => {
@@ -97,8 +95,7 @@ describe('canonical documentation registry', () => {
       Catálogo: 5,
       Inventario: 1,
       Terceros: 3,
-      Transacciones: 11,
-      'Otros documentos': 6,
+      'Transacciones y documentos': 15,
       Impuestos: 2,
       'Finanzas y cartera': 6,
       Organización: 2,
@@ -159,8 +156,7 @@ describe('canonical documentation registry', () => {
       'ventas-facturas-busquedas': 'Buscar facturas',
       'ventas-planes-separe-busquedas': 'Buscar plan separe',
       'ventas-compras-gastos-busquedas': 'Buscar compra/gasto',
-      'ventas-facturas': 'Crear factura',
-      'ventas-compras-gastos': 'Crear compra/gasto',
+      'documentos-crear': 'Crear documento',
       'operativas-pedidos-busquedas': 'Buscar pedidos',
       'operativas-cotizaciones-busquedas': 'Buscar cotizaciones',
       'finanzas-cartera-cobrar-busquedas': 'Buscar cuentas por cobrar',
@@ -707,7 +703,9 @@ describe('canonical documentation registry', () => {
     }
     expect(
       registry.endpoints
-        .filter((endpoint) => endpoint.category === 'Transacciones')
+        .filter(
+          (endpoint) => endpoint.category === 'Transacciones y documentos',
+        )
         .some((endpoint) => endpoint.compatibility),
     ).toBe(false);
 

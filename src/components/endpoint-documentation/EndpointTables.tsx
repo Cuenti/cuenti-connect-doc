@@ -1,3 +1,4 @@
+import { getFieldDescription } from '../../fieldDescriptions';
 import type { FieldSpec, ParameterSpec } from '../../model';
 
 const PresetValues = ({ value }: { value: unknown }) => {
@@ -174,7 +175,13 @@ const flattenFields = (
     return [{ field, path }, ...children];
   });
 
-export const BodyFieldsTable = ({ fields }: { fields: FieldSpec[] }) => {
+export const BodyFieldsTable = ({
+  fields,
+  endpointId,
+}: {
+  fields: FieldSpec[];
+  endpointId: string;
+}) => {
   const rows = flattenFields(fields);
   if (!rows.length) return null;
   return (
@@ -201,13 +208,16 @@ export const BodyFieldsTable = ({ fields }: { fields: FieldSpec[] }) => {
             {rows.map(({ field, path }) => {
               const allowed = formatAllowedValues(field);
               const constraints = formatFieldConstraints(field);
+              const description =
+                field.description ||
+                getFieldDescription(endpointId, field.name);
               return (
                 <tr key={path}>
                   <td>
                     <code>{path}</code>
                   </td>
                   <td>{field.typeLabel ?? field.type ?? '—'}</td>
-                  <td>{field.description || 'Sin descripción adicional.'}</td>
+                  <td>{description}</td>
                   <td>
                     {allowed || constraints ? (
                       <>

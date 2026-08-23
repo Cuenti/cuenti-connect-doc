@@ -16,6 +16,28 @@ const DownloadIcon = () => (
   </svg>
 );
 
+const skills = [
+  {
+    id: 'cuenti-mcp-erp',
+    title: 'Cuenti MCP ERP',
+    description:
+      'Productos, terceros, documentos, cartera y operaciones del ERP.',
+    files: [
+      'SKILL.md',
+      'references/endpoints.md',
+      'references/mcp-guide.md',
+      'references/catalogos.md',
+    ],
+  },
+  {
+    id: 'cuenti-mcp-stats',
+    title: 'Cuenti Stats MCP',
+    description:
+      'Indicadores, KPIs y reportes de ventas, inventario y operación.',
+    files: ['SKILL.md', 'references/tools.md', 'references/mcp-guide.md'],
+  },
+] as const;
+
 export const SkillInstallModal = ({
   open,
   onClose,
@@ -28,29 +50,16 @@ export const SkillInstallModal = ({
     onClose,
     'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
   );
-  const skillUrl = new URL('skills/cuenti-mcp/SKILL.md', document.baseURI).href;
-  const catalogUrl = new URL(
-    'skills/cuenti-mcp/references/endpoints.md',
-    document.baseURI,
-  ).href;
-  const guideUrl = new URL(
-    'skills/cuenti-mcp/references/mcp-guide.md',
-    document.baseURI,
-  ).href;
-  const catalogsUrl = new URL(
-    'skills/cuenti-mcp/references/catalogos.md',
-    document.baseURI,
-  ).href;
-  const packageUrl = new URL('skills/cuenti-mcp.zip', document.baseURI).href;
-
   if (!open) return null;
 
-  const installCommand = (directory: string) =>
-    `mkdir -p ${directory}/references && curl -fsSL '${skillUrl}' -o ${directory}/SKILL.md && curl -fsSL '${catalogUrl}' -o ${directory}/references/endpoints.md && curl -fsSL '${guideUrl}' -o ${directory}/references/mcp-guide.md && curl -fsSL '${catalogsUrl}' -o ${directory}/references/catalogos.md`;
-  const sharedInstall = installCommand('~/.agents/skills/cuenti-mcp');
-  const openCodeInstall = installCommand(
-    '~/.config/opencode/skills/cuenti-mcp',
-  );
+  const installCommand = (skill: (typeof skills)[number], directory: string) =>
+    `mkdir -p ${directory}/references && ${skill.files
+      .map((file) => {
+        const url = new URL(`skills/${skill.id}/${file}`, document.baseURI)
+          .href;
+        return `curl -fsSL '${url}' -o ${directory}/${file}`;
+      })
+      .join(' && ')}`;
 
   return (
     <div className="modal-backdrop">
@@ -71,7 +80,7 @@ export const SkillInstallModal = ({
         <header className="credentials-modal-header">
           <div>
             <p className="eyebrow">Agentes de IA</p>
-            <h2 id="skill-modal-title">Instalar skill del MCP</h2>
+            <h2 id="skill-modal-title">Instalar skills MCP</h2>
           </div>
           <button
             className="modal-close"
@@ -83,29 +92,55 @@ export const SkillInstallModal = ({
           </button>
         </header>
         <p className="credentials-modal-description">
-          Descarga un único paquete con las instrucciones, la guía de conexión,
-          los catálogos y el catálogo funcional de las 40 operaciones públicas.
+          Descarga por separado la skill del ERP o la skill de indicadores y
+          reportes. Cada paquete contiene únicamente su propio catálogo.
         </p>
         <div className="skill-downloads">
-          <a
-            className="skill-download"
-            href={packageUrl}
-            download="cuenti-mcp.zip"
-          >
-            <DownloadIcon />
-            Descargar skill
-          </a>
+          {skills.map((skill) => {
+            const packageUrl = new URL(
+              `skills/${skill.id}.zip`,
+              document.baseURI,
+            ).href;
+            return (
+              <section className="skill-download-card" key={skill.id}>
+                <div>
+                  <h3>{skill.title}</h3>
+                  <p>{skill.description}</p>
+                </div>
+                <a
+                  className="skill-download"
+                  href={packageUrl}
+                  download={`${skill.id}.zip`}
+                >
+                  <DownloadIcon />
+                  Descargar {skill.id}
+                </a>
+              </section>
+            );
+          })}
         </div>
-        <div className="skill-install-options">
-          <section>
-            <h3>Directorio compartido de Agent Skills</h3>
-            <JsonCodeBlock value={sharedInstall} fallback="" />
+        {skills.map((skill) => (
+          <section className="skill-install-options" key={skill.id}>
+            <h3>Instalar {skill.title}</h3>
+            <section>
+              <h4>Directorio compartido de Agent Skills</h4>
+              <JsonCodeBlock
+                value={installCommand(skill, `~/.agents/skills/${skill.id}`)}
+                fallback=""
+              />
+            </section>
+            <section>
+              <h4>OpenCode global</h4>
+              <JsonCodeBlock
+                value={installCommand(
+                  skill,
+                  `~/.config/opencode/skills/${skill.id}`,
+                )}
+                fallback=""
+              />
+            </section>
           </section>
-          <section>
-            <h3>OpenCode global</h3>
-            <JsonCodeBlock value={openCodeInstall} fallback="" />
-          </section>
-        </div>
+        ))}
         <p className="skill-restart-note">
           Reinicia el cliente de agentes para que detecte la nueva skill.
         </p>

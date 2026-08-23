@@ -181,7 +181,10 @@ export const EndpointDetail = ({
             </p>
           ) : null}
           {endpoint.bodyDescription ? <p>{endpoint.bodyDescription}</p> : null}
-          <BodyFieldsTable fields={endpoint.bodyFields} />
+          <BodyFieldsTable
+            fields={endpoint.bodyFields}
+            endpointId={endpoint.contractId ?? endpoint.id}
+          />
           <EndpointGuidance guidance={endpoint.guidance} />
           {endpoint.groups.length ? (
             <div>
@@ -196,15 +199,6 @@ export const EndpointDetail = ({
                       }
                       className="field-tooltip-trigger projection-group-trigger"
                     />
-                    {group.level ? (
-                      <span className="projection-level">
-                        {group.level === 'header'
-                          ? 'Cabecera'
-                          : group.level === 'detail'
-                            ? 'Detalle'
-                            : 'Cabecera y detalle'}
-                      </span>
-                    ) : null}
                     <span className="projection-fields">
                       {group.description || getGroupDescription(group.name)}
                       {group.aliases?.length

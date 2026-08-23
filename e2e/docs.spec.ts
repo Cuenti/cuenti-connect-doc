@@ -6,20 +6,21 @@ const openIndexOnMobile = async (page: Page) => {
   }
 };
 
-test('publica la skill MCP para descarga e instalación', async ({ page }) => {
+test('publica las skills MCP para descarga e instalación', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Instalar skill del MCP' }).click();
+  await page.getByRole('button', { name: 'Instalar skills MCP' }).click();
 
-  const dialog = page.getByRole('dialog', { name: 'Instalar skill del MCP' });
+  const dialog = page.getByRole('dialog', { name: 'Instalar skills MCP' });
   const skillDownload = dialog.getByRole('link', {
-    name: 'Descargar skill',
+    name: 'Descargar cuenti-mcp-erp',
   });
   await expect(skillDownload).toHaveAttribute(
     'href',
-    /\/skills\/cuenti-mcp\.zip$/,
+    /\/skills\/cuenti-mcp-erp\.zip$/,
   );
-  await expect(skillDownload).toHaveAttribute('download', 'cuenti-mcp.zip');
-  await expect(dialog.getByText(/\.agents\/skills/)).toBeVisible();
+  await expect(skillDownload).toHaveAttribute('download', 'cuenti-mcp-erp.zip');
+  await expect(dialog.getByText(/\.agents\/skills/).first()).toBeVisible();
+  await expect(dialog).toHaveCSS('overflow-y', 'auto');
 
   const packageResponse = await page.request.get(
     await skillDownload.getAttribute('href'),
@@ -91,12 +92,38 @@ test('documenta las listas embebidas y proyecta archivos como adjuntos', async (
   await expect(page.locator('.projection-grid')).toContainText('adjuntos');
   await expect(page.locator('.projection-grid')).toContainText('archivos');
 
+  const commentsRow = page
+    .locator('.projection-row')
+    .filter({ has: page.getByRole('button', { name: 'comentarios' }) });
+  await expect(commentsRow).toContainText(
+    'Comentarios asociados al documento; se entregan como una lista embebida de cabecera.',
+  );
+  await expect(commentsRow).not.toContainText('Cabecera');
+
+  const requestExample = page.getByRole('textbox', {
+    name: 'Solicitud JSON de ejemplo',
+  });
+  await expect(requestExample).toHaveValue(/"comentarios"/);
+  await expect(requestExample).toHaveValue(/"adjuntos"/);
+
   const completeById = page
     .locator('.preset-docs details')
     .filter({ hasText: 'Factura completa por ID' });
   await completeById.locator('summary').click();
   await expect(completeById).toContainText('adjuntos');
   await expect(completeById).not.toContainText('archivos');
+});
+
+test('describe los campos del cuerpo al crear y actualizar terceros', async ({
+  page,
+}) => {
+  for (const endpoint of ['terceros-crear', 'terceros-actualizar']) {
+    await page.goto(`/?endpoint=${endpoint}`);
+
+    const fields = page.locator('.body-fields');
+    await expect(fields).toBeVisible();
+    await expect(fields).not.toContainText('Sin descripción adicional.');
+  }
 });
 
 test('mantiene el inicio rápido después del título entre 1100 y 1250 px', async ({
@@ -432,7 +459,7 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page).toHaveTitle('Guía de integración de Cuenti');
   await expect(
-    page.getByRole('heading', { name: '40 operaciones' }),
+    page.getByRole('heading', { name: '38 operaciones' }),
   ).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Probar consulta' }),

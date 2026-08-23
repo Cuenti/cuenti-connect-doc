@@ -11,15 +11,21 @@ import {
   tryItEnabled,
 } from '../../app/runtime';
 import { CatalogGuide } from '../../CatalogGuide';
-import { McpGuide } from '../../McpGuide';
+import { MCP_SERVER_URL, McpGuide } from '../../McpGuide';
 import {
   categories,
   type EndpointCategory,
   type EndpointDoc,
 } from '../../model';
-import { catalogGuideUrl, endpointUrl, mcpGuideUrl } from '../../navigation';
+import {
+  catalogGuideUrl,
+  endpointUrl,
+  mcpGuideUrl,
+  statsMcpGuideUrl,
+} from '../../navigation';
 import { registry } from '../../registry';
 import { type Credentials, hasRequiredCredentials } from '../../request';
+import { STATS_MCP_SERVER_URL, StatsGuide } from '../../StatsGuide';
 import { filterEndpoints } from '../../search';
 import { applyTheme, persistTheme, readTheme } from '../../theme';
 import { EndpointDetail } from '../endpoint-documentation/EndpointDetail';
@@ -106,6 +112,15 @@ const PortalApp = () => {
     document.getElementById('main-content')?.focus();
   };
 
+  const selectStatsMcpGuide = () => {
+    window.history.pushState({}, '', statsMcpGuideUrl(window.location));
+    startTransition(() => {
+      setPage({ kind: 'mcp-stats' });
+      setNavigationOpen(false);
+    });
+    document.getElementById('main-content')?.focus();
+  };
+
   const selectCatalogGuide = () => {
     window.history.pushState({}, '', catalogGuideUrl(window.location));
     startTransition(() => {
@@ -130,7 +145,18 @@ const PortalApp = () => {
   if (!selectedEndpoint)
     return <p>El registro canónico no contiene operaciones.</p>;
 
-  const serverUrl = serverApiUrl(selectedEndpoint, serverOrigin);
+  const serverLabel =
+    page.kind === 'mcp-stats'
+      ? 'MCP Stats'
+      : page.kind === 'mcp'
+        ? 'MCP ERP'
+        : 'API base';
+  const serverUrl =
+    page.kind === 'mcp-stats'
+      ? STATS_MCP_SERVER_URL
+      : page.kind === 'mcp'
+        ? MCP_SERVER_URL
+        : serverApiUrl(selectedEndpoint, serverOrigin);
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -142,6 +168,7 @@ const PortalApp = () => {
         </a>
         <PortalTopbar
           serverUrl={serverUrl}
+          serverLabel={serverLabel}
           theme={theme}
           skillInstallOpen={skillInstallOpen}
           credentialsOpen={credentialsOpen}
@@ -151,6 +178,7 @@ const PortalApp = () => {
           onOpenSkill={() => setSkillInstallOpen(true)}
           onOpenCredentials={() => setCredentialsOpen(true)}
           onToggleNavigation={() => setNavigationOpen((open) => !open)}
+          showCredentials={page.kind === 'endpoint'}
         />
 
         <CredentialsModal
@@ -177,6 +205,7 @@ const PortalApp = () => {
           }
           onSearchChange={setSearch}
           onSelectMcpGuide={selectMcpGuide}
+          onSelectStatsMcpGuide={selectStatsMcpGuide}
           onSelectCatalogGuide={selectCatalogGuide}
           onToggleCategory={toggleCategory}
           onSelectEndpoint={selectEndpoint}
@@ -192,6 +221,8 @@ const PortalApp = () => {
           </div>
           {page.kind === 'catalog' ? (
             <CatalogGuide />
+          ) : page.kind === 'mcp-stats' ? (
+            <StatsGuide />
           ) : page.kind === 'mcp' ? (
             <McpGuide />
           ) : (

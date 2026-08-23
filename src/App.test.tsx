@@ -103,7 +103,7 @@ describe('documentation application', () => {
       screen.getByRole('button', { name: /^Catálogo\d+$/ }),
     ).toHaveAttribute('aria-expanded', 'true');
     expect(
-      screen.getByRole('button', { name: /^Transacciones\d+$/ }),
+      screen.getByRole('button', { name: /^Transacciones y documentos\d+$/ }),
     ).toHaveAttribute('aria-expanded', 'false');
     expect(
       within(navigation).queryByRole('button', {
@@ -112,7 +112,7 @@ describe('documentation application', () => {
     ).not.toBeInTheDocument();
 
     await user.click(
-      screen.getByRole('button', { name: /^Transacciones\d+$/ }),
+      screen.getByRole('button', { name: /^Transacciones y documentos\d+$/ }),
     );
     expect(
       within(navigation).getByRole('button', {
@@ -120,7 +120,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '40 operaciones' }),
+      screen.getByRole('heading', { name: '38 operaciones' }),
     ).toBeVisible();
   });
 
@@ -186,10 +186,10 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Transacciones');
+    await openCategory(user, 'Transacciones y documentos');
     await user.click(
       screen.getByRole('button', {
-        name: /^POSTCrear factura$/i,
+        name: /^POSTCrear documento$/i,
       }),
     );
 
@@ -202,10 +202,10 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Transacciones');
+    await openCategory(user, 'Transacciones y documentos');
     await user.click(
       screen.getByRole('button', {
-        name: /^POSTCrear factura$/i,
+        name: /^POSTCrear documento$/i,
       }),
     );
 
@@ -248,17 +248,17 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(
-      screen.getByRole('button', { name: 'Guía de conexión MCP' }),
-    );
+    await user.click(screen.getByRole('button', { name: 'MCP ERP' }));
 
     expect(new URLSearchParams(window.location.search).get('section')).toBe(
       'mcp',
     );
     expect(
-      screen.getByRole('heading', { name: 'Conectar y usar Cuenti MCP' }),
+      screen.getByRole('heading', { name: 'Conectar y usar Cuenti MCP ERP' }),
     ).toBeVisible();
-    expect(screen.getByText('https://mcp-api.cuenti.co/mcp')).toBeVisible();
+    expect(screen.getAllByText('https://mcp-api.cuenti.co/mcp')).toHaveLength(
+      2,
+    );
     expect(
       screen.queryByRole('heading', { name: 'Elegir type_match_producto' }),
     ).not.toBeInTheDocument();
@@ -268,6 +268,29 @@ describe('documentation application', () => {
     expect(
       screen.queryByRole('heading', { name: 'Encabezados' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('opens the Stats MCP guide with its own server and tool catalog', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: 'MCP Stats' }));
+
+    expect(window.location.search).toContain('section=mcp');
+    expect(window.location.search).toContain('server=stats');
+    expect(
+      screen.getByRole('heading', { name: 'Conectar y usar Cuenti Stats MCP' }),
+    ).toBeVisible();
+    expect(screen.getAllByText('https://mcp-stats.cuenti.co/mcp')).toHaveLength(
+      2,
+    );
+    expect(
+      screen.getByRole('heading', { name: '22 herramientas públicas' }),
+    ).toBeVisible();
+    expect(screen.getByText('Listar sucursales disponibles')).toBeVisible();
+    expect(document.querySelectorAll('.stats-tool summary code')).toHaveLength(
+      0,
+    );
   });
 
   it('opens the independent catalog guide with dynamic ID rules and base values', async () => {
@@ -295,10 +318,10 @@ describe('documentation application', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await openCategory(user, 'Transacciones');
+    await openCategory(user, 'Transacciones y documentos');
     await user.click(
       screen.getByRole('button', {
-        name: /^POSTCrear factura$/i,
+        name: /^POSTCrear documento$/i,
       }),
     );
 
@@ -426,37 +449,48 @@ describe('documentation application', () => {
     expect(await navigator.clipboard.readText()).not.toContain('{{token}}');
   });
 
-  it('offers the public MCP skill with installation instructions', async () => {
+  it('offers both public MCP skills with installation instructions', async () => {
     const user = userEvent.setup();
     render(<App />);
 
     await user.click(
-      screen.getByRole('button', { name: 'Instalar skill del MCP' }),
+      screen.getByRole('button', { name: 'Instalar skills MCP' }),
     );
     const dialog = screen.getByRole('dialog', {
-      name: 'Instalar skill del MCP',
+      name: 'Instalar skills MCP',
     });
-    const skillDownload = within(dialog).getByRole('link', {
-      name: 'Descargar skill',
+    const erpDownload = within(dialog).getByRole('link', {
+      name: 'Descargar cuenti-mcp-erp',
     });
-    expect(skillDownload).toHaveAttribute(
+    expect(erpDownload).toHaveAttribute(
       'href',
-      'http://localhost:3000/skills/cuenti-mcp.zip',
+      'http://localhost:3000/skills/cuenti-mcp-erp.zip',
     );
-    expect(skillDownload).toHaveAttribute('download', 'cuenti-mcp.zip');
+    expect(erpDownload).toHaveAttribute('download', 'cuenti-mcp-erp.zip');
+    const statsDownload = within(dialog).getByRole('link', {
+      name: 'Descargar cuenti-mcp-stats',
+    });
+    expect(statsDownload).toHaveAttribute(
+      'href',
+      'http://localhost:3000/skills/cuenti-mcp-stats.zip',
+    );
+    expect(statsDownload).toHaveAttribute('download', 'cuenti-mcp-stats.zip');
     expect(
       within(dialog).getAllByText(/references\/endpoints\.md/),
     ).toHaveLength(2);
     expect(
       within(dialog).getAllByText(/references\/mcp-guide\.md/),
-    ).toHaveLength(2);
+    ).toHaveLength(4);
     expect(
       within(dialog).getAllByText(/references\/catalogos\.md/),
     ).toHaveLength(2);
-    expect(within(dialog).getByText(/\.agents\/skills/)).toBeVisible();
+    expect(within(dialog).getAllByText(/references\/tools\.md/)).toHaveLength(
+      2,
+    );
+    expect(within(dialog).getAllByText(/\.agents\/skills/)).toHaveLength(2);
     expect(
-      within(dialog).getByText(/\.config\/opencode\/skills/),
-    ).toBeVisible();
+      within(dialog).getAllByText(/\.config\/opencode\/skills/),
+    ).toHaveLength(2);
   });
 
   it('blocks requests until credentials are configured and hides status badges', async () => {

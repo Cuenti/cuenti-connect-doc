@@ -1,8 +1,8 @@
 # Guía de la API Cuenti
 
-Documentación operativa en React para las 28 operaciones verificadas de Cuenti expuestas mediante Envoy. La interfaz usa Cuenti DNA y lee `contracts/j4/endpoints.json` como registro canónico local; no usa Swagger ni duplica el inventario de rutas.
+Documentación operativa en React para las operaciones REST de Cuenti expuestas mediante Envoy y para sus dos servidores MCP. La interfaz usa Cuenti DNA, lee `contracts/j4/endpoints.json` y `contracts/stats/endpoints.json` como fuentes canónicas locales, y no usa Swagger ni duplica los inventarios.
 
-El portal también publica la skill `cuenti-mcp` en `/skills/cuenti-mcp/`. El botón **Skill MCP** descarga un único paquete `cuenti-mcp.zip` con `SKILL.md`, `references/mcp-guide.md`, `references/catalogos.md` y `references/endpoints.md`, y muestra comandos que instalan los cuatro archivos en clientes compatibles con Agent Skills y OpenCode.
+El portal publica dos skills independientes: `cuenti-mcp-erp` en `/skills/cuenti-mcp-erp/` y `cuenti-mcp-stats` en `/skills/cuenti-mcp-stats/`. Cada ZIP contiene únicamente las instrucciones y referencias de su servidor MCP. El portal no implementa un cliente MCP de prueba.
 
 La interfaz web incluye la sección independiente **Catálogos y valores**, con el significado de los IDs de configuración y los valores base documentados.
 
@@ -14,7 +14,7 @@ La interfaz web incluye la sección independiente **Catálogos y valores**, con 
 
 Durante el desarrollo, las solicitudes del navegador permanecen en el mismo origen. Rsbuild reenvía `/api/v1/**` y `/jServerj4ErpPro/**` a `ERP_PROXY_TARGET`.
 
-El indicador **Servidor API** muestra `PUBLIC_PROXY_BASE_URL` seguido del prefijo `/jServerj4ErpPro`. Si esa variable está vacía durante el desarrollo, muestra el fallback `http://localhost:8081/jServerj4ErpPro`.
+El indicador **Servidor API** muestra `PUBLIC_PROXY_BASE_URL` seguido del prefijo `/jServerj4ErpPro`. Si esa variable está vacía durante el desarrollo, muestra el fallback `http://localhost:8081/jServerj4ErpPro`. Las guías MCP muestran sus propias URLs y no ejecutan llamadas desde el navegador.
 
 ## Probar consultas
 
@@ -103,6 +103,7 @@ La aplicación se organiza alrededor de límites explícitos:
 | `src/components/endpoint-documentation` | Presentación de contratos, ejemplos, curl y tablas de cada operación. |
 | `src/components/try-it` | Estado y controles de ejecución interactiva por endpoint. |
 | `src/components/modals` | Flujos de credenciales e instalación de skills. |
+| `src/StatsGuide.tsx` | Guía y catálogo visual de las tools públicas de Stats derivados del contrato. |
 | `src/app` | Configuración del runtime y estado de página derivado de la URL. |
 | `src/request` | Construcción pura de solicitudes y comandos curl, detrás de `src/request.ts`. |
 | `src/registry` | Adaptación del registro canónico, detrás de `src/registry.ts`. |
@@ -114,6 +115,7 @@ El dominio no depende de React ni de APIs del navegador. Los componentes reciben
 | Fuente | Responsabilidad |
 | --- | --- |
 | `contracts/j4/endpoints.json` | Registro local con rutas, métodos, clasificación, política de caché, contratos, ejemplos y metadatos. |
+| `contracts/stats/endpoints.json` | Contrato canónico de las herramientas públicas y workflows del servidor Stats MCP. |
 | `src/registry.ts` | Validación en ejecución, adaptación tipada y encabezados globales obligatorios. |
 | `src/request.ts` | Validación de campos, URL del proxy, normalización de Bearer, generación de curl sin credenciales y preparación de solicitudes. |
 | `src/TryIt.tsx` | Credenciales solo en memoria, tiempo límite, confirmación de mutaciones e inspección de respuestas. |

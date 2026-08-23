@@ -53,6 +53,7 @@ const MoonIcon = ({ active }: { active: boolean }) => (
 
 export const PortalTopbar = ({
   serverUrl,
+  serverLabel,
   theme,
   skillInstallOpen,
   credentialsOpen,
@@ -62,8 +63,10 @@ export const PortalTopbar = ({
   onOpenSkill,
   onOpenCredentials,
   onToggleNavigation,
+  showCredentials,
 }: {
   serverUrl: string;
+  serverLabel: string;
   theme: ColorTheme;
   skillInstallOpen: boolean;
   credentialsOpen: boolean;
@@ -73,10 +76,11 @@ export const PortalTopbar = ({
   onOpenSkill: () => void;
   onOpenCredentials: () => void;
   onToggleNavigation: () => void;
+  showCredentials: boolean;
 }) => (
   <header className="topbar">
     <div className="server-indicator">
-      <span className="server-indicator-label">API base</span>
+      <span className="server-indicator-label">{serverLabel}</span>
       <code>{serverUrl}</code>
     </div>
     <div className="topbar-actions">
@@ -96,30 +100,32 @@ export const PortalTopbar = ({
         size="sm"
         aria-haspopup="dialog"
         aria-expanded={skillInstallOpen}
-        aria-label="Instalar skill del MCP"
+        aria-label="Instalar skills MCP"
         onClick={onOpenSkill}
       >
         <DownloadIcon />
-        <span className="skill-trigger-label">Skill MCP</span>
+        <span className="skill-trigger-label">Skills MCP</span>
       </Button>
-      <Button
-        className="credentials-trigger"
-        variant="outline"
-        size="sm"
-        aria-haspopup="dialog"
-        aria-expanded={credentialsOpen}
-        aria-label="Configurar credenciales"
-        onClick={onOpenCredentials}
-      >
-        <LockIcon />
-        <span>Credenciales</span>
-        <span
-          className={`credentials-status ${
-            credentialsReady ? 'credentials-status-ready' : ''
-          }`}
-          aria-hidden="true"
-        />
-      </Button>
+      {showCredentials ? (
+        <Button
+          className="credentials-trigger"
+          variant="outline"
+          size="sm"
+          aria-haspopup="dialog"
+          aria-expanded={credentialsOpen}
+          aria-label="Configurar credenciales"
+          onClick={onOpenCredentials}
+        >
+          <LockIcon />
+          <span>Credenciales</span>
+          <span
+            className={`credentials-status ${
+              credentialsReady ? 'credentials-status-ready' : ''
+            }`}
+            aria-hidden="true"
+          />
+        </Button>
+      ) : null}
       <Button
         className="mobile-menu"
         variant="outline"

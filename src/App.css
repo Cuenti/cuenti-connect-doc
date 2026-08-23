@@ -458,12 +458,15 @@ pre {
   position: relative;
   z-index: 1;
   width: min(100%, 34rem);
+  max-height: calc(100dvh - 2rem);
   padding: 1.5rem;
+  overflow-y: auto;
   color: var(--text);
   background: var(--surface-raised);
   border: 1px solid var(--border);
   border-radius: 1rem;
   box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 35%);
+  overscroll-behavior: contain;
 }
 
 .credentials-modal-header,
@@ -478,9 +481,28 @@ pre {
 }
 
 .skill-downloads {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 0.65rem;
+}
+
+.skill-download-card {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+}
+
+.skill-download-card h3,
+.skill-download-card p {
+  margin: 0;
+}
+
+.skill-download-card p {
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.84rem;
 }
 
 .skill-download {
@@ -508,6 +530,12 @@ pre {
 .skill-install-options h3 {
   margin: 0 0 0.5rem;
   font-size: 0.9rem;
+}
+
+.skill-install-options h4 {
+  margin: 0.75rem 0 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
 }
 
 .skill-restart-note {
@@ -1159,6 +1187,78 @@ main:focus {
   padding-left: 1.5rem;
   color: var(--text-muted);
   line-height: 1.55;
+}
+
+.stats-tool-group h3 {
+  margin: 2rem 0 0.65rem;
+  color: var(--text-strong);
+  font-size: 1rem;
+  text-transform: capitalize;
+}
+
+.stats-tool {
+  margin: 0.5rem 0;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+
+.stats-tool summary {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  color: var(--text-strong);
+  font-weight: 700;
+  cursor: pointer;
+  list-style-position: inside;
+}
+
+.stats-tool summary code {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.stats-tool-content {
+  padding: 0 1rem 1rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.stats-tool-content > p:first-child {
+  margin-top: 0;
+}
+
+.stats-tool-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.stats-tool-facts div {
+  padding: 0.7rem;
+  border: 1px solid var(--border);
+}
+
+.stats-tool-facts dt {
+  color: var(--text-strong);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.stats-tool-facts dd {
+  margin: 0.25rem 0 0;
+}
+
+.stats-tool-note,
+.stats-tool-interpretation {
+  margin: 1rem 0 0;
+}
+
+.stats-tool-interpretation ul {
+  margin-bottom: 0;
 }
 
 .catalog-guide-hero {
@@ -2468,6 +2568,16 @@ html[data-theme="dark"] .credentials-modal input:read-only {
 
   .mcp-guide-content {
     width: min(100% - 1.5rem, 76rem);
+  }
+
+  .skill-download-card,
+  .stats-tool summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .stats-tool-facts {
+    grid-template-columns: 1fr;
   }
 
   .mcp-guide-hero {

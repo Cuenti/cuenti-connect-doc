@@ -1,4 +1,4 @@
-# Catálogo funcional de Cuenti MCP
+# Catálogo funcional de Cuenti MCP ERP
 
 <!-- Generated from contracts/j4/endpoints.json and contracts/mcp/external-tools.json. Do not edit manually. -->
 
@@ -20,8 +20,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Transacciones | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `ventas-facturas`, `ventas-compras-gastos`, `ventas-remisiones`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas` |
-| Otros documentos | `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
+| Transacciones y documentos | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `documentos-crear`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas`, `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
 | Catálogo | `catalogo-productos-busquedas`, `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `catalogo-marcas`, `catalogo-marca-por-id` |
 | Inventario | `inventario-conteos` |
 | Terceros | `terceros-busquedas`, `terceros-crear`, `terceros-actualizar` |
@@ -32,7 +31,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | Restaurante | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas` |
 | Restaurante | `restaurante-comandas-crear` |
 
-## Transacciones
+## Transacciones y documentos
 
 ### `ventas-facturas-busquedas`: Buscar facturas
 
@@ -1224,13 +1223,13 @@ Para `grupos`:
 
 **Peticiones habituales:** Historial de ventas; Factura completa por ID; Facturas anuladas; Factura con comentarios y archivos.
 
-### `ventas-facturas`: Crear factura
+### `documentos-crear`: Crear documento
 
-**Para qué sirve:** Crear factura.
+**Para qué sirve:** Crear documento.
 
 **Método:** `POST`.
 
-**Ruta:** `/api/v1/transacciones/ventas/facturas`.
+**Ruta:** `/api/v1/documentos`.
 
 **Tipo:** Acción que modifica datos.
 
@@ -1240,6 +1239,7 @@ Para `grupos`:
 
 | Dato | Obligatorio | Valores que acepta | Significado |
 | --- | --- | --- | --- |
+| `tipoDocumento` | Sí | número entero | Tipo de documento que se va a crear; consulta el catálogo de valores admitidos. |
 | `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
 | `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
 | `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
@@ -1258,17 +1258,19 @@ Para `grupos`:
 | `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
 
 - Una solicitud contiene un solo documento.
-- route-fixed-selector 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
+- tipoDocumento determina el documento que se crea; consulta el catálogo de valores para seleccionar el tipo correcto.
+- Esta operación cubre transacciones como facturas, compras y remisiones, y documentos comerciales como órdenes de compra, cotizaciones y despachos.
 - objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
 - cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
 - type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
-- Para gasto, route-fixed-selector=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
+- Para gasto, tipoDocumento=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
 
 **Ejemplo de argumentos:**
 
 ```json
 {
   "body": {
+    "tipoDocumento": 1,
     "type_match_producto": 1,
     "id_consecutivo": 3,
     "codigo_unico": "001",
@@ -1334,231 +1336,7 @@ Para `grupos`:
 **Peticiones habituales:** Factura de inventario.
 
 **Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-Después incluye `confirmation=confirm:ventas-facturas` en los argumentos.
-
-### `ventas-compras-gastos`: Crear compra/gasto
-
-**Para qué sirve:** Crear compra/gasto.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/transacciones/ventas/compras-gastos`.
-
-**Tipo:** Acción que modifica datos.
-
-**Filtros:** no requiere filtros adicionales.
-
-**Datos que acepta la acción**
-
-| Dato | Obligatorio | Valores que acepta | Significado |
-| --- | --- | --- | --- |
-| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
-| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
-| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
-| `nota` | Sí | texto | Nota general del documento. |
-| `observacion` | Sí | texto | Observación general del documento. |
-| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
-| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
-| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
-| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
-| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
-| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
-| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
-| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
-| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
-| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
-| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
-
-- Una solicitud contiene un solo documento.
-- route-fixed-selector 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
-- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
-- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
-- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
-- Para gasto, route-fixed-selector=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "type_match_producto": 1,
-    "id_consecutivo": 3,
-    "codigo_unico": "001",
-    "nota": "",
-    "observacion": "",
-    "id_sucursal": 1,
-    "id_bodega": 1,
-    "id_vendedor": 1,
-    "id_empleado": 1,
-    "objClienteMini": {
-      "id_cliente": 1179,
-      "nombre_cliente": "Cliente de ejemplo",
-      "identificacion": "",
-      "telefono1": "",
-      "telefono2": "",
-      "email1": "",
-      "direccion": "",
-      "id_tipo_persona": 1,
-      "es_cliente": 1,
-      "es_proveedor": 0,
-      "departamento": "",
-      "pais": "",
-      "ciudad": "",
-      "zona": ""
-    },
-    "objDetalle": [
-      {
-        "cantidad": 1,
-        "descripcion": "Producto",
-        "total": 10000,
-        "cambiar_precio_compra": false,
-        "id_producto": 25
-      }
-    ],
-    "lstPagos": []
-  }
-}
-```
-
-**Respuesta esperada:** Mensaje { type: integer, message: string, retorno: string, id_transacion: integer, url_interna: string, url_externa: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "type": 1,
-  "message": "guardar",
-  "retorno": "resultado-ejemplo",
-  "id_transacion": 511903,
-  "url_interna": "https://ejemplo.invalid/documento",
-  "url_externa": "https://ejemplo.invalid/documento"
-}
-```
-
-- lstPagos vacío representa una operación a crédito.
-- Los campos sin información de objClienteMini se envían como string vacío.
-- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
-- codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
-- No mezcle detalles de inventario y gasto en el mismo documento.
-- retorno es opaco y no debe analizarse.
-- No se reintentan automáticamente documentos sin idempotencia comprobada.
-
-**Peticiones habituales:** Factura de inventario.
-
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-Después incluye `confirmation=confirm:ventas-compras-gastos` en los argumentos.
-
-### `ventas-remisiones`: Crear remisión
-
-**Para qué sirve:** Crear remisión.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/transacciones/ventas/remisiones`.
-
-**Tipo:** Acción que modifica datos.
-
-**Filtros:** no requiere filtros adicionales.
-
-**Datos que acepta la acción**
-
-| Dato | Obligatorio | Valores que acepta | Significado |
-| --- | --- | --- | --- |
-| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
-| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
-| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
-| `nota` | Sí | texto | Nota general del documento. |
-| `observacion` | Sí | texto | Observación general del documento. |
-| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
-| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
-| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
-| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
-| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
-| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
-| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
-| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
-| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
-| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
-| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
-
-- Una solicitud contiene un solo documento.
-- route-fixed-selector 1 es factura, 7 es compra o gasto y 9 es remisión o prefactura.
-- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
-- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
-- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
-- Para gasto, route-fixed-selector=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "type_match_producto": 1,
-    "id_consecutivo": 3,
-    "codigo_unico": "001",
-    "nota": "",
-    "observacion": "",
-    "id_sucursal": 1,
-    "id_bodega": 1,
-    "id_vendedor": 1,
-    "id_empleado": 1,
-    "objClienteMini": {
-      "id_cliente": 1179,
-      "nombre_cliente": "Cliente de ejemplo",
-      "identificacion": "",
-      "telefono1": "",
-      "telefono2": "",
-      "email1": "",
-      "direccion": "",
-      "id_tipo_persona": 1,
-      "es_cliente": 1,
-      "es_proveedor": 0,
-      "departamento": "",
-      "pais": "",
-      "ciudad": "",
-      "zona": ""
-    },
-    "objDetalle": [
-      {
-        "cantidad": 1,
-        "descripcion": "Producto",
-        "total": 10000,
-        "cambiar_precio_compra": false,
-        "id_producto": 25
-      }
-    ],
-    "lstPagos": []
-  }
-}
-```
-
-**Respuesta esperada:** Mensaje { type: integer, message: string, retorno: string, id_transacion: integer, url_interna: string, url_externa: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "type": 1,
-  "message": "guardar",
-  "retorno": "resultado-ejemplo",
-  "id_transacion": 511903,
-  "url_interna": "https://ejemplo.invalid/documento",
-  "url_externa": "https://ejemplo.invalid/documento"
-}
-```
-
-- lstPagos vacío representa una operación a crédito.
-- Los campos sin información de objClienteMini se envían como string vacío.
-- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
-- codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
-- No mezcle detalles de inventario y gasto en el mismo documento.
-- retorno es opaco y no debe analizarse.
-- No se reintentan automáticamente documentos sin idempotencia comprobada.
-
-**Peticiones habituales:** Factura de inventario.
-
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-Después incluye `confirmation=confirm:ventas-remisiones` en los argumentos.
+Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 
 ### `ventas-productos-comprados-busquedas`: Buscar productos comprados
 
@@ -1820,8 +1598,6 @@ Después incluye `confirmation=confirm:ventas-remisiones` en los argumentos.
 - grupos no debe estar vacío y debe contener valores únicos.
 
 **Peticiones habituales:** Por cliente; Por empleado; Por vendedor.
-
-## Otros documentos
 
 ### `operativas-pedidos-busquedas`: Buscar pedidos
 

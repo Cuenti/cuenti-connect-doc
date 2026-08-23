@@ -1,48 +1,58 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const registryPath = resolve(root, 'contracts/j4/endpoints.json');
+const erpRegistryPath = resolve(root, 'contracts/j4/endpoints.json');
+const statsRegistryPath = resolve(root, 'contracts/stats/endpoints.json');
 const externalToolsPath = resolve(root, 'contracts/mcp/external-tools.json');
-const markdownPath = resolve(
-  root,
-  'public/skills/cuenti-mcp/references/endpoints.md',
-);
-const archivePath = resolve(root, 'public/skills/cuenti-mcp.zip');
-const archiveRoot = 'cuenti-mcp/';
+const oldSkillPath = resolve(root, 'public/skills/cuenti-mcp');
+const oldSkillArchive = resolve(root, 'public/skills/cuenti-mcp.zip');
 const externalRegistry = JSON.parse(readFileSync(externalToolsPath, 'utf8'));
-const externalToolIds = externalRegistry.tools.map((tool) => tool.id);
-const publicFiles = [
-  'SKILL.md',
-  'references/endpoints.md',
-  'references/mcp-guide.md',
-  'references/catalogos.md',
-];
+const erpRegistry = JSON.parse(readFileSync(erpRegistryPath, 'utf8'));
+const statsRegistry = JSON.parse(readFileSync(statsRegistryPath, 'utf8'));
 
-const registry = JSON.parse(readFileSync(registryPath, 'utf8'));
-const endpointIds = registry.endpoints.map((endpoint) => endpoint.id);
-const publishedIds = [
-  ...(registry.routes?.length
-    ? registry.routes.map((route) => route.routeId)
-    : endpointIds),
-  ...externalToolIds,
+const skills = [
+  {
+    id: 'cuenti-mcp-erp',
+    markdownPath: resolve(
+      root,
+      'public/skills/cuenti-mcp-erp/references/endpoints.md',
+    ),
+    archivePath: resolve(root, 'public/skills/cuenti-mcp-erp.zip'),
+    publicFiles: [
+      'SKILL.md',
+      'references/endpoints.md',
+      'references/mcp-guide.md',
+      'references/catalogos.md',
+    ],
+    publishedIds: [
+      ...(erpRegistry.routes?.length
+        ? erpRegistry.routes.map((route) => route.routeId)
+        : erpRegistry.endpoints.map((endpoint) => endpoint.id)),
+      ...externalRegistry.tools.map((tool) => tool.id),
+    ],
+  },
+  {
+    id: 'cuenti-mcp-stats',
+    markdownPath: resolve(
+      root,
+      'public/skills/cuenti-mcp-stats/references/tools.md',
+    ),
+    archivePath: resolve(root, 'public/skills/cuenti-mcp-stats.zip'),
+    publicFiles: ['SKILL.md', 'references/tools.md', 'references/mcp-guide.md'],
+    publishedIds: statsRegistry.endpoints
+      .filter(
+        (endpoint) =>
+          endpoint.visibility === 'public' && endpoint.exposedAsTool,
+      )
+      .map((endpoint) => endpoint.id),
+  },
 ];
-const markdown = readFileSync(markdownPath, 'utf8');
-const markdownIds = [...markdown.matchAll(/^### `([^`]+)`:/gm)].map(
-  ([, id]) => id,
-);
-const unknownMarkdownIds = markdownIds.filter(
-  (id) => !publishedIds.includes(id),
-);
 
 const sameItems = (left, right) =>
   left.length === right.length &&
   left.every((item, index) => item === right[index]);
-
-const duplicateItems = (items) => [
-  ...new Set(items.filter((item, index) => items.indexOf(item) !== index)),
-];
 
 const sameSet = (left, right) => {
   const leftSet = new Set(left);
@@ -55,54 +65,58 @@ const sameSet = (left, right) => {
   );
 };
 
-if (!sameSet(publishedIds, markdownIds) || unknownMarkdownIds.length > 0) {
-  const missing = publishedIds.filter((id) => !markdownIds.includes(id));
-  const extra = unknownMarkdownIds;
-  const duplicateRegistryIds = duplicateItems(publishedIds);
-  const duplicateMarkdownIds = duplicateItems(markdownIds);
-  throw new Error(
-    [
-      'El catálogo Markdown no coincide con el conjunto de endpoints del registry.',
-      missing.length > 0 ? `Faltan: ${missing.join(', ')}.` : '',
-      extra.length > 0 ? `Sobran: ${extra.join(', ')}.` : '',
-      duplicateRegistryIds.length > 0
-        ? `Duplicados en registry: ${duplicateRegistryIds.join(', ')}.`
-        : '',
-      duplicateMarkdownIds.length > 0
-        ? `Duplicados en Markdown: ${duplicateMarkdownIds.join(', ')}.`
-        : '',
-    ]
-      .filter(Boolean)
-      .join(' '),
-  );
+if (existsSync(oldSkillPath) || existsSync(oldSkillArchive)) {
+  throw new Error('La skill obsoleta cuenti-mcp no debe publicarse.');
 }
 
-const archiveEntries = execFileSync('unzip', ['-Z1', archivePath], {
-  encoding: 'utf8',
-})
-  .trim()
-  .split('\n')
-  .filter(Boolean);
-const expectedEntries = publicFiles.map((file) => `${archiveRoot}${file}`);
-
-if (!sameItems(expectedEntries, archiveEntries)) {
-  throw new Error(
-    'El ZIP de la skill no contiene exactamente los artefactos esperados.',
+for (const skill of skills) {
+  const markdown = readFileSync(skill.markdownPath, 'utf8');
+  const markdownIds = [...markdown.matchAll(/^### `([^`]+)`:/gm)].map(
+    ([, id]) => id,
   );
-}
+  const unknownMarkdownIds = markdownIds.filter(
+    (id) => !skill.publishedIds.includes(id),
+  );
+  if (
+    !sameSet(skill.publishedIds, markdownIds) ||
+    unknownMarkdownIds.length > 0
+  ) {
+    const missing = skill.publishedIds.filter(
+      (id) => !markdownIds.includes(id),
+    );
+    throw new Error(
+      `${skill.id}: el catálogo Markdown no coincide; faltan ${missing.join(', ')} y sobran ${unknownMarkdownIds.join(', ')}.`,
+    );
+  }
 
-for (const file of publicFiles) {
-  const source = readFileSync(resolve(root, 'public/skills/cuenti-mcp', file));
-  const archived = execFileSync('unzip', [
-    '-p',
-    archivePath,
-    `${archiveRoot}${file}`,
-  ]);
-  if (!source.equals(archived)) {
-    throw new Error(`El ZIP no coincide con public/skills/cuenti-mcp/${file}.`);
+  const archiveRoot = `${skill.id}/`;
+  const archiveEntries = execFileSync('unzip', ['-Z1', skill.archivePath], {
+    encoding: 'utf8',
+  })
+    .trim()
+    .split('\n')
+    .filter(Boolean);
+  const expectedEntries = skill.publicFiles.map(
+    (file) => `${archiveRoot}${file}`,
+  );
+  if (!sameItems(expectedEntries, archiveEntries)) {
+    throw new Error(
+      `${skill.id}: el ZIP no contiene exactamente sus artefactos.`,
+    );
+  }
+  for (const file of skill.publicFiles) {
+    const source = readFileSync(resolve(root, 'public/skills', skill.id, file));
+    const archived = execFileSync('unzip', [
+      '-p',
+      skill.archivePath,
+      `${archiveRoot}${file}`,
+    ]);
+    if (!source.equals(archived)) {
+      throw new Error(`${skill.id}: el ZIP no coincide con ${file}.`);
+    }
   }
 }
 
 console.log(
-  `Public artifacts verified: ${publishedIds.length} routes, ${publicFiles.length} ZIP files.`,
+  `Public artifacts verified: ${skills.map((skill) => `${skill.id} (${skill.publishedIds.length} tools)`).join(', ')}.`,
 );

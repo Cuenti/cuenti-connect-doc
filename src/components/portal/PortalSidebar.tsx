@@ -27,6 +27,12 @@ const NavigationIcon = ({ kind }: { kind: string }) => {
         <path d="M8 9h8M8 13h5" />
       </>
     ),
+    stats: (
+      <>
+        <path d="M4 19V5m0 14h16" />
+        <path d="m7 15 3-4 3 2 5-7" />
+      </>
+    ),
     Inventario: (
       <>
         <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" />
@@ -52,7 +58,7 @@ const NavigationIcon = ({ kind }: { kind: string }) => {
         <path d="M9 7h6M9 11h6M9 15h4" />
       </>
     ),
-    Transacciones: (
+    'Transacciones y documentos': (
       <>
         <path d="M5 3h14v18l-3-2-4 2-4-2-3 2z" />
         <path d="M9 8h6M9 12h6" />
@@ -74,12 +80,6 @@ const NavigationIcon = ({ kind }: { kind: string }) => {
       <>
         <path d="M4 5h16v14H4z" />
         <path d="M8 9h8M8 13h5" />
-      </>
-    ),
-    'Otros documentos': (
-      <>
-        <path d="M5 3h14v18H5z" />
-        <path d="M9 8h6M9 12h6M9 16h4" />
       </>
     ),
     Facturación: (
@@ -107,6 +107,7 @@ export const PortalSidebar = ({
   onToggleCollapsed,
   onSearchChange,
   onSelectMcpGuide,
+  onSelectStatsMcpGuide,
   onSelectCatalogGuide,
   onToggleCategory,
   onSelectEndpoint,
@@ -116,11 +117,12 @@ export const PortalSidebar = ({
   search: string;
   filteredEndpoints: EndpointDoc[];
   selectedEndpoint: EndpointDoc;
-  pageKind: 'endpoint' | 'mcp' | 'catalog';
+  pageKind: 'endpoint' | 'mcp' | 'mcp-stats' | 'catalog';
   expandedCategories: Set<EndpointCategory>;
   onToggleCollapsed: () => void;
   onSearchChange: (value: string) => void;
   onSelectMcpGuide: () => void;
+  onSelectStatsMcpGuide: () => void;
   onSelectCatalogGuide: () => void;
   onToggleCategory: (category: EndpointCategory) => void;
   onSelectEndpoint: (endpoint: EndpointDoc) => void;
@@ -186,12 +188,22 @@ export const PortalSidebar = ({
       <button
         type="button"
         className={`guide-link${pageKind === 'mcp' ? ' active' : ''}`}
-        aria-label="Guía de conexión MCP"
+        aria-label="MCP ERP"
         aria-current={pageKind === 'mcp' ? 'page' : undefined}
         onClick={onSelectMcpGuide}
       >
         <NavigationIcon kind="mcp" />
-        <span className="guide-link-label">Guía de conexión MCP</span>
+        <span className="guide-link-label">MCP ERP</span>
+      </button>
+      <button
+        type="button"
+        className={`guide-link${pageKind === 'mcp-stats' ? ' active' : ''}`}
+        aria-label="MCP Stats"
+        aria-current={pageKind === 'mcp-stats' ? 'page' : undefined}
+        onClick={onSelectStatsMcpGuide}
+      >
+        <NavigationIcon kind="stats" />
+        <span className="guide-link-label">MCP Stats</span>
       </button>
       <button
         type="button"

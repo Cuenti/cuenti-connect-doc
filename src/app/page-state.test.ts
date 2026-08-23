@@ -25,6 +25,16 @@ describe('page state', () => {
         'catalogo-categorias-busquedas',
       ),
     ).toEqual({ kind: 'mcp' });
+    expect(
+      pageStateFromLocation(
+        {
+          search:
+            '?endpoint=finanzas-cartera-cobrar-busquedas&section=mcp&server=stats',
+        },
+        endpointIds,
+        'catalogo-categorias-busquedas',
+      ),
+    ).toEqual({ kind: 'mcp-stats' });
   });
 
   it('accepts known endpoints and falls back for unknown values', () => {

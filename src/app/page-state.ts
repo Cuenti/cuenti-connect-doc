@@ -2,11 +2,13 @@ import {
   catalogGuideFromLocation,
   endpointFromLocation,
   mcpGuideFromLocation,
+  statsMcpGuideFromLocation,
 } from '../navigation';
 
 export type PageState =
   | { kind: 'endpoint'; id: string }
   | { kind: 'mcp' }
+  | { kind: 'mcp-stats' }
   | { kind: 'catalog' };
 
 export const pageStateFromLocation = (
@@ -15,6 +17,7 @@ export const pageStateFromLocation = (
   fallbackId: string,
 ): PageState => {
   if (catalogGuideFromLocation(location)) return { kind: 'catalog' };
+  if (statsMcpGuideFromLocation(location)) return { kind: 'mcp-stats' };
   if (mcpGuideFromLocation(location)) return { kind: 'mcp' };
   const endpointId = endpointFromLocation(location);
   return {
