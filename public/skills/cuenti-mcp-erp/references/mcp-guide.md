@@ -15,7 +15,7 @@ Encabezados de contexto:
 | --- | --- |
 | `X-Auth-Token-empresa` | Identificador de la empresa. |
 | `X-Auth-Token-sucursal` | Identificador de la sucursal. |
-| `X-Id-Empleado` | Empleado que ejecuta la operación. |
+| `X-Id-Empleado` | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (`id_usuario_portal`). |
 | `X-gtm` | Zona horaria, normalmente `GMT-0500`. |
 | `Authorization` | Token con el formato `Bearer <token>`. |
 

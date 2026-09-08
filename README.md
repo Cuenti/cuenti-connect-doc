@@ -66,7 +66,7 @@ Los cinco encabezados globales se envían en todas las operaciones GET y POST:
 | --- | --- |
 | `X-Auth-Token-empresa` | Empresa ingresada en la interfaz. |
 | `X-Auth-Token-sucursal` | Sucursal ingresada en la interfaz. |
-| `X-Id-Empleado` | Empleado que ejecuta la operación. |
+| `X-Id-Empleado` | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (`id_usuario_portal`). |
 | `X-gtm` | `GMT-0500` de forma predeterminada. |
 | `Authorization` | `Bearer <token>`, siempre con un único prefijo. |
 

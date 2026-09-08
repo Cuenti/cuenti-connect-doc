@@ -374,7 +374,8 @@ const globalHeaders: HeaderSpec[] = [
   },
   {
     name: 'X-Id-Empleado',
-    description: 'Identificador del empleado que ejecuta la operación.',
+    description:
+      'Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal).',
     required: true,
   },
   {
@@ -391,7 +392,8 @@ const headerDescriptions: Record<string, string> = {
   'X-gtm': 'Zona horaria fija usada para interpretar fechas.',
   Authorization: 'Token de acceso con un único prefijo Bearer.',
   'X-Auth-Token-sucursal': 'Identificador de la sucursal afectada.',
-  'X-Id-Empleado': 'Identificador del empleado que ejecuta la operación.',
+  'X-Id-Empleado':
+    'Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal).',
 };
 
 const defaultHeaders = (method: HttpMethod): HeaderSpec[] => {

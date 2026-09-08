@@ -59,6 +59,7 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -297,6 +298,7 @@ Para `grupos`:
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -535,6 +537,7 @@ Para `grupos`:
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -773,6 +776,7 @@ Para `grupos`:
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -1011,6 +1015,7 @@ Para `grupos`:
 | `id_vendedor` | No | número entero |
 | `id_sucursal` | No | número entero |
 | `es_ingreso` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
@@ -1626,6 +1631,7 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 | `id_canal` | No | número entero |
 | `es_facturado` | No | `0`, `1` |
 | `es_facturado_manual` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `es_activo` | No | `0`, `1` |
 | `pago_realizado` | No | `0`, `1` |
@@ -1818,6 +1824,7 @@ Para `grupos`:
 | `id_canal` | No | número entero |
 | `es_facturado` | No | `0`, `1` |
 | `es_facturado_manual` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `es_activo` | No | `0`, `1` |
 | `pago_realizado` | No | `0`, `1` |
@@ -2010,6 +2017,7 @@ Para `grupos`:
 | `id_canal` | No | número entero |
 | `es_facturado` | No | `0`, `1` |
 | `es_facturado_manual` | No | `0`, `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `es_nula` | No | `0`, `1` |
 | `es_activo` | No | `0`, `1` |
 | `pago_realizado` | No | `0`, `1` |
@@ -2192,6 +2200,7 @@ Para `grupos`:
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
 | `id_cliente` | No | número entero; mínimo `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `id_vendedor` | No | número entero; mínimo `1` |
 | `id_sucursal` | No | número entero; mínimo `1` |
 | `tipo_documento` | No | lista de números separados por comas |
@@ -2273,6 +2282,7 @@ Para `grupos`:
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
 | `id_documento` | No | número entero; mínimo `1` |
+| `es_devolucion` | No | `0`, `1` |
 | `id_cliente` | No | número entero; mínimo `1` |
 | `id_empleado` | No | número entero; mínimo `1` |
 | `id_vendedor` | No | número entero; mínimo `1` |
@@ -2361,6 +2371,7 @@ Para `grupos`:
 | `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
 | `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
 | `agrupar_por` | No | `cliente`, `empleado`, `vendedor`, `sucursal`; valor habitual `cliente` |
+| `es_devolucion` | No | `0`, `1` |
 | `id_cliente` | No | número entero; mínimo `1` |
 | `id_empleado` | No | número entero; mínimo `1` |
 | `id_vendedor` | No | número entero; mínimo `1` |
