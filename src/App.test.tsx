@@ -357,22 +357,22 @@ describe('documentation application', () => {
     const dialog = screen.getByRole('dialog', {
       name: 'Contexto y credenciales',
     });
-    expect(within(dialog).getByLabelText('Token *')).toHaveClass(
+    expect(within(dialog).getByLabelText('API TOKEN *')).toHaveClass(
       'border-neutral-500',
       'h-12',
       'rounded-md',
     );
-    expect(within(dialog).getByLabelText('Sucursal *')).toHaveClass(
+    expect(within(dialog).getByLabelText('ID sucursal *')).toHaveClass(
       'border-neutral-500',
       'h-12',
       'rounded-md',
     );
-    expect(within(dialog).getByLabelText('Sucursal *')).not.toHaveAttribute(
+    expect(within(dialog).getByLabelText('ID sucursal *')).not.toHaveAttribute(
       'type',
       'password',
     );
-    await user.type(within(dialog).getByLabelText('Empresa *'), 'empresa-1');
-    await user.type(within(dialog).getByLabelText('Token *'), 'token-1');
+    await user.type(within(dialog).getByLabelText('ID empresa *'), 'empresa-1');
+    await user.type(within(dialog).getByLabelText('API TOKEN *'), 'token-1');
     expect(within(dialog).getByLabelText('Zona horaria *')).toHaveValue(
       'GMT-0500',
     );
@@ -380,8 +380,8 @@ describe('documentation application', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /Credenciales/i }));
-    expect(screen.getByLabelText('Empresa *')).toHaveValue('empresa-1');
-    expect(screen.getByLabelText('Token *')).toHaveValue('token-1');
+    expect(screen.getByLabelText('ID empresa *')).toHaveValue('empresa-1');
+    expect(screen.getByLabelText('API TOKEN *')).toHaveValue('token-1');
   });
 
   it('copies the top curl anonymously and with active in-memory credentials', async () => {
@@ -413,10 +413,10 @@ describe('documentation application', () => {
     const dialog = screen.getByRole('dialog', {
       name: 'Contexto y credenciales',
     });
-    await user.type(within(dialog).getByLabelText('Empresa *'), 'empresa-ui');
-    await user.type(within(dialog).getByLabelText('Token *'), 'token-ui');
-    await user.type(within(dialog).getByLabelText('Sucursal *'), '3');
-    await user.type(within(dialog).getByLabelText('Empleado *'), '9');
+    await user.type(within(dialog).getByLabelText('ID empresa *'), 'empresa-ui');
+    await user.type(within(dialog).getByLabelText('API TOKEN *'), 'token-ui');
+    await user.type(within(dialog).getByLabelText('ID sucursal *'), '3');
+    await user.type(within(dialog).getByLabelText('ID empleado *'), '9');
     await user.click(within(dialog).getByRole('button', { name: 'Aceptar' }));
 
     expect(
@@ -509,10 +509,10 @@ describe('documentation application', () => {
     const dialog = screen.getByRole('dialog', {
       name: 'Contexto y credenciales',
     });
-    await user.type(within(dialog).getByLabelText('Empresa *'), 'empresa-1');
-    await user.type(within(dialog).getByLabelText('Token *'), 'token-1');
-    await user.type(within(dialog).getByLabelText('Sucursal *'), '1');
-    await user.type(within(dialog).getByLabelText('Empleado *'), '7');
+    await user.type(within(dialog).getByLabelText('ID empresa *'), 'empresa-1');
+    await user.type(within(dialog).getByLabelText('API TOKEN *'), 'token-1');
+    await user.type(within(dialog).getByLabelText('ID sucursal *'), '1');
+    await user.type(within(dialog).getByLabelText('ID empleado *'), '7');
     await user.click(within(dialog).getByRole('button', { name: 'Aceptar' }));
 
     expect(sendButton).toBeEnabled();

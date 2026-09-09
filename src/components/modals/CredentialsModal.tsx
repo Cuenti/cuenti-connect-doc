@@ -86,7 +86,7 @@ export const CredentialsModal = ({
                 htmlFor="global-company"
                 required
               >
-                Empresa
+                ID empresa
               </Label>
               <Input
                 id="global-company"
@@ -122,7 +122,7 @@ export const CredentialsModal = ({
                 htmlFor="global-token"
                 required
               >
-                Token
+                API TOKEN
               </Label>
               <Input
                 id="global-token"
@@ -143,7 +143,7 @@ export const CredentialsModal = ({
                 htmlFor="global-branch"
                 required
               >
-                Sucursal
+                ID sucursal
               </Label>
               <Input
                 id="global-branch"
@@ -163,7 +163,7 @@ export const CredentialsModal = ({
                 htmlFor="global-employee"
                 required
               >
-                Empleado
+                ID empleado
               </Label>
               <Input
                 id="global-employee"
