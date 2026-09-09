@@ -413,7 +413,10 @@ describe('documentation application', () => {
     const dialog = screen.getByRole('dialog', {
       name: 'Contexto y credenciales',
     });
-    await user.type(within(dialog).getByLabelText('ID empresa *'), 'empresa-ui');
+    await user.type(
+      within(dialog).getByLabelText('ID empresa *'),
+      'empresa-ui',
+    );
     await user.type(within(dialog).getByLabelText('API TOKEN *'), 'token-ui');
     await user.type(within(dialog).getByLabelText('ID sucursal *'), '3');
     await user.type(within(dialog).getByLabelText('ID empleado *'), '9');
