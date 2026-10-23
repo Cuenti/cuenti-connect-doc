@@ -346,6 +346,33 @@ export const EndpointDetail = ({
                 </p>
               )}
             </div>
+            <div>
+              <h3>Errores controlados del ERP</h3>
+              <ul className="plain-list">
+                <li>
+                  <code>erp_query_failed</code> permite reintentar consultas.
+                </li>
+                <li>
+                  <code>erp_query_rejected</code> y{' '}
+                  <code>erp_mutation_rejected</code> no deben reintentarse.
+                </li>
+                <li>
+                  <code>erp_capacity_exceeded</code> permite reintentar después
+                  del tiempo indicado en <code>Retry-After</code>.
+                </li>
+                <li>
+                  <code>erp_mutation_outcome_unknown</code> indica que la
+                  operación pudo persistirse y no debe repetirse
+                  automáticamente.
+                </li>
+              </ul>
+              <p className="security-note">
+                Los errores controlados incluyen <code>request_id</code> y el
+                header <code>X-Request-ID</code>; nunca exponen SQL ni detalles
+                JDBC. Las respuestas exitosas conservan el formato de cada
+                contrato.
+              </p>
+            </div>
           </div>
           {endpoint.notes.length ? (
             <ul className="notes-list">

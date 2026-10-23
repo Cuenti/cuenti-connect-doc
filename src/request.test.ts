@@ -185,7 +185,7 @@ describe('request builder', () => {
     expect(request.init.body).toBeTruthy();
   });
 
-  it('rejects global header values that Envoy would reject', () => {
+  it('rejects invalid global header values', () => {
     const endpoint = findEndpoint('buscarCategorias');
     if (!endpoint) throw new Error('Category endpoint was not found.');
     const draft = defaultDraft(endpoint);

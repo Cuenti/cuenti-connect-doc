@@ -28,7 +28,7 @@ Consulta `references/mcp-guide.md` para la conexión por Streamable HTTP y `refe
 - No inventes IDs: consulta el catálogo MCP correspondiente o pregunta al usuario.
 - Mantén las credenciales en la conexión MCP; nunca las incluyas en argumentos o respuestas.
 - Antes de modificar datos, consulta el estado actual, explica el cambio y solicita confirmación.
-- Ejecuta `actualizarImpuestosLicores` y `guardarTercero` una sola vez. Si el resultado es ambiguo, verifica consultando.
+- Ejecuta cada mutación una sola vez, incluidos terceros, pagos, anticipos y anulaciones. Ante un resultado ambiguo, consulta el estado y solicita una decisión; no reintentes automáticamente.
 
 ## Execution Steps
 

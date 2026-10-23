@@ -48,6 +48,109 @@
       "sensitive": true
     }
   },
+  "eventInvalidations": [
+    {
+      "events": [
+        "product_create",
+        "product_update",
+        "product_image"
+      ],
+      "tags": [
+        "tenant:{empresa}:products"
+      ]
+    },
+    {
+      "events": [
+        "category_create",
+        "category_update",
+        "category_image"
+      ],
+      "tags": [
+        "tenant:{empresa}:products"
+      ]
+    },
+    {
+      "events": [
+        "customer_create",
+        "customer_update"
+      ],
+      "tags": [
+        "tenant:{empresa}:third-parties"
+      ]
+    },
+    {
+      "events": [
+        "inventory",
+        "price_update"
+      ],
+      "tags": [
+        "tenant:{empresa}:products"
+      ],
+      "branchTags": [
+        "tenant:{empresa}:branch:{id_sucursal}:products"
+      ]
+    },
+    {
+      "events": [
+        "invoice",
+        "invoice_create",
+        "invoice_update",
+        "remission_create",
+        "remission_update",
+        "quotation_create",
+        "quotation_update",
+        "order_create",
+        "order_update",
+        "grouped_dispatch_create",
+        "grouped_dispatch_update",
+        "dispatch_create",
+        "dispatch_update",
+        "purchase_create",
+        "purchase_update",
+        "separate_plan",
+        "payment_create",
+        "payment_update"
+      ],
+      "tags": [
+        "tenant:{empresa}:transactions"
+      ]
+    },
+    {
+      "events": [
+        "sequence_number_create",
+        "sequence_number_update"
+      ],
+      "tags": [
+        "tenant:{empresa}:master-sequences"
+      ]
+    },
+    {
+      "events": [
+        "payment_methods_create",
+        "payment_methods_update"
+      ],
+      "tags": [
+        "tenant:{empresa}:master-payment-methods"
+      ]
+    },
+    {
+      "events": [
+        "banks_create",
+        "banks_update"
+      ],
+      "tags": [
+        "tenant:{empresa}:master-banks"
+      ]
+    },
+    {
+      "events": [
+        "send_invoice",
+        "cost_center_create",
+        "cost_center_update"
+      ],
+      "tags": []
+    }
+  ],
   "endpoints": [
     {
       "id": "buscarProductosCatalogo",
@@ -191,6 +294,23 @@
               0,
               1
             ]
+          },
+          {
+            "name": "id_proveedor",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "name": "nit_proveedor",
+            "type": "string",
+            "required": false,
+            "match": "exacta o patrón LIKE con %"
+          },
+          {
+            "name": "nombre_proveedor",
+            "type": "string",
+            "required": false,
+            "match": "parcial"
           }
         ]
       },
@@ -199,6 +319,7 @@
         "type": "object",
         "columns": [
           "id_producto",
+          "id_tipo_producto",
           "nombre",
           "sku",
           "codigo_barras",
@@ -252,7 +373,19 @@
           "codigo_producto_dian",
           "tiempo_preparacion",
           "ncm",
-          "fecha_registro"
+          "fecha_registro",
+          "cantidad_por_paquete_ads",
+          "cantidad_medida_paquete_ads",
+          "unidad_medida_paquete_ads",
+          "unidad_medida_paquete",
+          "equivalencia_compra",
+          "sku_proveedor",
+          "total_paquete",
+          "total_paquete_unidad",
+          "presentaciones_s",
+          "id_proveedor",
+          "nit_proveedor",
+          "nombre_proveedor"
         ],
         "groups": [
           {
@@ -267,7 +400,11 @@
               "impuestos",
               "medida",
               "imagen",
-              "configuracion"
+              "configuracion",
+              "composicion",
+              "empaque",
+              "presentaciones",
+              "proveedor"
             ]
           }
         ],
@@ -282,7 +419,11 @@
             "impuestos",
             "medida",
             "imagen",
-            "configuracion"
+            "configuracion",
+            "composicion",
+            "empaque",
+            "presentaciones",
+            "proveedor"
           ]
         }
       },
@@ -299,7 +440,11 @@
           "impuestos",
           "medida",
           "imagen",
-          "configuracion"
+          "configuracion",
+          "composicion",
+          "empaque",
+          "presentaciones",
+          "proveedor"
         ],
         "example": {
           "pagina": 0,
@@ -308,6 +453,7 @@
             {
               "producto": {
                 "id_producto": 25,
+                "id_tipo_producto": 1,
                 "nombre": "Producto ejemplo",
                 "sku": "SKU-001",
                 "codigo_barras": "000000000001",
@@ -332,7 +478,11 @@
               "impuestos": {"id_impuesto": 1, "nombre_impuesto": "Impuesto ejemplo", "valor_impuesto": 19, "tipo_impuesto": "porcentaje", "clasificacion_tributaria": "gravado", "total_estampilla": 0, "total_impoconsumo": 0},
               "medida": {"id_tipo_medida": 1, "nombre_medida": "Unidad", "tipo_medida": "UND"},
               "imagen": {"id_imagen": 1, "ext1": "jpg", "ext2": "webp", "url_imagen": "https://example.invalid/producto-200.jpg", "url_imagen_400": "https://example.invalid/producto-400.jpg"},
-              "configuracion": {"invima": "REGISTRO-EJEMPLO", "cum": null, "cups": null, "codigo_producto_dian": "00000000", "tiempo_preparacion": 0, "ncm": "0000.00.00", "fecha_registro": 1735689600000}
+              "configuracion": {"invima": "REGISTRO-EJEMPLO", "cum": null, "cups": null, "codigo_producto_dian": "00000000", "tiempo_preparacion": 0, "ncm": "0000.00.00", "fecha_registro": 1735689600000},
+              "composicion": [{"id_producto": 26, "nombre": "Componente ejemplo", "id_tipo_producto": 1, "unidades": 2, "es_activo": 1, "validar_inventario": 1, "existencias": 10}],
+              "empaque": {"cantidad_por_paquete": 6, "cantidad_medida_paquete": 1, "id_unidad_medida_paquete": 1, "unidad_medida_paquete": "Unidad", "equivalencia_compra": 6, "sku_proveedor": "PROV-001", "total_paquete": 60, "total_paquete_unidad": "60 Unidad"},
+              "presentaciones": [{"equivalencia": 6, "existencias_disponibles": 60}],
+              "proveedor": {"id_proveedor": 7, "nit": "PROVEEDOR-EJEMPLO", "nombre": "Proveedor ejemplo"}
             }
           ]
         }
@@ -354,13 +504,17 @@
               "precios",
               "inventario",
               "categoria",
-              "marca",
-              "impuestos",
-              "medida",
-              "imagen",
-              "configuracion"
-            ]
-          }
+             "marca",
+             "impuestos",
+             "medida",
+             "imagen",
+             "configuracion",
+             "composicion",
+             "empaque",
+             "presentaciones",
+             "proveedor"
+           ]
+         }
         }
       ],
       "errors": [
@@ -369,7 +523,9 @@
       ],
       "notes": [
         "El body acepta columnas o grupos de catálogo; el orden solicitado se conserva.",
-        "Los valores vacíos de filtros de texto se ignoran."
+        "Los valores vacíos de filtros de texto se ignoran.",
+        "nit_proveedor usa igualdad salvo que el valor incluya %, caso en el que se envía como patrón LIKE.",
+        "composicion se carga bajo demanda, evita ciclos y anida productos compuestos hasta cinco niveles; presentaciones agrega existencias_disponibles."
       ],
       "tryIt": {
         "enabled": true,
@@ -390,7 +546,11 @@
             "impuestos",
             "medida",
             "imagen",
-            "configuracion"
+            "configuracion",
+            "composicion",
+            "empaque",
+            "presentaciones",
+            "proveedor"
           ]
         }
       },
@@ -400,7 +560,7 @@
           "Paginación de producto-sucursal con joins opcionales de catálogos."
         ]
       },
-      "summary": "Consulta productos y existencias, con filtros por sucursal, categoría, marca, código y estado."
+      "summary": "Consulta productos y existencias, con filtros por sucursal, categoría, marca, proveedor, código y estado."
     },
     {
       "id": "buscarCategorias",
@@ -713,6 +873,9 @@
           "message": "guardar",
           "type": 1,
           "retorno": "1"
+        },
+        "successWhen": {
+          "type": 1
         }
       },
       "presets": [
@@ -808,6 +971,12 @@
             "type": "string",
             "required": false,
             "match": "exacta"
+          },
+          {
+            "name": "exacto",
+            "type": "string",
+            "required": false,
+            "pattern": "^(1|[Tt][Rr][Uu][Ee])$"
           },
           {
             "name": "telefono",
@@ -921,7 +1090,8 @@
       ],
       "notes": [
         "La respuesta se publica en la colección clientes y conserva los bloques funcionales del ERP.",
-        "No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché."
+        "No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché.",
+        "nit usa coincidencia por prefijo de forma predeterminada, igualdad con exacto=1 o exacto=true, y LIKE cuando el valor incluye %."
       ],
       "tryIt": {
         "enabled": true,
@@ -951,11 +1121,32 @@
       "summary": "Consulta clientes y proveedores usando filtros como nombre, documento, teléfono o correo."
     },
     {
+      "id": "consultarClienteId",
+      "internal": true,
+      "title": "Consultar cliente completo para actualización interna",
+      "category": "Terceros",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/adm/cliente/consultarClienteId/{id_cliente}",
+      "operation": "query",
+      "cache": {"policy": "bypass", "domain": "third-parties", "tags": []},
+      "invalidates": [],
+      "requiredHeaders": ["Authorization", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm"],
+      "params": {"path": [{"name": "id_cliente", "type": "integer", "required": true, "minimum": 1}], "query": []},
+      "body": {"type": "none", "required": false, "example": null},
+      "expectedCollection": null,
+      "response": {"shape": "Cliente[] privado; nunca publicar, registrar ni almacenar en cache", "example": []},
+      "presets": [],
+      "errors": ["Una lectura fallida impide la escritura posterior."],
+      "notes": ["Contrato exclusivamente interno para conservar campos omitidos."],
+      "tryIt": {"enabled": false, "proxyOnly": true, "params": {"path": {"id_cliente": 1}, "query": {}}, "body": null},
+      "cost": {"tier": "low", "factors": ["Consulta interna por id sin cache."]}
+    },
+    {
       "id": "guardarTercero",
       "title": "Guardar tercero",
       "category": "Terceros",
       "method": "POST",
-      "path": "/jServerj4ErpPro/com/j4ErpPro/server/adm/cliente/guardarTercero",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/adm/cliente/grabarCliente",
       "operation": "mutation",
       "cache": {
         "policy": "bypass",
@@ -1091,7 +1282,16 @@
           "solo_remision2",
           "tiene_documentos_asocisados",
           "telefonos",
-          "correos"
+          "correos",
+          {"name":"codigo_tributario","type":"integer","allowed":[1,2,4,5]},
+          {"name":"cucon","type":"string"},
+          {"name":"es_declarante","type":"integer","allowed":[0,1]},
+          {"name":"aplico_retencion_venta","type":"integer","allowed":[0,1]},
+          {"name":"aplico_retencion_compra","type":"integer","allowed":[0,1]},
+          {"name":"solo_remision3","type":"integer","allowed":[0,1]},
+          {"name":"mostrar_precio_venta_orden_compra","type":"integer","allowed":[0,1]},
+          {"name":"contactos","type":"array"},
+          {"name":"lstContactoCliente","type":"array"}
         ],
         "createRequired": [
           "id_cliente=-1",
@@ -1126,9 +1326,12 @@
       "response": {
         "shape": "Mensaje { message: string, type: integer, retorno?: string }",
         "example": {
-          "message": "guardar",
+          "message": "save",
           "type": 1,
           "retorno": "<id_cliente>"
+        },
+        "successWhen": {
+          "type": 1
         }
       },
       "presets": [
@@ -1164,7 +1367,10 @@
         "Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías."
       ],
       "notes": [
-        "El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir id_cliente no crea; id_cliente=-1 crea.",
+        "La API moderna traduce id_cliente=-1 a 0 para grabarCliente; las actualizaciones fusionan una consulta privada fresca antes de escribir.",
+        "codigo_tributario acepta 1, 2, 4 o 5; cucon es texto y los flags ext aceptan 0 o 1.",
+        "contactos es alias de lstContactoCliente. Los contactos omitidos se conservan; [] no elimina contactos existentes.",
+        "La respuesta pública siempre contiene el id y nunca el JSON completo del cliente. La conversión de fechas asume UTC como zona fija de la JVM del ERP.",
         "No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.",
         "Los reintentos automáticos están prohibidos sin idempotencia comprobada."
       ],
@@ -1189,7 +1395,7 @@
       "cost": {
         "tier": "high",
         "factors": [
-          "Inserción transaccional o actualización parcial dinámica seguida de invalidación de varios dominios."
+          "Consultas privadas, merge y una escritura legacy sin transacción global. Puede haber escrituras parciales o conflictos concurrentes; se invalidan los dominios tras un intento de escritura."
         ]
       },
       "summary": "Crea un cliente o proveedor nuevo, o actualiza los datos de uno existente."
@@ -2627,6 +2833,15 @@
             ]
           },
           {
+            "name": "es_devolucion",
+            "type": "integer",
+            "required": false,
+            "allowed": [
+              0,
+              1
+            ]
+          },
+          {
             "name": "es_nula",
             "type": "integer",
             "required": false,
@@ -2652,6 +2867,56 @@
             "type": "epoch-milliseconds",
             "required": false,
             "inclusive": true
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "deuda_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "deuda_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "saldo_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "saldo_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "descuento_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "descuento_hasta",
+            "type": "number",
+            "required": false
           }
         ]
       },
@@ -2762,36 +3027,71 @@
             "impresion",
             "cartera_cliente",
             "empresa",
-            "sucursal_configuracion",
-            "taller",
-            "acta_entrega",
-            "comentarios",
-            "adjuntos"
-          ]
-        }
+             "sucursal_configuracion",
+             "taller",
+             "acta_entrega",
+             "ruta_despacho",
+             "comentarios",
+             "adjuntos"
+           ],
+           "detalle": [
+             "producto",
+             "cantidades",
+             "precios",
+             "impuestos",
+             "descuento",
+             "totales"
+           ]
+         }
       },
       "expectedCollection": "transacciones",
       "response": {
         "shape": "{ pagina: integer, transacciones: Transaccion[] }; Transaccion.comentarios?: Comentario[]; Transaccion.adjuntos?: Adjunto[]; Transaccion.archivos?: Archivo[]",
         "example": {
           "pagina": 0,
-          "transacciones": [
-            {
-              "codigos": {"id_transacion": 1, "n_transacion": 1, "n_factura": "1", "prefijo": "DOC", "numeracion": 1, "tipo_documento": 1},
-              "totales": {"subtotal": 10000, "impuesto": 1900, "total_neto": 11900, "descuento": 0, "total_costo": 7000, "total_utilidad": 3000, "total_abono": 11900, "saldo_pendiente": 0},
-              "cliente": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo", "direccion": "Dirección ejemplo", "ciudad": "Ciudad ejemplo", "telefonos": "0000000000", "correos": "cliente@example.invalid"},
-              "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"},
-              "fechas": {"fecha_factura": 1735689600000, "fecha_registro": 1735689600000, "fecha_vencimiento": 1738281600000},
-              "ruta_despacho": {"id_ruta": 1, "nombre": "Ruta ejemplo"},
-              "comentarios": [
-                {"id_comentario": 1, "comentario": "Comentario ficticio de integración", "id_empleado": 1, "empleado": "Empleado ejemplo", "leido": 1, "fecha_registro": 1735689600000}
-              ],
+           "transacciones": [
+             {
+               "codigos": {"id_transacion": 1, "n_transacion": 1, "n_factura": "1", "prefijo": "DOC", "numeracion": 1, "tipo_documento": 1},
+               "fechas": {"fecha_registro": 1735689600000, "fecha_vencimiento": 1738281600000, "dias_vencimiento": 30},
+               "sucursal": {"id_sucursal": 1, "nombre": "Sucursal principal"},
+               "cliente": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre": "Cliente ejemplo", "alias": "Cliente", "direccion": "Dirección ejemplo", "telefono": "0000000000", "movil": "0000000000", "email": "cliente@example.invalid", "id_tipo_persona": 1, "id_tipo_identificacion": 1, "contacto": {"nombre": "Contacto ejemplo", "direccion": "Dirección ejemplo", "movil": "0000000000"}},
+               "empleado": {"id_empleado": 1, "nombre": "Empleado ejemplo"},
+               "vendedor": {"id_vendedor": 1, "nombre": "Vendedor ejemplo"},
+               "totales": {"subtotal": 10000, "descuento": 0, "impuestos": {"impuesto": 1900, "impoconsumo": 0, "estampilla": 0, "total": 1900}, "retencion": 0, "total_neto": 11900, "total_deuda": 11900, "total_abono": 0, "saldo": 11900, "total_devoluciones": 0, "domicilio": 0, "propina": 0},
+               "estado": {"es_ingreso": 1, "es_factura": 1, "es_nula": 0, "es_activo": 1, "es_devolucion": 0, "enviado_documento_full": 0, "enviado_documento_electronico": 0, "es_contingencia": 0},
+               "qr": {"codigo": "QR-EJEMPLO", "url": "https://example.invalid/qr/1"},
+               "nota": "Nota de ejemplo",
+               "documento": {"id_consecutivo": 1, "id_transacion_padre": null, "id_centro_costo": 1, "id_bodega": 1, "bodega": "Bodega principal", "id_lista_precio": 1, "orden_compra": "OC-001", "tipo_compra": 1, "numero_mesa": null, "nombre_mesa": null, "observacion": "Observación de ejemplo", "medio_pago": "Efectivo"},
+               "moneda": {"documento": "COP", "conversion": "COP", "tasa_cambio": 1, "simbolo": "$"},
+               "pagos": [],
+               "retenciones": [],
+               "notas_credito": [],
+               "facturacion_electronica": [],
+               "consecutivo": {"id_consecutivo": 1, "nombre_consecutivo": "Factura", "prefijo": "DOC", "resolucion": "RES-EJEMPLO", "inicia": 1, "finaliza": 1000, "fecha_vencimiento": 1767225600000, "fecha_registro": 1735689600000, "multi_moneda": 0, "es_factura_electronica": 1, "es_tirilla_pos": 0, "tipo_consecutivo": 1},
+               "impresion": {},
+               "cartera_cliente": {"id_cliente": 1, "es_ingreso": 1, "saldo_pendiente": 11900, "documentos_pendientes": 1},
+               "sucursal_configuracion": {"id_sucursal": 1, "activar_documento_preelectronico": 0, "id_consecutivo_electronico": 1, "activar_factura_electronica_pos": 0, "id_consecutivo_factura_electronica_pos": null, "activar_taller_repuestos": 0},
+               "taller": [],
+               "acta_entrega": [],
+               "ruta_despacho": {"id_ruta": 1, "nombre": "Ruta ejemplo", "es_activo": 1, "fecha_registro": 1735689600000},
+               "comentarios": [
+                 {"id_comentario": 1, "comentario": "Comentario ficticio de integración", "id_empleado": 1, "empleado": "Empleado ejemplo", "leido": 1, "fecha_registro": 1735689600000}
+               ],
               "adjuntos": [
                 {"id_adjunto": 1, "nombre_real": "factura-ejemplo.pdf", "tipo": "application/pdf", "etiqueta": "Documento", "ruta": "https://example.invalid/archivos/factura-ejemplo.pdf", "fecha_registro": 1735689600000}
               ],
-              "detalle": [{"producto": {"id_producto": 25, "sku": "SKU-001", "nombre": "Producto ejemplo"}, "cantidades": {"cantidad": 1}, "precios": {"precio_unitario": 10000}, "totales": {"subtotal": 10000, "total_neto": 11900}, "impuestos": {"total_impuesto": 1900}, "descuento": {"descuento": 0}}]
-            }
-          ]
+               "detalle": [
+                 {
+                   "producto": {"id_producto": 25, "id_producto_sucursal": 1, "sku": "SKU-001", "codigo_barras": "000000000001", "nombre": "Producto ejemplo", "descripcion": "Descripción de ejemplo"},
+                   "cantidades": {"facturada": 1, "devuelta": 0, "neta": 1},
+                   "precios": {"precio_real": 10000, "precio_venta": 10000},
+                   "impuestos": {"impuesto": {"base": 10000, "porcentaje": 19, "valor": 1900, "tipo": "porcentaje", "clasificacion_tributaria": "gravado"}, "impoconsumo": {"valor_unitario": 0, "valor_total": 0}, "estampilla": {"valor_unitario": 0, "valor_total": 0}},
+                   "descuento": {"porcentaje": 0, "valor": 0},
+                   "totales": {"subtotal": 10000, "impuestos": {"impuesto": 1900, "impoconsumo": 0, "estampilla": 0, "total": 1900}, "total": 11900}
+                 }
+               ]
+             }
+           ]
         }
       },
       "presets": [
@@ -2966,6 +3266,7 @@
       ],
       "notes": [
         "Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.",
+        "Los filtros total, subtotal, deuda, saldo y descuento aceptan límites desde/hasta decimales.",
         "detalle.codigos contiene id_detalle_transacion, no id_transacion.",
         "El grupo impresion devuelve configuración y no genera un PDF.",
         "La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.",
@@ -3116,6 +3417,26 @@
             "type": "epoch-milliseconds",
             "required": false,
             "inclusive": true
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
           }
         ]
       },
@@ -3183,7 +3504,8 @@
       ],
       "notes": [
         "Los resultados se consolidan por id_producto.",
-        "Las transacciones anuladas se excluyen de forma predeterminada."
+        "Las transacciones anuladas se excluyen de forma predeterminada.",
+        "Los filtros total y subtotal aceptan límites desde/hasta decimales."
       ],
       "tryIt": {
         "enabled": true,
@@ -3309,6 +3631,26 @@
             "type": "epoch-milliseconds",
             "required": false,
             "inclusive": true
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
           }
         ]
       },
@@ -3357,22 +3699,26 @@
             "totales"
           ]
         },
-        "example": {
-          "grupos": [
-            "transaccion",
-            "cliente",
-            "totales"
-          ]
+         "example": {
+           "grupos": [
+             "transaccion",
+             "cliente",
+             "producto",
+             "cantidades",
+             "precios",
+             "descuento",
+             "totales"
+           ]
         }
       },
       "expectedCollection": "descuentos",
       "response": {
         "shape": "{ pagina: integer, descuentos: Descuento[] }",
         "example": {
-          "pagina": 0,
-          "descuentos": [
-            {"transaccion": {"id_transacion": 1, "n_factura": "DOC-001"}, "cliente": {"id_cliente": 1, "nombre_cliente": "Cliente ejemplo"}, "producto": {"id_producto": 25, "nombre": "Producto ejemplo"}, "descuento": {"descuento": 1000, "porcentaje_descuento": 10}, "totales": {"total_neto": 9000}}
-          ]
+           "pagina": 0,
+           "descuentos": [
+             {"transaccion": {"id_transacion": 1, "n_factura": "DOC-001"}, "cliente": {"id_cliente": 1, "nombre_cliente": "Cliente ejemplo"}, "empleado": {"id_empleado": 1, "nombre_empleado": "Empleado ejemplo"}, "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"}, "producto": {"id_producto": 25, "nombre": "Producto ejemplo"}, "cantidades": {"cantidad": 1}, "precios": {"precio_real": 10000, "precio_venta": 10000}, "descuento": {"descuento": 1000, "porcentaje_descuento": 10}, "totales": {"total_neto": 9000}}
+           ]
         }
       },
       "presets": [
@@ -3386,9 +3732,11 @@
           },
           "body": {
             "grupos": [
-              "transaccion",
-              "cliente",
-              "totales"
+               "transaccion",
+               "cliente",
+               "empleado",
+               "vendedor",
+               "totales"
             ]
           }
         },
@@ -3418,7 +3766,8 @@
       ],
       "notes": [
         "Las transacciones anuladas se excluyen de forma predeterminada.",
-        "La proyección se determina por los grupos solicitados."
+        "La proyección se determina por los grupos solicitados.",
+        "Los filtros total y subtotal aceptan límites desde/hasta decimales."
       ],
       "tryIt": {
         "enabled": true,
@@ -3428,11 +3777,15 @@
           "cantidad_registros": 30
         },
         "body": {
-          "grupos": [
-            "transaccion",
-            "cliente",
-            "totales"
-          ]
+           "grupos": [
+             "transaccion",
+             "cliente",
+             "producto",
+             "cantidades",
+             "precios",
+             "descuento",
+             "totales"
+           ]
         }
       },
       "cost": {
@@ -3552,6 +3905,26 @@
             "type": "epoch-milliseconds",
             "required": false,
             "inclusive": true
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
           }
         ]
       },
@@ -3639,7 +4012,8 @@
         "grupos no debe estar vacío y debe contener valores únicos."
       ],
       "notes": [
-        "Las transacciones anuladas se excluyen de forma predeterminada, salvo que se proporcione es_nula=1."
+        "Las transacciones anuladas se excluyen de forma predeterminada, salvo que se proporcione es_nula=1.",
+        "Los filtros total y subtotal aceptan límites desde/hasta decimales."
       ],
       "tryIt": {
         "enabled": true,
@@ -3810,9 +4184,9 @@
             "total_abono": 20,
             "total_pendiente": 80
           },
-          "cartera": [
-            {"transaccion": {"id_transacion": 1, "n_factura": 1, "prefijo": "DOC"}, "saldo": {"total_factura": 100, "total_abono": 20, "saldo_pendiente": 80}, "tercero": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo"}, "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"}, "estado": {"estado_cartera": "Pendiente", "dias_vencidos": 0}}
-          ]
+           "cartera": [
+             {"transaccion": {"id_transacion": 1, "n_factura": 1, "prefijo": "DOC"}, "fechas": {"fecha_registro": 1735689600000, "fecha_vencimiento": 1738281600000, "dias_vencimiento": 30}, "sucursal": {"id_sucursal": 1, "nombre": "Sucursal principal"}, "saldo": {"total_factura": 100, "total_abono": 20, "saldo_pendiente": 80}, "tercero": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo"}, "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"}, "estado": {"estado_cartera": "Pendiente", "dias_vencidos": 0}}
+           ]
         }
       },
       "presets": [
@@ -4114,10 +4488,12 @@
     },
     {
       "id": "obtenerComandas",
+      "projectionPolicy": "groups-or-empty",
       "title": "Obtener comandas de cocina",
       "category": "Comandas",
       "method": "POST",
-      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/mesas/obtenerComandas",
+      "path": "/api/v2/restaurante/comandas",
+      "upstreamService": "table-transactions-sync",
       "operation": "query",
       "cache": {
         "policy": "cache",
@@ -4132,9 +4508,6 @@
       "requiredHeaders": [
         "Content-Type",
         "X-Auth-Token-empresa",
-        "X-Auth-Token-sucursal",
-        "X-Id-Empleado",
-        "X-gtm",
         "Authorization"
       ],
       "params": {
@@ -4158,7 +4531,9 @@
           {
             "name": "id_sucursal",
             "type": "integer",
-            "required": true
+            "required": false,
+            "default": 1,
+            "minimum": 1
           },
           {
             "name": "id_transacion",
@@ -4200,8 +4575,10 @@
         ]
       },
       "body": {
-        "required": true,
+        "required": false,
         "type": "object",
+        "emptyBodyAllowed": true,
+        "emptyBodyProjection": "full",
         "columns": [],
         "groups": [
           {
@@ -4311,9 +4688,9 @@
         "shape": "{ pagina: integer, comandas: ComandaCocina[] }",
         "example": {
           "pagina": 0,
-          "comandas": [
-            {"codigos": {"id_transacion_mesa": 1, "id_transacion": 1}, "mesa": {"numero_mesa": 1, "nombre_mesa": "Mesa ejemplo", "comensales": 2}, "producto": {"id_producto": 25, "nombre": "Producto ejemplo", "cantidad": 1, "precio": 10000}, "estado": {"estado": 1, "es_activo": 1}}
-          ]
+           "comandas": [
+             {"codigos": {"id_transacion_mesa": 1, "id_transacion": 1}, "sucursal": {"id_sucursal": 1}, "mesa": {"numero_mesa": 1, "nombre_mesa": "Mesa ejemplo", "comensales": 2, "turno": 1}, "producto": {"id_producto": 25, "nombre": "Producto ejemplo", "cantidad": 1, "precio": 10000, "nota": "Sin modificaciones", "formato_presentacion": "Unidad", "configuracion_plato": "{}"}, "empleado": {"id_empleado": 1, "nombre_empleado": "Empleado ejemplo"}, "fecha": {"fecha_registro": 1735689600000}, "estado": {"estado": 1, "es_activo": 1, "id_cocina": 1}, "preparacion": {"tiempo_preparacion_producto": 10, "tiempo_preparacion_plato": 15, "tiempo_entrega": 20}, "pedido": {"es_pedido_linea": 0, "id_pedido_linea": null, "numero_orden": 1, "numero_orden2": 1}, "impresion": {"impreso": 0, "imprimio_prefactura": 0, "marca": "", "observacion": ""}}
+           ]
         }
       },
       "presets": [
@@ -4342,11 +4719,13 @@
         }
       ],
       "errors": [
-        "id_sucursal es obligatorio.",
-        "grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo."
+        "id_sucursal debe ser positivo; si se omite se utiliza 1.",
+        "Si se envía grupos, debe contener valores únicos del catálogo y no estar vacío."
       ],
       "notes": [
-        "Solo se devuelven comandas de cocina activas cuyo estado sea diferente de 4."
+        "Consulta table-transactions-sync; no se envía a Java.",
+        "El cuerpo vacío o {} solicita todos los grupos. Los filtros de fecha son epoch-ms.",
+        "No requiere headers de empleado, sucursal ni zona horaria; la sucursal se selecciona en query."
       ],
       "tryIt": {
         "enabled": true,
@@ -4381,10 +4760,12 @@
     },
     {
       "id": "platosEliminados",
+      "projectionPolicy": "groups-or-empty",
       "title": "Buscar platos eliminados",
       "category": "Comandas",
       "method": "POST",
-      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/mesas/platosEliminados",
+      "path": "/api/v2/restaurante/platos-eliminados",
+      "upstreamService": "table-transactions-sync",
       "operation": "query",
       "cache": {
         "policy": "cache",
@@ -4399,9 +4780,6 @@
       "requiredHeaders": [
         "Content-Type",
         "X-Auth-Token-empresa",
-        "X-Auth-Token-sucursal",
-        "X-Id-Empleado",
-        "X-gtm",
         "Authorization"
       ],
       "params": {
@@ -4425,7 +4803,9 @@
           {
             "name": "id_sucursal",
             "type": "integer",
-            "required": true
+            "required": false,
+            "default": 1,
+            "minimum": 1
           },
           {
             "name": "id_empleado",
@@ -4452,8 +4832,10 @@
         ]
       },
       "body": {
-        "required": true,
+        "required": false,
         "type": "object",
+        "emptyBodyAllowed": true,
+        "emptyBodyProjection": "full",
         "columns": [],
         "groups": [
           {
@@ -4500,7 +4882,7 @@
                 ]
               },
               {
-                "name": "motivo",
+                "name": "eliminacion",
                 "fields": [
                   "nota"
                 ]
@@ -4516,7 +4898,7 @@
             "empleado",
             "producto",
             "mesa",
-            "motivo"
+            "eliminacion"
           ]
         }
       },
@@ -4525,9 +4907,9 @@
         "shape": "{ pagina: integer, platos_eliminados: AuditoriaPlatoEliminado[] }",
         "example": {
           "pagina": 0,
-          "platos_eliminados": [
-            {"codigos": {"id_auditoria": 1}, "fecha": {"fecha_registro": 1735689600000}, "producto": {"nombre_producto": "Producto ejemplo", "cantidad": 1}, "motivo": {"nota": "Motivo de ejemplo"}}
-          ]
+           "platos_eliminados": [
+              {"codigos": {"id_auditoria": 1}, "fecha": {"fecha_registro": 1735689600000}, "sucursal": {"id_sucursal": 1, "nombre_sucursal": "Sucursal principal"}, "empleado": {"id_empleado": 1, "nombre_empleado": "Empleado ejemplo"}, "producto": {"nombre_producto": "Producto ejemplo", "cantidad": 1}, "mesa": {"mesa": 1, "nombre_mesa": "Mesa ejemplo"}, "eliminacion": {"nota": "Motivo de ejemplo"}}
+           ]
         }
       },
       "presets": [
@@ -4547,18 +4929,20 @@
               "empleado",
               "producto",
               "mesa",
-              "motivo"
+              "eliminacion"
             ]
           }
         }
       ],
       "errors": [
-        "id_sucursal es obligatorio.",
+        "id_sucursal debe ser positivo; si se omite se utiliza 1.",
         "Los filtros de fecha deben expresarse en milisegundos desde la época Unix.",
         "grupos no debe estar vacío y debe contener valores únicos."
       ],
       "notes": [
-        "El punto de acceso expone únicamente campos respaldados por la tabla de auditoría de eliminación de platos."
+        "Consulta table-transactions-sync; no se envía a Java.",
+        "El cuerpo vacío o {} solicita todos los grupos. El grupo de eliminación se llama eliminacion.",
+        "No requiere headers de empleado, sucursal ni zona horaria; la sucursal se selecciona en query."
       ],
       "tryIt": {
         "enabled": true,
@@ -4576,7 +4960,7 @@
             "empleado",
             "producto",
             "mesa",
-            "motivo"
+            "eliminacion"
           ]
         }
       },
@@ -4587,6 +4971,34 @@
         ]
       },
       "summary": "Consulta el historial de productos retirados de las mesas."
+    },
+    {
+      "id": "mesasOcupadas",
+      "title": "Consultar mesas ocupadas",
+      "category": "Comandas",
+      "method": "GET",
+      "path": "/api/v2/restaurante/mesas-ocupadas",
+      "upstreamService": "table-transactions-sync",
+      "operation": "query",
+      "cache": {"policy": "bypass", "domain": "occupied-tables", "tags": []},
+      "invalidates": [],
+      "requiredHeaders": ["Authorization", "X-Auth-Token-empresa"],
+      "params": {
+        "path": [],
+        "query": [{"name": "id_sucursal", "type": "integer", "required": false, "default": 1, "minimum": 1}]
+      },
+      "body": {"type": "none", "required": false, "example": null},
+      "expectedCollection": null,
+      "response": {"shape": "JSON de mesas ocupadas agrupadas, sin transformación", "example": []},
+      "presets": [],
+      "errors": ["id_sucursal debe ser positivo; si se omite se utiliza 1."],
+      "notes": [
+        "Consulta table-transactions-sync sin cache para obtener el estado actual de las mesas.",
+        "Incluye cantidad de platos, total de cuenta y mesero según la respuesta del servicio."
+      ],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {"id_sucursal": 1}, "body": null},
+      "cost": {"tier": "low", "factors": ["Consulta operativa agrupada por mesa."]},
+      "summary": "Lista las mesas con comandas abiertas de una sucursal."
     },
     {
       "id": "grabarMovimientoArr",
@@ -5055,6 +5467,7 @@
             "minimumItems": 1,
             "items": {
               "type": "object",
+              "additionalProperties": true,
               "fields": [
                 {
                   "name": "cantidad",
@@ -5131,6 +5544,13 @@
             "items": {
               "type": "object",
               "fields": [
+                {
+                  "name": "id_comprobante_caja",
+                  "type": "integer",
+                  "required": false,
+                  "nullable": false,
+                  "minimum": 1
+                },
                 {
                   "name": "id_medio_pago",
                   "type": "integer",
@@ -5266,6 +5686,9 @@
           "id_transacion": 511903,
           "url_interna": "https://ejemplo.invalid/documento",
           "url_externa": "https://ejemplo.invalid/documento"
+        },
+        "successWhen": {
+          "type": 1
         }
       },
       "presets": [
@@ -5373,6 +5796,414 @@
         ]
       },
       "summary": "Crea el documento indicado por tipoDocumento, incluyendo transacciones y documentos comerciales con sus productos, cliente y forma de pago."
+    },
+    {
+      "id": "agregarPagoTransacion",
+      "title": "Registrar abono y consultar comprobante",
+      "summary": "Aplica un pago a una transacción existente y devuelve el comprobante de caja generado.",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/api/token/agregarPagoTransacion",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]},
+        {"domain": "discounts", "scope": "tenant", "tags": ["tenant:{empresa}:discounts"]},
+        {"domain": "consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:consolidated"]}
+      ],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {
+        "required": true,
+        "type": "object",
+        "strict": true,
+        "fields": [
+          {"name": "id_transacion", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_comprobante_caja", "type": "integer", "required": false, "nullable": false, "minimum": 1},
+          {"name": "id_sucursal", "type": "integer", "required": true, "minimum": 1},
+          {"name": "valor", "type": "number", "required": true, "exclusiveMinimum": 0},
+          {"name": "id_medio_pago", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_empleado", "type": "integer", "required": true, "minimum": 1},
+          {"name": "fecha_registro", "type": "local-date-time", "required": true},
+          {"name": "id_banco", "type": "integer", "required": true, "minimum": 0},
+          {"name": "nota", "type": "string", "required": false}
+        ],
+        "example": {
+          "id_transacion": 54321, "id_sucursal": 1, "valor": 50000.0, "id_medio_pago": 1,
+          "id_empleado": 1, "fecha_registro": "2026-10-05T13:30:00",
+          "id_banco": 1, "nota": "Abono remisión"
+        }
+      },
+      "expectedCollection": null,
+      "response": {
+        "shape": "ComprobanteCaja[]; si la consulta falla, Mensaje { type: 1, message: string, retorno: string } confirma el pago y conserva el ID del comprobante.",
+        "example": [{"id_comprobante_caja": 1542, "n_caja": "RV105", "valor": 50000.0, "es_activo": 1, "fecha_registro": "2026-10-05 13:30:00.0", "id_medio_pago": 1, "nombre_medio_pago": "Efectivo", "id_banco": 1, "nombre_banco": "Caja General"}],
+        "successWhen": {"type": 1},
+        "receiptContract": "consultarComprobanteCaja_id",
+        "upstreamExample": {"type": 1, "message": "save", "retorno": "1542"},
+        "fallbackExample": {"type": 1, "message": "save", "retorno": "1542"}
+      },
+      "presets": [],
+      "errors": [
+        "El ERP rechaza valores superiores a la deuda, transacciones sin deuda y comprobantes duplicados; el wrapper devuelve erp_mutation_rejected sin detalles internos.",
+        "Si no se puede confirmar la escritura, no repita el POST automáticamente."
+      ],
+      "notes": [
+        "id_transacion es el ID interno de la transacción, no necesariamente el número visible de la remisión.",
+        "id_sucursal es obligatorio dentro del body; el header X-Auth-Token-sucursal no lo sustituye.",
+        "Un abono parcial conserva el saldo pendiente; el pago total depende de la deuda validada por Java.",
+        "La consulta del comprobante conserva la autorización y los headers de empresa, sucursal, empleado y zona horaria; no usa cache.",
+        "Si el comprobante no está disponible, el pago sigue confirmado. Consulte posteriormente el comprobante con el ID de retorno, sin repetir el abono.",
+        "Los IDs de efectivo, caja y empleado corresponden a los catálogos de la empresa; los valores del ejemplo no son universales."
+      ],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": {"id_transacion": 54321, "id_sucursal": 1, "valor": 50000.0, "id_medio_pago": 1, "id_empleado": 1, "fecha_registro": "2026-10-05T13:30:00", "id_banco": 1, "nota": "Abono remisión"}},
+      "cost": {"tier": "critical", "factors": ["Escritura de pago y consulta inmediata del comprobante generado."]}
+    },
+    {
+      "id": "consultarComprobanteCaja_id",
+      "title": "Consultar comprobante de caja por ID",
+      "summary": "Consulta el comprobante generado por un abono, dentro de la empresa autenticada.",
+      "category": "Finanzas y cartera",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/consultarComprobanteCaja_id/{id_comprobante_caja}",
+      "operation": "query",
+      "cache": {"policy": "bypass", "domain": "cash-receipts", "tags": []},
+      "invalidates": [],
+      "requiredHeaders": ["X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [{"name": "id_comprobante_caja", "type": "integer", "required": true, "minimum": 1}], "query": []},
+      "body": {"required": false, "type": "none", "example": null},
+      "expectedCollection": null,
+      "response": {
+        "shape": "ComprobanteCaja[]",
+        "itemFields": ["id_comprobante_caja", "n_caja", "valor", "es_activo", "fecha_registro", "ip", "nombre_completo", "nota", "DateKey", "DateKey_hora", "id_sucursal", "nombre_sucursal", "id_banco", "nombre_banco", "id_medio_pago", "nombre_medio_pago", "es_conciliado", "es_cerrado", "boucher", "digitos", "devuelta", "dinero_entregado", "es_ingreso", "id_cliente"],
+        "example": [{"id_comprobante_caja": 1542, "n_caja": "RV105", "valor": 50000.0, "es_activo": 1, "fecha_registro": "2026-10-05 13:30:00.0", "id_medio_pago": 1, "nombre_medio_pago": "Efectivo", "id_banco": 1, "nombre_banco": "Caja General"}]
+      },
+      "presets": [],
+      "errors": ["Los errores técnicos se devuelven como erp_query_failed sin detalles internos."],
+      "notes": ["Retorna [] si el ID no existe o no pertenece a la empresa autenticada.", "La consulta es de solo lectura y no se almacena en cache."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "path": {"id_comprobante_caja": 1542}, "query": {}, "body": null},
+      "cost": {"tier": "low", "factors": ["Consulta puntual de comprobante sin cache."]}
+    },
+    {
+      "id": "agregarPagoAnticipo",
+      "title": "Registrar anticipo de cliente",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/agregarPagoAnticipo",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]},
+        {"domain": "discounts", "scope": "tenant", "tags": ["tenant:{empresa}:discounts"]},
+        {"domain": "consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:consolidated"]}
+      ],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {
+        "type": "object", "required": true,
+        "fields": [
+          {"name": "id_cliente", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_sucursal", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_empleado", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_medio_pago", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_banco", "type": "integer", "required": true, "minimum": 1},
+          {"name": "valor", "type": "number", "required": true, "exclusiveMinimum": 0},
+          {"name": "es_ingreso", "type": "integer", "required": true, "allowed": [1]},
+          {"name": "nota", "type": "string", "required": true, "pattern": "\\S"},
+          {"name": "fecha_registro", "type": "local-date-time", "required": true},
+          {"name": "id_centro_costo", "type": "integer", "required": false, "minimum": 1}
+        ],
+        "example": {"id_cliente": 1234, "id_sucursal": 1, "id_empleado": 7, "id_medio_pago": 1, "id_banco": 1, "valor": 50000.0, "es_ingreso": 1, "nota": "Anticipo de pedido", "fecha_registro": "2026-10-19T10:00:00"}
+      },
+      "expectedCollection": null,
+      "response": {
+        "envelope": "receipt",
+        "shape": "{ success: boolean, data: object|null, error: object|null, request_id: string }",
+        "successWhen": {"type": 1},
+        "receiptContract": "consultarComprobanteCaja_id",
+        "example": {"success": true, "data": {"id_comprobante_caja": 15420, "comprobante": {"id_comprobante_caja": 15420, "valor": 50000.0, "id_cliente": 1234, "id_sucursal": 1, "es_activo": 1}}, "error": null, "request_id": "0123456789abcdef0123456789abcdef"},
+        "upstreamExample": {"type": 1, "message": "save", "retorno": "15420"},
+        "fallbackExample": {"success": true, "data": {"id_comprobante_caja": 15420, "comprobante": null}, "error": null, "request_id": "0123456789abcdef0123456789abcdef"}
+      },
+      "presets": [],
+      "errors": ["Los rechazos y errores técnicos usan errores controlados sin detalles internos.", "No se debe repetir una escritura cuyo resultado sea desconocido o ya confirmado."],
+      "notes": ["Registra un anticipo recibido del cliente, no un abono vinculado a id_documento.", "id_empleado es el ID local del empleado, no id_usuario_portal.", "Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.", "El comprobante puede recuperarse por ID sin repetir el POST."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": {"id_cliente": 1234, "id_sucursal": 1, "id_empleado": 7, "id_medio_pago": 1, "id_banco": 1, "valor": 50000.0, "es_ingreso": 1, "nota": "Anticipo de pedido", "fecha_registro": "2026-10-19T10:00:00"}},
+      "cost": {"tier": "critical", "factors": ["Escritura financiera y consulta posterior del comprobante"]}
+    },
+    {
+      "id": "listaAnticiposClienteActivo",
+      "title": "Consultar anticipos activos de un cliente y sucursal",
+      "category": "Finanzas y cartera",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/listaAnticiposClienteActivo/{id_cliente}/{es_ingreso}/{id_sucursal}/{es_activo}",
+      "operation": "query",
+      "cache": {"policy": "bypass", "domain": "customer-advances", "tags": []},
+      "invalidates": [],
+      "requiredHeaders": ["X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [
+        {"name": "id_cliente", "type": "integer", "required": true, "minimum": 1},
+        {"name": "es_ingreso", "type": "integer", "required": true, "allowed": [1]},
+        {"name": "id_sucursal", "type": "integer", "required": true, "minimum": 1},
+        {"name": "es_activo", "type": "integer", "required": true, "allowed": [1]}
+      ], "query": []},
+      "body": {"type": "none", "required": false, "example": null},
+      "expectedCollection": null,
+      "response": {
+        "envelope": "items",
+        "shape": "{ success: boolean, data: { items: AnticipoCliente[] }|null, error: object|null, request_id: string }",
+        "itemFields": ["id_comprobante_caja", "n_caja", "valor", "valorPagado", "id_cliente", "id_sucursal", "es_activo"],
+        "example": {"success": true, "data": {"items": [{"id_comprobante_caja": 15420, "valor": 50000.0, "valorPagado": null, "id_cliente": 1234, "id_sucursal": 1, "es_activo": 1}]}, "error": null, "request_id": "0123456789abcdef0123456789abcdef"}
+      },
+      "presets": [],
+      "errors": ["Los errores técnicos se devuelven como erp_query_failed sin detalles internos."],
+      "notes": ["Consulta fresca de anticipos recibidos y activos del cliente y sucursal.", "Saldo disponible = valor - COALESCE(valorPagado, 0). La lista no filtra automáticamente todos los saldos agotados.", "No agrega un grupo pagos a la búsqueda de pedidos."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "path": {"id_cliente": 1234, "es_ingreso": 1, "id_sucursal": 1, "es_activo": 1}, "query": {}, "body": null},
+      "cost": {"tier": "low", "factors": ["Consulta financiera por cliente y sucursal sin cache"]}
+    },
+    {
+      "id": "anularAnticipo",
+      "title": "Anular anticipo de cliente",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/anularAnticipo",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]},
+        {"domain": "discounts", "scope": "tenant", "tags": ["tenant:{empresa}:discounts"]},
+        {"domain": "consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:consolidated"]}
+      ],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {"type": "object", "required": true, "fields": [
+        {"name": "id_comprobante_caja", "type": "integer", "required": true, "minimum": 1},
+        {"name": "id_empleado", "type": "integer", "required": true, "minimum": 1},
+        {"name": "valor", "type": "number", "required": true, "exclusiveMinimum": 0},
+        {"name": "nota", "type": "string", "required": true, "pattern": "\\S"},
+        {"name": "fecha_registro", "type": "local-date-time", "required": true},
+        {"name": "observacion", "type": "string", "required": false}
+      ], "example": {"id_comprobante_caja": 15420, "id_empleado": 7, "valor": 50000.0, "nota": "Anticipo registrado por error", "fecha_registro": "2026-10-19T10:00:00"}},
+      "expectedCollection": null,
+      "response": {
+        "envelope": "cancellation",
+        "shape": "{ success: boolean, data: object|null, error: object|null, request_id: string }",
+        "successWhen": {"type": 1},
+        "example": {"success": true, "data": {"id_comprobante_caja": 15420, "status": "ANULADO"}, "error": null, "request_id": "0123456789abcdef0123456789abcdef"},
+        "upstreamExample": {"type": 1, "message": "save", "retorno": "0"}
+      },
+      "presets": [],
+      "errors": ["Un anticipo inexistente o ya anulado se devuelve como rechazo controlado, no como una nueva anulación exitosa."],
+      "notes": ["Anulación completa del anticipo conforme a las reglas del ERP, incluidos sus cruces existentes.", "No crea un nuevo recibo de contrapartida ni expone la opción nativa de retorno a otro banco.", "data.id_comprobante_caja identifica el comprobante solicitado y status=ANULADO confirma la anulación; no se consulta otro recibo."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": {"id_comprobante_caja": 15420, "id_empleado": 7, "valor": 50000.0, "nota": "Anticipo registrado por error", "fecha_registro": "2026-10-19T10:00:00"}},
+      "cost": {"tier": "critical", "factors": ["Reversión financiera completa del anticipo y sus cruces"]}
+    },
+    {
+      "id": "anularPago",
+      "title": "Anular completamente un abono",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/anularPago",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]},
+        {"domain": "discounts", "scope": "tenant", "tags": ["tenant:{empresa}:discounts"]},
+        {"domain": "consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:consolidated"]}
+      ],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {"type": "object", "required": true, "fields": [
+        {"name": "id_comprobante_caja", "type": "integer", "required": true, "minimum": 1},
+        {"name": "id_empleado", "type": "integer", "required": true, "minimum": 1},
+        {"name": "valor", "type": "number", "required": true, "exclusiveMinimum": 0},
+        {"name": "nota", "type": "string", "required": true, "pattern": "\\S"},
+        {"name": "fecha_registro", "type": "local-date-time", "required": true},
+        {"name": "observacion", "type": "string", "required": false},
+        {"name": "id_transacion_comprobante_transacion", "type": "array", "required": false, "items": {"type": "integer", "allowed": [-1]}}
+      ], "example": {"id_comprobante_caja": 1542, "id_empleado": 7, "valor": 50000.0, "nota": "Abono registrado por error", "fecha_registro": "2026-10-19T10:00:00"}},
+      "expectedCollection": null,
+      "response": {
+        "envelope": "cancellation",
+        "shape": "{ success: boolean, data: object|null, error: object|null, request_id: string }",
+        "successWhen": {"type": 1},
+        "example": {"success": true, "data": {"id_comprobante_caja": 1542, "status": "ANULADO"}, "error": null, "request_id": "0123456789abcdef0123456789abcdef"},
+        "upstreamExample": {"type": 1, "message": "save", "retorno": "0"}
+      },
+      "presets": [],
+      "errors": ["Un comprobante inexistente o ya anulado es un rechazo controlado.", "El selector de cruces es interno y no puede suministrarse desde la API pública."],
+      "notes": ["La ruta pública inyecta id_transacion_comprobante_transacion=[-1] para anular el comprobante completo.", "No permite elegir cruces parciales ni enviar arreglos vacíos al DAO.", "data.id_comprobante_caja conserva el ID solicitado, nunca el retorno nativo que puede ser cero o un valor financiero."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": {"id_comprobante_caja": 1542, "id_empleado": 7, "valor": 50000.0, "nota": "Abono registrado por error", "fecha_registro": "2026-10-19T10:00:00"}},
+      "cost": {"tier": "critical", "factors": ["Reversión de comprobante, cartera, contabilidad y banco"]}
+    },
+    {
+      "id": "anularTransacion",
+      "title": "Anular transacción operativa",
+      "category": "Transacciones y documentos",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/anularTransacion",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
+        {"domain": "products", "scope": "tenant", "tags": ["tenant:{empresa}:products"]},
+        {"domain": "inventory", "scope": "tenant", "tags": ["tenant:{empresa}:inventory"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]},
+        {"domain": "discounts", "scope": "tenant", "tags": ["tenant:{empresa}:discounts"]},
+        {"domain": "consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:consolidated"]},
+        {"domain": "commercial-documents", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-documents"]},
+        {"domain": "commercial-document-products", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-document-products"]},
+        {"domain": "commercial-document-discounts", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-document-discounts"]},
+        {"domain": "commercial-document-consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-document-consolidated"]}
+      ],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {
+        "type": "object", "required": true,
+        "fields": [
+          {"name": "id_transacion", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_empleado", "type": "integer", "required": true, "minimum": 1},
+          {"name": "nota", "type": "string", "required": true, "pattern": "\\S"},
+          {"name": "observacion", "type": "string", "required": false}
+        ],
+        "example": {"id_transacion": 544182, "id_empleado": 1, "nota": "Motivo de la anulación", "observacion": "Detalle interno opcional"}
+      },
+      "expectedCollection": null,
+      "response": {
+        "shape": "ResultadoAnulacion", "example": {"success": true, "status": "ANULADO"},
+        "successWhen": {"type": 1}, "cancellation": {"completedStatus": "ANULADO"},
+        "upstreamExample": {"type": 1, "message": "save", "retorno": "..."}
+      },
+      "presets": [],
+      "errors": ["Los errores de negocio se devuelven como erp_mutation_rejected sin detalles internos.", "Un resultado de transporte desconocido no debe repetirse automáticamente."],
+      "notes": ["Anula transacciones existentes y revierte inventario y pagos según las reglas del ERP.", "Solo type=1 confirma la anulación y permite invalidar caché.", "No hay reintentos automáticos."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": {"id_transacion": 544182, "id_empleado": 1, "nota": "Motivo de la anulación"}},
+      "cost": {"tier": "critical", "factors": ["Reversión de inventario, cartera y pagos"]}
+    },
+    {
+      "id": "anularDocumento",
+      "title": "Anular documento logístico",
+      "category": "Transacciones y documentos",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/vent/documento/anularDocumento/{id_documento}/{id_empleado}",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "commercial-documents", "tags": []},
+      "invalidates": [
+        {"domain": "commercial-documents", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-documents"]},
+        {"domain": "commercial-document-products", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-document-products"]},
+        {"domain": "commercial-document-discounts", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-document-discounts"]},
+        {"domain": "commercial-document-consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:commercial-document-consolidated"]},
+        {"domain": "products", "scope": "tenant", "tags": ["tenant:{empresa}:products"]},
+        {"domain": "inventory", "scope": "tenant", "tags": ["tenant:{empresa}:inventory"]}
+      ],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {
+        "path": [
+          {"name": "id_documento", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_empleado", "type": "integer", "required": true, "minimum": 1}
+        ], "query": []
+      },
+      "body": {"type": "none", "required": false, "example": null},
+      "expectedCollection": null,
+      "response": {
+        "shape": "ResultadoAnulacion", "example": {"success": true, "status": "ANULADO"},
+        "successWhen": {"type": 1},
+        "cancellation": {"completedStatus": "ANULADO", "alreadyCancelledErrorCode": "1017", "alreadyCancelledStatus": "YA_ESTABA_ANULADO"},
+        "upstreamExample": {"type": 1, "message": "save", "retorno": ""}
+      },
+      "presets": [],
+      "errors": ["Actas activas, errores de inventario, documentos inexistentes o tokens inválidos rechazan la operación.", "No se devuelven excepciones ni mensajes técnicos del ERP."],
+      "notes": ["La ruta pública usa POST aunque Java ejecuta un GET con efectos secundarios.", "type=1 devuelve ANULADO; type=0 con código exacto 1017 devuelve YA_ESTABA_ANULADO. Ambos invalidan caché.", "Los demás type=0 no invalidan caché y no se reintentan automáticamente."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "path": {"id_documento": 12345, "id_empleado": 1}, "query": {}, "body": null},
+      "cost": {"tier": "critical", "factors": ["Reversión de traslados e inventario"]}
+    },
+    {
+      "id": "agregarNotaTransacion",
+      "title": "Crear nota crédito o débito sobre una transacción",
+      "category": "Transacciones y documentos",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/agregarNotaTransacion",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
+        {"domain": "products", "scope": "tenant", "tags": ["tenant:{empresa}:products"]},
+        {"domain": "inventory", "scope": "tenant", "tags": ["tenant:{empresa}:inventory"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]},
+        {"domain": "discounts", "scope": "tenant", "tags": ["tenant:{empresa}:discounts"]},
+        {"domain": "consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:consolidated"]}
+      ],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {
+        "type": "object", "required": true,
+        "fields": [
+          {"name": "id_transacion", "type": "integer", "required": true, "minimum": 1},
+          {"name": "es_nota_credito", "type": "integer", "required": true, "allowed": [0, 1]},
+          {"name": "valor", "type": "number", "required": true, "minimum": 0},
+          {"name": "id_empleado", "type": "integer", "required": true, "minimum": 1},
+          {"name": "id_cliente", "type": "integer", "required": false, "minimum": 1},
+          {"name": "id_sucursal", "type": "integer", "required": false, "minimum": 1},
+          {"name": "nota", "type": "string", "required": true, "pattern": "\\S"},
+          {"name": "madificoSaldo", "type": "integer", "required": false, "allowed": [0, 1]},
+          {"name": "retornarDinero", "type": "boolean", "required": false},
+          {"name": "objDetalleNota", "type": "array", "required": true, "items": {
+            "type": "object", "fields": [
+              {"name": "id_detalle_transacion", "type": "integer", "required": true, "minimum": 1},
+              {"name": "id_producto", "type": "integer", "required": true, "minimum": 1},
+              {"name": "id_producto_sucursal", "type": "integer", "required": true, "minimum": 1},
+              {"name": "cantidad", "type": "number", "required": true, "exclusiveMinimum": 0},
+              {"name": "precio_venta", "type": "number", "required": true, "minimum": 0},
+              {"name": "total", "type": "number", "required": true, "minimum": 0},
+              {"name": "descripcion", "type": "string", "required": false}
+            ]
+          }}
+        ],
+        "example": {"id_transacion": 544182, "es_nota_credito": 1, "valor": 50000.0, "id_empleado": 1, "id_cliente": 1, "id_sucursal": 1, "nota": "Ajuste por nota crédito", "madificoSaldo": 1, "retornarDinero": false, "objDetalleNota": []}
+      },
+      "expectedCollection": null,
+      "response": {"shape": "tipoMensajes", "example": {"type": 1, "message": "save", "retorno": "15894"}, "successWhen": {"type": 1}},
+      "presets": [],
+      "errors": ["type=0 rechaza la creación sin invalidar caché.", "Un resultado desconocido no debe repetirse automáticamente."],
+      "notes": ["es_nota_credito=1 crea crédito; 0 crea débito.", "id_cliente, id_sucursal, madificoSaldo y retornarDinero son opcionales; Java obtiene la sucursal de la transacción padre.", "Conserva la grafía nativa madificoSaldo: 1 afecta el saldo pendiente; 0 no lo modifica.", "retornarDinero=true solicita devolución física en caja según reglas del ERP.", "objDetalleNota es obligatorio y admite [] para ajustes exclusivamente financieros; nunca envíe null.", "retorno contiene id_nota. Crear la nota y emitirla electrónicamente son operaciones separadas."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": {"id_transacion": 544182, "es_nota_credito": 1, "valor": 50000.0, "id_empleado": 1, "id_cliente": 1, "id_sucursal": 1, "nota": "Ajuste por nota crédito", "madificoSaldo": 1, "retornarDinero": false, "objDetalleNota": []}},
+      "cost": {"tier": "critical", "factors": ["Ajuste de cartera, caja e inventario"]}
+    },
+    {
+      "id": "generarNotaCreditoElectronica",
+      "title": "Emitir nota crédito electrónica",
+      "category": "Transacciones y documentos",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/generarNotaCreditoElectronica/{id_nota}",
+      "operation": "mutation",
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [{"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]}],
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [{"name": "id_nota", "type": "integer", "required": true, "minimum": 1}], "query": []},
+      "body": {"type": "object", "required": false, "fields": [{"name": "emitir_nc_sin_fe", "type": "boolean", "required": false, "default": false}], "example": {"emitir_nc_sin_fe": false}},
+      "expectedCollection": null,
+      "response": {"shape": "tipoMensajes", "example": {"type": 1, "message": "save", "retorno": "ok"}, "successWhen": {"type": 1}},
+      "presets": [],
+      "errors": ["Un rechazo DIAN con type=0 no es éxito aunque message=save.", "No se repite automáticamente una emisión cuyo resultado no se pudo confirmar."],
+      "notes": ["Una sola ruta pública POST admite emitir_nc_sin_fe booleano; si se omite, vale false.", "false usa la factura electrónica original; true agrega /true al GET nativo para emitir sin factura electrónica previa.", "La bandera se consume en el wrapper: Java recibe un GET sin cuerpo.", "Conserva id_nota si la emisión falla; no recrees la nota automáticamente."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "path": {"id_nota": 15894}, "query": {}, "body": {"emitir_nc_sin_fe": false}},
+      "cost": {"tier": "critical", "factors": ["Emisión electrónica ante DIAN"]}
     },
     {
       "id": "consultarImpuestoCuenti",
@@ -5771,6 +6602,15 @@
             ]
           },
           {
+            "name": "es_devolucion",
+            "type": "integer",
+            "required": false,
+            "allowed": [
+              0,
+              1
+            ]
+          },
+          {
             "name": "es_nula",
             "type": "integer",
             "required": false,
@@ -5834,6 +6674,36 @@
           {
             "name": "ultima_fecha",
             "type": "epoch-milliseconds",
+            "required": false
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "descuento_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "descuento_hasta",
+            "type": "number",
             "required": false
           }
         ]
@@ -5920,12 +6790,20 @@
             "ruta_despacho",
             "logistica",
             "estado",
-            "documento",
-            "nota",
-            "comentarios",
-            "adjuntos"
-          ]
-        }
+             "documento",
+             "nota",
+             "comentarios",
+             "adjuntos"
+           ],
+           "detalle": [
+             "producto",
+             "cantidades",
+             "precios",
+             "impuestos",
+             "descuento",
+             "totales"
+           ]
+         }
       },
       "expectedCollection": "documentos",
       "response": {
@@ -5934,26 +6812,36 @@
           "pagina": 0,
           "cantidad": 1,
           "documentos": [
-            {
-              "codigos": {"id_documento": 1, "n_documento": "DOC-001", "tipo_documento": 4},
-              "totales": {"subtotal": 10000, "impuesto": 1900, "total_neto": 11900, "descuento": 0},
-              "cliente": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo"},
-              "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"},
-              "fechas": {"fecha_documento": 1735689600000, "fecha_registro": 1735689600000},
-              "comentarios": [
-                {"id_comentario": 1, "comentario": "Comentario ficticio de integración", "id_empleado": 1, "empleado": "Empleado ejemplo", "leido": 1, "fecha_registro": 1735689600000}
+             {
+               "codigos": {"id_documento": 1, "n_documento": "DOC-001", "tipo_documento": 4},
+               "fechas": {"fecha_documento": 1735689600000, "fecha_registro": 1735689600000},
+               "sucursal": {"id_sucursal": 1, "nombre": "Sucursal principal"},
+               "cliente": {"id_cliente": 1, "identificacion": "DOCUMENTO-EJEMPLO", "nombre_cliente": "Cliente ejemplo"},
+               "empleado": {"id_empleado": 1, "nombre": "Empleado ejemplo"},
+               "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"},
+               "totales": {"subtotal": 10000, "descuento": 0, "impuestos": {"impuesto": 1900, "impoconsumo": 0, "estampilla": 0, "total": 1900}, "total_neto": 11900},
+               "bodegas": {"id_bodega_insumos": 1, "bodega_insumos": "Bodega de insumos", "id_bodega_destino": 2, "bodega_destino": "Bodega destino", "id_bodega_testeo": null, "id_bodega_reserva": null, "bodega_reserva": null},
+               "ruta_despacho": {"id_ruta": 1, "nombre": "Ruta ejemplo", "es_activo": 1},
+               "logistica": {"alias_direccion": "Principal", "nota_direccion": "Dirección de ejemplo", "estado_tienda_online": 1, "tiempo_aprox_prestamo": 30},
+               "estado": {"es_activo": 1, "es_nula": 0, "estado": 1, "pago_realizado": 0, "tasa_cumplimiento": 100},
+               "documento": {"id_consecutivo_varios": 1, "id_lista_precio": 1, "id_canal": 1, "orden_servicio": "OS-001", "observacion": "Observación de ejemplo"},
+               "nota": "Nota de ejemplo",
+               "comentarios": [
+                 {"id_comentario": 1, "comentario": "Comentario ficticio de integración", "id_empleado": 1, "empleado": "Empleado ejemplo", "leido": 1, "fecha_registro": 1735689600000}
               ],
               "adjuntos": [
                 {"id_adjunto": 1, "nombre_real": "pedido-ejemplo.pdf", "tipo": "application/pdf", "etiqueta": "Documento", "ruta": "https://example.invalid/archivos/pedido-ejemplo.pdf", "fecha_registro": 1735689600000}
               ],
               "detalle": [
-                {
-                  "producto": {"id_producto": 25, "sku": "SKU-001", "nombre": "Producto ejemplo"},
-                  "cantidades": {"cantidad": 1},
-                  "precios": {"precio_unitario": 10000},
-                  "totales": {"subtotal": 10000, "total_neto": 11900}
-                }
-              ]
+                 {
+                   "producto": {"id_producto": 25, "sku": "SKU-001", "nombre": "Producto ejemplo"},
+                   "cantidades": {"facturada": 1, "real": 1, "real_presentacion": 1, "original_pedido": 1},
+                   "precios": {"precio_real": 10000, "precio_venta": 10000, "costo": 7000, "costo_produccion": 6500},
+                   "impuestos": {"impuesto": {"base": 10000, "porcentaje": 19, "valor": 1900}, "impoconsumo": {"valor_unitario": 0, "valor_total": 0}, "estampilla": {"valor_unitario": 0, "valor_total": 0}},
+                   "descuento": {"porcentaje": 0, "valor": 0},
+                   "totales": {"subtotal": 10000, "impuestos": {"impuesto": 1900, "impoconsumo": 0, "estampilla": 0, "total": 1900}, "total": 11900}
+                 }
+               ]
             }
           ]
         }
@@ -6051,6 +6939,7 @@
       ],
       "notes": [
         "detalle es opcional y conserva el orden de los grupos solicitados.",
+        "Los filtros total, subtotal y descuento aceptan límites desde/hasta decimales.",
         "Las respuestas no exponen credenciales ni claves internas.",
         "La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.",
         "comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.",
@@ -6148,6 +7037,15 @@
             "minimum": 1
           },
           {
+            "name": "es_devolucion",
+            "type": "integer",
+            "required": false,
+            "allowed": [
+              0,
+              1
+            ]
+          },
+          {
             "name": "id_vendedor",
             "type": "integer",
             "required": false,
@@ -6175,6 +7073,26 @@
             "type": "epoch-milliseconds",
             "required": false,
             "inclusive": true
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
           }
         ]
       },
@@ -6213,9 +7131,9 @@
         "example": {
           "pagina": 0,
           "cantidad": 1,
-          "productos": [
-            {"producto": {"id_producto": 25, "sku": "SKU-001", "nombre_producto": "Producto ejemplo"}, "cantidades": {"cantidad": 1}, "totales": {"subtotal": 10000, "total_neto": 11900}, "fechas": {"fecha_registro": 1735689600000}}
-          ]
+           "productos": [
+             {"producto": {"id_producto": 25, "sku": "SKU-001", "nombre_producto": "Producto ejemplo"}, "cantidades": {"cantidad": 1}, "totales": {"subtotal": 10000, "total_neto": 11900}, "costos": {"costo": 7000, "costo_produccion": 6500}, "fechas": {"fecha_registro": 1735689600000}}
+           ]
         }
       },
       "presets": [
@@ -6242,7 +7160,8 @@
       ],
       "notes": [
         "Los productos se agrupan por id_producto y respetan la paginación.",
-        "No se permite mezclar políticas de buscarProductosComprados."
+        "No se permite mezclar políticas de buscarProductosComprados.",
+        "Los filtros total y subtotal aceptan límites desde/hasta decimales."
       ],
       "tryIt": {
         "enabled": true,
@@ -6318,6 +7237,15 @@
             "minimum": 1
           },
           {
+            "name": "es_devolucion",
+            "type": "integer",
+            "required": false,
+            "allowed": [
+              0,
+              1
+            ]
+          },
+          {
             "name": "id_cliente",
             "type": "integer",
             "required": false,
@@ -6357,6 +7285,26 @@
             "type": "epoch-milliseconds",
             "required": false,
             "inclusive": true
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
           }
         ]
       },
@@ -6405,25 +7353,27 @@
             "totales"
           ]
         },
-        "example": {
-          "grupos": [
-            "documento",
-            "cliente",
-            "empleado",
-            "vendedor",
-            "totales"
-          ]
-        }
-      },
-      "expectedCollection": "descuentos",
+         "example": {
+           "grupos": [
+             "documento",
+             "cliente",
+             "producto",
+             "cantidades",
+             "precios",
+             "descuento",
+             "totales"
+           ]
+         }
+       },
+       "expectedCollection": "descuentos",
       "response": {
         "shape": "{ pagina: integer, cantidad: integer, descuentos: DescuentoDocumento[] }",
         "example": {
           "pagina": 0,
-          "cantidad": 1,
-          "descuentos": [
-            {"documento": {"id_documento": 1, "n_documento": "DOC-001"}, "cliente": {"id_cliente": 1, "nombre_cliente": "Cliente ejemplo"}, "producto": {"id_producto": 25, "nombre": "Producto ejemplo"}, "descuento": {"descuento": 1000}, "totales": {"total_neto": 9000}}
-          ]
+           "cantidad": 1,
+           "descuentos": [
+             {"documento": {"id_documento": 1, "n_documento": "DOC-001"}, "cliente": {"id_cliente": 1, "nombre_cliente": "Cliente ejemplo"}, "empleado": {"id_empleado": 1, "nombre_empleado": "Empleado ejemplo"}, "vendedor": {"id_vendedor": 1, "nombre_vendedor": "Vendedor ejemplo"}, "producto": {"id_producto": 25, "nombre": "Producto ejemplo"}, "cantidades": {"cantidad": 1}, "precios": {"precio_real": 10000, "precio_venta": 10000}, "descuento": {"descuento": 1000, "porcentaje_descuento": 10}, "totales": {"total_neto": 9000}}
+           ]
         }
       },
       "presets": [
@@ -6432,13 +7382,13 @@
           "title": "Descuentos por documento (cabecera)",
           "query": {},
           "body": {
-            "grupos": [
-              "documento",
-              "cliente",
-              "empleado",
-              "vendedor",
-              "totales"
-            ]
+           "grupos": [
+             "documento",
+             "cliente",
+             "empleado",
+             "vendedor",
+             "totales"
+           ]
           }
         },
         {
@@ -6463,7 +7413,8 @@
       ],
       "notes": [
         "Los grupos producto, cantidades, precios o descuento solicitan el modo detalle.",
-        "Los resultados solo incluyen documentos con descuentos."
+        "Los resultados solo incluyen documentos con descuentos.",
+        "Los filtros total y subtotal aceptan límites desde/hasta decimales."
       ],
       "tryIt": {
         "enabled": true,
@@ -6473,8 +7424,10 @@
           "grupos": [
             "documento",
             "cliente",
-            "empleado",
-            "vendedor",
+            "producto",
+            "cantidades",
+            "precios",
+            "descuento",
             "totales"
           ]
         }
@@ -6543,6 +7496,15 @@
             ]
           },
           {
+            "name": "es_devolucion",
+            "type": "integer",
+            "required": false,
+            "allowed": [
+              0,
+              1
+            ]
+          },
+          {
             "name": "id_cliente",
             "type": "integer",
             "required": false,
@@ -6582,6 +7544,26 @@
             "type": "epoch-milliseconds",
             "required": false,
             "inclusive": true
+          },
+          {
+            "name": "total_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "total_hasta",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_desde",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "subtotal_hasta",
+            "type": "number",
+            "required": false
           }
         ]
       },
@@ -6640,7 +7622,8 @@
       ],
       "notes": [
         "El consolidado agrupa documentos por la dimensión seleccionada.",
-        "Los rangos de fecha incluyen ambos extremos y usan epoch-milliseconds."
+        "Los rangos de fecha incluyen ambos extremos y usan epoch-milliseconds.",
+        "Los filtros total y subtotal aceptan límites desde/hasta decimales."
       ],
       "tryIt": {
         "enabled": true,
@@ -6739,6 +7722,47 @@
       "contract": "grabarDocumentoSimple",
       "title": "Crear documento",
       "translation": {}
+    },
+    {
+      "routeId": "transacciones-anular",
+      "category": "Transacciones y documentos",
+      "method": "POST",
+      "path": "/api/v1/transacciones/anulaciones",
+      "contract": "anularTransacion",
+      "title": "Anular transacción",
+      "translation": {}
+    },
+    {
+      "routeId": "documentos-anular",
+      "category": "Transacciones y documentos",
+      "method": "POST",
+      "path": "/api/v1/documentos/{id_documento}/anulaciones/{id_empleado}",
+      "contract": "anularDocumento",
+      "title": "Anular documento logístico",
+      "translation": {}
+    },
+    {
+      "routeId": "transacciones-notas-crear",
+      "category": "Transacciones y documentos",
+      "method": "POST",
+      "path": "/api/v1/transacciones/notas",
+      "contract": "agregarNotaTransacion",
+      "title": "Crear nota crédito o débito",
+      "translation": {}
+    },
+    {
+      "routeId": "transacciones-notas-credito-emitir",
+      "category": "Transacciones y documentos",
+      "method": "POST",
+      "path": "/api/v1/transacciones/notas-credito/{id_nota}/emision",
+      "contract": "generarNotaCreditoElectronica",
+      "title": "Emitir nota crédito electrónica",
+      "translation": {
+        "bodyFlagPathSuffix": {
+          "field": "emitir_nc_sin_fe",
+          "suffix": "/true"
+        }
+      }
     },
     {
       "routeId": "ventas-productos-comprados-busquedas",
@@ -6949,6 +7973,54 @@
       "translation": {}
     },
     {
+      "routeId": "finanzas-abonos-crear",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/abonos",
+      "contract": "agregarPagoTransacion",
+      "translation": {}
+    },
+    {
+      "routeId": "finanzas-anticipos-crear",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/anticipos",
+      "contract": "agregarPagoAnticipo",
+      "translation": {}
+    },
+    {
+      "routeId": "finanzas-anticipos-cliente-sucursal",
+      "category": "Finanzas y cartera",
+      "method": "GET",
+      "path": "/api/v1/finanzas/anticipos/clientes/{id_cliente}/sucursales/{id_sucursal}",
+      "contract": "listaAnticiposClienteActivo",
+      "translation": {"fixedPath": {"es_ingreso": 1, "es_activo": 1}}
+    },
+    {
+      "routeId": "finanzas-anticipos-anular",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/anticipos/anulaciones",
+      "contract": "anularAnticipo",
+      "translation": {}
+    },
+    {
+      "routeId": "finanzas-abonos-anular",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/abonos/anulaciones",
+      "contract": "anularPago",
+      "translation": {"fixedBody": {"id_transacion_comprobante_transacion": [-1]}}
+    },
+    {
+      "routeId": "finanzas-comprobante-caja-por-id",
+      "category": "Finanzas y cartera",
+      "method": "GET",
+      "path": "/api/v1/finanzas/comprobantes-caja/{id_comprobante_caja}",
+      "contract": "consultarComprobanteCaja_id",
+      "translation": {}
+    },
+    {
       "routeId": "finanzas-cartera-cobrar-busquedas",
       "category": "Finanzas y cartera",
       "method": "POST",
@@ -7038,6 +8110,14 @@
       "method": "POST",
       "path": "/api/v1/restaurante/comandas/platos-eliminados/busquedas",
       "contract": "platosEliminados",
+      "translation": {}
+    },
+    {
+      "routeId": "restaurante-mesas-ocupadas",
+      "category": "Restaurante",
+      "method": "GET",
+      "path": "/api/v1/restaurante/mesas-ocupadas",
+      "contract": "mesasOcupadas",
       "translation": {}
     }
   ]

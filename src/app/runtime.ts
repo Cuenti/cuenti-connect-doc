@@ -5,7 +5,7 @@ import { DEFAULT_TIMEZONE } from '../request';
 export const proxyBaseUrl = import.meta.env.PUBLIC_PROXY_BASE_URL?.trim() ?? '';
 export const serverOrigin =
   proxyBaseUrl ||
-  (import.meta.env.DEV ? 'http://localhost:8081' : window.location.origin);
+  (import.meta.env.DEV ? 'http://localhost:8083' : window.location.origin);
 
 export const serverApiUrl = (endpoint: EndpointDoc, origin: string) => {
   const baseSegment = endpoint.path.split('/').filter(Boolean)[0];

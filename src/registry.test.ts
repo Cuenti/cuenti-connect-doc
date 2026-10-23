@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import canonicalRegistry from '../contracts/j4/endpoints.json';
 import { hasFieldDescription, hasGroupDescription } from './fieldDescriptions';
 import { categories, upcomingCapabilities } from './model';
 import { registry } from './registry';
@@ -11,7 +12,7 @@ const findEndpoint = (id: string) =>
   );
 
 describe('canonical documentation registry', () => {
-  it('exposes all 38 approved public method/path tuples', () => {
+  it('exposes all 49 approved public method/path tuples', () => {
     const tuples = registry.endpoints.map(
       (endpoint) => `${endpoint.method} ${endpoint.path}`,
     );
@@ -23,6 +24,10 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/transacciones/ventas/compras-gastos/busquedas',
         'POST /api/v1/transacciones/ventas/remisiones/busquedas',
         'POST /api/v1/documentos',
+        'POST /api/v1/documentos/{id_documento}/anulaciones/{id_empleado}',
+        'POST /api/v1/transacciones/anulaciones',
+        'POST /api/v1/transacciones/notas',
+        'POST /api/v1/transacciones/notas-credito/{id_nota}/emision',
         'POST /api/v1/transacciones/ventas/productos-comprados/busquedas',
         'POST /api/v1/transacciones/ventas/descuentos/busquedas',
         'POST /api/v1/transacciones/ventas/consolidados/busquedas',
@@ -44,6 +49,12 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/tributario/impuestos/busquedas',
         'GET /api/v1/tributario/impuestos/{id_impuesto}',
         'POST /api/v1/finanzas/bancos/busquedas',
+        'POST /api/v1/finanzas/abonos',
+        'POST /api/v1/finanzas/abonos/anulaciones',
+        'POST /api/v1/finanzas/anticipos',
+        'POST /api/v1/finanzas/anticipos/anulaciones',
+        'GET /api/v1/finanzas/anticipos/clientes/{id_cliente}/sucursales/{id_sucursal}',
+        'GET /api/v1/finanzas/comprobantes-caja/{id_comprobante_caja}',
         'POST /api/v1/finanzas/medios-pago/busquedas',
         'POST /api/v1/finanzas/cartera/cuentas-por-cobrar/busquedas',
         'POST /api/v1/finanzas/cartera/cuentas-por-pagar/busquedas',
@@ -55,9 +66,10 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/restaurante/comandas/busquedas',
         'POST /api/v1/restaurante/comandas/platos-eliminados/busquedas',
         'POST /api/v1/restaurante/comandas',
+        'GET /api/v1/restaurante/mesas-ocupadas',
       ]),
     );
-    expect(tuples).toHaveLength(38);
+    expect(tuples).toHaveLength(49);
     expect(tuples.every((tuple) => tuple.includes('/api/v1/'))).toBe(true);
     expect(JSON.stringify(registry)).not.toContain('/jServerj4ErpPro');
     expect(
@@ -66,7 +78,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('keeps the public query and mutation split', () => {
-    expect(registry.endpoints).toHaveLength(38);
+    expect(registry.endpoints).toHaveLength(49);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -77,10 +89,10 @@ describe('canonical documentation registry', () => {
     ).toHaveLength(32);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
-    ).toHaveLength(6);
+    ).toHaveLength(14);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(6);
+    ).toHaveLength(17);
   });
 
   it('keeps the flat public service distribution', () => {
@@ -95,12 +107,12 @@ describe('canonical documentation registry', () => {
       Catálogo: 5,
       Inventario: 1,
       Terceros: 3,
-      'Transacciones y documentos': 15,
+      'Transacciones y documentos': 19,
       Impuestos: 2,
-      'Finanzas y cartera': 6,
+      'Finanzas y cartera': 12,
       Organización: 2,
       Facturación: 1,
-      Restaurante: 3,
+      Restaurante: 4,
     });
   });
 
@@ -318,7 +330,10 @@ describe('canonical documentation registry', () => {
     expect(fields.get('es_consumidor_final')).toBeDefined();
     expect(fields.get('fecha_nacimiento')).toBeDefined();
     expect(fields.get('horario')).toBeDefined();
-    expect(fields.get('lstContactoCliente')).toBeUndefined();
+    expect(fields.get('lstContactoCliente')).toEqual(
+      expect.objectContaining({ required: false, type: 'array' }),
+    );
+    expect(fields.get('codigo_tributario')).toBeDefined();
   });
 
   it('keeps customer-facing metadata free of internal implementation terms', () => {
@@ -345,24 +360,26 @@ describe('canonical documentation registry', () => {
     }
   });
 
-  it('adds the five required global headers to every endpoint', () => {
+  it('preserves each canonical contract’s required headers', () => {
     for (const endpoint of registry.endpoints) {
+      const contract = canonicalRegistry.endpoints.find(
+        ({ id }) => id === endpoint.contractId,
+      );
       const requiredHeaders = endpoint.headers
         .filter((header) => header.required)
         .map((header) => header.name);
       expect(requiredHeaders).toEqual(
-        expect.arrayContaining([
+        contract?.requiredHeaders ?? [
+          'Content-Type',
           'X-Auth-Token-empresa',
           'X-Auth-Token-sucursal',
           'X-Id-Empleado',
           'X-gtm',
           'Authorization',
-        ]),
+        ],
       );
-      expect(
-        endpoint.headers.find((header) => header.name === 'X-gtm')
-          ?.defaultValue,
-      ).toBe('GMT-0500');
+      const timezone = endpoint.headers.find(({ name }) => name === 'X-gtm');
+      if (timezone) expect(timezone.defaultValue).toBe('GMT-0500');
     }
   });
 
@@ -408,14 +425,30 @@ describe('canonical documentation registry', () => {
       discounts?.queryParams.map((parameter) => parameter.name),
     ).not.toContain('nivel');
     expect(discounts?.tryIt?.body).toEqual({
-      grupos: ['transaccion', 'cliente', 'totales'],
+      grupos: [
+        'transaccion',
+        'cliente',
+        'producto',
+        'cantidades',
+        'precios',
+        'descuento',
+        'totales',
+      ],
     });
 
     const commercialDiscounts = findEndpoint(
       'buscarDescuentosDocumentosComerciales',
     );
     expect(commercialDiscounts?.tryIt?.body).toEqual({
-      grupos: ['documento', 'cliente', 'empleado', 'vendedor', 'totales'],
+      grupos: [
+        'documento',
+        'cliente',
+        'producto',
+        'cantidades',
+        'precios',
+        'descuento',
+        'totales',
+      ],
     });
     expect(commercialDiscounts?.groups).toEqual(
       expect.arrayContaining([
@@ -554,6 +587,9 @@ describe('canonical documentation registry', () => {
       expect.arrayContaining([
         expect.objectContaining({ name: 'id_producto', required: false }),
         expect.objectContaining({ name: 'sku', required: false }),
+        expect.objectContaining({ name: 'id_proveedor', required: false }),
+        expect.objectContaining({ name: 'nit_proveedor', required: false }),
+        expect.objectContaining({ name: 'nombre_proveedor', required: false }),
       ]),
     );
     expect(products?.tryIt?.query).toMatchObject({
@@ -572,8 +608,32 @@ describe('canonical documentation registry', () => {
         'medida',
         'imagen',
         'configuracion',
+        'composicion',
+        'empaque',
+        'presentaciones',
+        'proveedor',
       ],
     });
+
+    expect(
+      findEndpoint('buscarTercero')?.queryParams.map(({ name }) => name),
+    ).toContain('exacto');
+    expect(
+      findEndpoint('buscarTransacciones')?.queryParams.map(({ name }) => name),
+    ).toEqual(
+      expect.arrayContaining([
+        'total_desde',
+        'total_hasta',
+        'subtotal_desde',
+        'subtotal_hasta',
+        'deuda_desde',
+        'deuda_hasta',
+        'saldo_desde',
+        'saldo_hasta',
+        'descuento_desde',
+        'descuento_hasta',
+      ]),
+    );
 
     for (const endpointId of [
       'buscarDocumentosComerciales',

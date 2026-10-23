@@ -14,22 +14,32 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 - Las **columnas** solo aplican cuando la operación las declara explícitamente; los catálogos maestros usan `grupos` o `{}`.
 - Los **grupos** agregan bloques relacionados; cada grupo explica sus campos incluidos.
 - `0` suele significar no/inactivo y `1` sí/activo, salvo que la operación indique otro significado.
-- Las fechas en milisegundos Unix son números como `1722470400000`.
+- Consulta el formato de cada campo: finanzas recibe `YYYY-MM-DDTHH:mm:ss` sin zona; los filtros de restaurante usan milisegundos Unix como `1722470400000`.
+- El catálogo contiene 48 rutas ERP y una herramienta externa. Los ejemplos no prueban despliegue en producción.
+- Revisa [Finanzas y documentos](mcp-guide.md#finanzas-y-documentos) antes de registrar pagos o anular documentos.
 
 ## Herramientas por necesidad
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Transacciones y documentos | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `documentos-crear`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas`, `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
+
+| Transacciones y documentos | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `documentos-crear`, `transacciones-anular`, `documentos-anular`, `transacciones-notas-crear`, `transacciones-notas-credito-emitir`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas`, `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
+
 | Catálogo | `catalogo-productos-busquedas`, `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `catalogo-marcas`, `catalogo-marca-por-id` |
+
 | Inventario | `inventario-conteos` |
+
 | Terceros | `terceros-busquedas`, `terceros-crear`, `terceros-actualizar` |
+
 | Impuestos | `tributario-impuestos-busquedas`, `tributario-impuesto-por-id` |
-| Finanzas y cartera | `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
+
+| Finanzas y cartera | `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `finanzas-abonos-crear`, `finanzas-anticipos-crear`, `finanzas-anticipos-cliente-sucursal`, `finanzas-anticipos-anular`, `finanzas-abonos-anular`, `finanzas-comprobante-caja-por-id`, `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
+
 | Organización | `organizacion-sucursales-busquedas`, `organizacion-empleados-busquedas` |
+
 | Facturación | `facturacion-consecutivos-busquedas` |
-| Restaurante | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas` |
-| Restaurante | `restaurante-comandas-crear` |
+
+| Restaurante | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas`, `restaurante-mesas-ocupadas`, `restaurante-comandas-crear` |
 
 ## Transacciones y documentos
 
@@ -63,6 +73,16 @@ Usa este catálogo para traducir una necesidad de negocio a la herramienta corre
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `deuda_desde` | No | número |
+| `deuda_hasta` | No | número |
+| `saldo_desde` | No | número |
+| `saldo_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -261,6 +281,7 @@ Para `grupos`:
 ```
 
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- Los filtros total, subtotal, deuda, saldo y descuento aceptan límites desde/hasta decimales.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
 - La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
@@ -302,6 +323,16 @@ Para `grupos`:
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `deuda_desde` | No | número |
+| `deuda_hasta` | No | número |
+| `saldo_desde` | No | número |
+| `saldo_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -500,6 +531,7 @@ Para `grupos`:
 ```
 
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- Los filtros total, subtotal, deuda, saldo y descuento aceptan límites desde/hasta decimales.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
 - La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
@@ -541,6 +573,16 @@ Para `grupos`:
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `deuda_desde` | No | número |
+| `deuda_hasta` | No | número |
+| `saldo_desde` | No | número |
+| `saldo_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -739,6 +781,7 @@ Para `grupos`:
 ```
 
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- Los filtros total, subtotal, deuda, saldo y descuento aceptan límites desde/hasta decimales.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
 - La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
@@ -780,6 +823,16 @@ Para `grupos`:
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `deuda_desde` | No | número |
+| `deuda_hasta` | No | número |
+| `saldo_desde` | No | número |
+| `saldo_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -978,6 +1031,7 @@ Para `grupos`:
 ```
 
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- Los filtros total, subtotal, deuda, saldo y descuento aceptan límites desde/hasta decimales.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
 - La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
@@ -1019,6 +1073,16 @@ Para `grupos`:
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `deuda_desde` | No | número |
+| `deuda_hasta` | No | número |
+| `saldo_desde` | No | número |
+| `saldo_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -1217,6 +1281,7 @@ Para `grupos`:
 ```
 
 - Todas las variaciones de filtros son configuraciones predefinidas de este punto de acceso, nunca rutas independientes.
+- Los filtros total, subtotal, deuda, saldo y descuento aceptan límites desde/hasta decimales.
 - detalle.codigos contiene id_detalle_transacion, no id_transacion.
 - El grupo impresion devuelve configuración y no genera un PDF.
 - La identificación del padre se devuelve dentro de codigos; transacion no es un grupo válido.
@@ -1230,45 +1295,87 @@ Para `grupos`:
 
 ### `documentos-crear`: Crear documento
 
-**Para qué sirve:** Crear documento.
+**Para qué sirve:** Crea el documento indicado por tipoDocumento, incluyendo transacciones y documentos comerciales con sus productos, cliente y forma de pago.
 
 **Método:** `POST`.
 
 **Ruta:** `/api/v1/documentos`.
 
-**Tipo:** Acción que modifica datos.
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
 
-**Filtros:** no requiere filtros adicionales.
+**Encabezados del REST público**
 
-**Datos que acepta la acción**
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
 
-| Dato | Obligatorio | Valores que acepta | Significado |
-| --- | --- | --- | --- |
-| `tipoDocumento` | Sí | número entero | Tipo de documento que se va a crear; consulta el catálogo de valores admitidos. |
-| `type_match_producto` | Sí | `1`, `2`, `3`; valor habitual `1` | 1 ID de producto, 2 SKU, 3 código de barras. |
-| `id_consecutivo` | Sí | número entero; mínimo `1` | Consecutivo con el que se registra el documento. |
-| `codigo_unico` | Sí | texto; Conserva ceros iniciales y no se normaliza. | Código numérico de 1 a 50 dígitos, sin normalizar. |
-| `nota` | Sí | texto | Nota general del documento. |
-| `observacion` | Sí | texto | Observación general del documento. |
-| `id_sucursal` | Sí | número entero; mínimo `1` | Sucursal del documento. |
-| `id_bodega` | Sí | número entero; mínimo `1` | Bodega; debe coincidir con id_sucursal. |
-| `id_vendedor` | Sí | número entero; mínimo `1` | Vendedor asociado al documento. |
-| `id_empleado` | Sí | número entero; mínimo `1` | Empleado que registra el documento. |
-| `fecha_registro` | No | fecha y hora en milisegundos Unix | Fecha de creación del tercero. |
-| `fecha_vencimiento` | No | fecha y hora en milisegundos Unix | Fecha límite de pago o vencimiento de la autorización. |
-| `id_centro_costo` | No | número entero; mínimo `1` | Centro de costo predeterminado para operaciones del tercero. |
-| `objClienteMini` | Sí | object | Datos mínimos obligatorios del tercero. |
-| `objDetalle` | Sí | array | Líneas del documento; total es el total de cada línea. |
-| `lstPagos` | Sí | array | Pagos del documento; arreglo vacío indica crédito. |
-| `impuestos` | No | object | Impuestos de la línea; si se incluye debe ser completo. |
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
 
-- Una solicitud contiene un solo documento.
-- tipoDocumento determina el documento que se crea; consulta el catálogo de valores para seleccionar el tipo correcto.
-- Esta operación cubre transacciones como facturas, compras y remisiones, y documentos comerciales como órdenes de compra, cotizaciones y despachos.
-- objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
-- cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
-- type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
-- Para gasto, tipoDocumento=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `tipoDocumento` | Sí | Tipo de documento; consulta el catálogo de valores admitidos antes de crear la operación. Tipo: entero.; no admite null |
+| `type_match_producto` | Sí | Tipo: entero.; valor habitual: `1`; valores: `1`, `2`, `3`; no admite null |
+| `id_consecutivo` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `codigo_unico` | Sí | Conserva ceros iniciales y no se normaliza. Tipo: texto.; no admite null; patrón: `^[0-9]{1,50}$` |
+| `nota` | Sí | Tipo: texto.; no admite null |
+| `observacion` | Sí | Tipo: texto.; no admite null |
+| `id_sucursal` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_bodega` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_vendedor` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `fecha_registro` | No | Tipo: milisegundos desde epoch.; no admite null |
+| `fecha_vencimiento` | No | Tipo: milisegundos desde epoch.; no admite null |
+| `id_centro_costo` | No | Tipo: entero.; mínimo: `1`; no admite null |
+| `objClienteMini` | Sí | Tipo: objeto.; no admite null |
+| `objClienteMini.id_cliente` | Sí | Tipo: entero.; no admite null |
+| `objClienteMini.nombre_cliente` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.identificacion` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.telefono1` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.telefono2` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.email1` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.direccion` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.id_tipo_persona` | Sí | Tipo: entero.; no admite null |
+| `objClienteMini.es_cliente` | Sí | Tipo: entero.; no admite null |
+| `objClienteMini.es_proveedor` | Sí | Tipo: entero.; no admite null |
+| `objClienteMini.departamento` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.pais` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.ciudad` | Sí | Tipo: texto.; no admite null |
+| `objClienteMini.zona` | Sí | Tipo: texto.; no admite null |
+| `objDetalle` | Sí | Tipo: arreglo.; mínimo de elementos: `1`; no admite null |
+| `objDetalle[].cantidad` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `objDetalle[].descripcion` | Sí | Tipo: texto.; no admite null |
+| `objDetalle[].total` | Sí | Total de la línea; Cuenti calcula el valor unitario. Tipo: número.; mínimo: `0`; no admite null |
+| `objDetalle[].cambiar_precio_compra` | Sí | Tipo: booleano.; no admite null |
+| `objDetalle[].id_producto` | No | Tipo: entero.; mínimo: `1`; no admite null |
+| `objDetalle[].code` | No | Tipo: texto.; no admite null |
+| `objDetalle[].id_plan_cuentas` | No | Tipo: entero.; mínimo: `1`; no admite null |
+| `objDetalle[].impuestos` | No | Tipo: objeto.; no admite null |
+| `objDetalle[].impuestos.id_impuesto` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `objDetalle[].impuestos.total_impuesto_agregado_1` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `objDetalle[].impuestos.total_impuesto_agregado_2` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `lstPagos` | Sí | Tipo: arreglo.; no admite null |
+| `lstPagos[].id_comprobante_caja` | No | Tipo: entero.; mínimo: `1`; no admite null |
+| `lstPagos[].id_medio_pago` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `lstPagos[].id_banco` | Sí | Tipo: entero.; mínimo: `0`; no admite null |
+| `lstPagos[].valor` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `lstPagos[].boucher` | Sí | Tipo: texto.; no admite null |
+| `lstPagos[].digitos` | Sí | Tipo: texto.; no admite null |
+| `lstPagos[].devuelta` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `lstPagos[].dinero_entregado` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `lstPagos[].nota` | Sí | Tipo: texto.; no admite null |
+| `impuestos` | No | Tipo: objeto.; no admite null |
+| `impuestos.id_impuesto` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `impuestos.total_impuesto_agregado_1` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `impuestos.total_impuesto_agregado_2` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+
+**Cuerpo:** obligatorio.
 
 **Ejemplo de argumentos:**
 
@@ -1303,9 +1410,9 @@ Para `grupos`:
     },
     "objDetalle": [
       {
-        "cantidad": 1,
+        "cantidad": 2,
         "descripcion": "Producto",
-        "total": 10000,
+        "total": 20000,
         "cambiar_precio_compra": false,
         "id_producto": 25
       }
@@ -1330,18 +1437,316 @@ Para `grupos`:
 }
 ```
 
-- lstPagos vacío representa una operación a crédito.
-- Los campos sin información de objClienteMini se envían como string vacío.
-- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
+**Errores y límites**
+
 - codigo_unico debe ser un string de 1 a 50 dígitos y conserva ceros iniciales.
 - No mezcle detalles de inventario y gasto en el mismo documento.
 - retorno es opaco y no debe analizarse.
 - No se reintentan automáticamente documentos sin idempotencia comprobada.
 
-**Peticiones habituales:** Factura de inventario.
+**Notas**
 
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
+- lstPagos vacío representa una operación a crédito.
+- Los campos sin información de objClienteMini se envían como string vacío.
+- La respuesta exitosa incluye siempre id_transacion, url_interna y url_externa.
+
+- El detalle admite campos adicionales. `lstPagos[].id_comprobante_caja` es una referencia opcional al crear el documento; no publica una asociación posterior de pedidos existentes.
+
+### `transacciones-anular`: Anular transacción
+
+**Para qué sirve:** Anula transacciones existentes y revierte inventario y pagos según las reglas del ERP.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/anulaciones`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_transacion` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `nota` | Sí | Tipo: texto.; no admite null; patrón: `\S` |
+| `observacion` | No | Tipo: texto.; no admite null |
+
+**Cuerpo:** obligatorio.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_transacion": 544182,
+    "id_empleado": 1,
+    "nota": "Motivo de la anulación",
+    "observacion": "Detalle interno opcional"
+  }
+}
+```
+
+**Respuesta esperada:** ResultadoAnulacion.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "status": "ANULADO"
+}
+```
+
+**Errores y límites**
+
+- Los errores de negocio se devuelven como erp_mutation_rejected sin detalles internos.
+- Un resultado de transporte desconocido no debe repetirse automáticamente.
+
+**Notas**
+
+- Anula transacciones existentes y revierte inventario y pagos según las reglas del ERP.
+- Solo type=1 confirma la anulación y permite invalidar caché.
+- No hay reintentos automáticos.
+
+### `documentos-anular`: Anular documento logístico
+
+**Para qué sirve:** La ruta pública usa POST aunque Java ejecuta un GET con efectos secundarios.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/documentos/{id_documento}/anulaciones/{id_empleado}`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_documento` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+
+**Cuerpo:** sin cuerpo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_documento": 12345,
+  "id_empleado": 1
+}
+```
+
+**Respuesta esperada:** ResultadoAnulacion.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "status": "ANULADO"
+}
+```
+
+**Errores y límites**
+
+- Actas activas, errores de inventario, documentos inexistentes o tokens inválidos rechazan la operación.
+- No se devuelven excepciones ni mensajes técnicos del ERP.
+
+**Notas**
+
+- La ruta pública usa POST aunque Java ejecuta un GET con efectos secundarios.
+- type=1 devuelve ANULADO; type=0 con código exacto 1017 devuelve YA_ESTABA_ANULADO. Ambos invalidan caché.
+- Los demás type=0 no invalidan caché y no se reintentan automáticamente.
+
+### `transacciones-notas-crear`: Crear nota crédito o débito
+
+**Para qué sirve:** es_nota_credito=1 crea crédito; 0 crea débito.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/notas`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_transacion` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `es_nota_credito` | Sí | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `valor` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_cliente` | No | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_sucursal` | No | Tipo: entero.; mínimo: `1`; no admite null |
+| `nota` | Sí | Tipo: texto.; no admite null; patrón: `\S` |
+| `madificoSaldo` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `retornarDinero` | No | Tipo: booleano.; no admite null |
+| `objDetalleNota` | Sí | Tipo: arreglo.; no admite null |
+| `objDetalleNota[].id_detalle_transacion` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `objDetalleNota[].id_producto` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `objDetalleNota[].id_producto_sucursal` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `objDetalleNota[].cantidad` | Sí | Tipo: número.; no admite null |
+| `objDetalleNota[].precio_venta` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `objDetalleNota[].total` | Sí | Tipo: número.; mínimo: `0`; no admite null |
+| `objDetalleNota[].descripcion` | No | Tipo: texto.; no admite null |
+
+**Cuerpo:** obligatorio.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_transacion": 544182,
+    "es_nota_credito": 1,
+    "valor": 50000,
+    "id_empleado": 1,
+    "id_cliente": 1,
+    "id_sucursal": 1,
+    "nota": "Ajuste por nota crédito",
+    "madificoSaldo": 1,
+    "retornarDinero": false,
+    "objDetalleNota": []
+  }
+}
+```
+
+**Respuesta esperada:** tipoMensajes.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "save",
+  "retorno": "15894"
+}
+```
+
+**Errores y límites**
+
+- type=0 rechaza la creación sin invalidar caché.
+- Un resultado desconocido no debe repetirse automáticamente.
+
+**Notas**
+
+- es_nota_credito=1 crea crédito; 0 crea débito.
+- id_cliente, id_sucursal, madificoSaldo y retornarDinero son opcionales; Java obtiene la sucursal de la transacción padre.
+- Conserva la grafía nativa madificoSaldo: 1 afecta el saldo pendiente; 0 no lo modifica.
+- retornarDinero=true solicita devolución física en caja según reglas del ERP.
+- objDetalleNota es obligatorio y admite [] para ajustes exclusivamente financieros; nunca envíe null.
+- retorno contiene id_nota. Crear la nota y emitirla electrónicamente son operaciones separadas.
+
+### `transacciones-notas-credito-emitir`: Emitir nota crédito electrónica
+
+**Para qué sirve:** Una sola ruta pública POST admite emitir_nc_sin_fe booleano; si se omite, vale false.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/notas-credito/{id_nota}/emision`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_nota` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `emitir_nc_sin_fe` | No | Tipo: booleano.; no admite null |
+
+**Cuerpo:** opcional.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_nota": 15894,
+  "body": {
+    "emitir_nc_sin_fe": false
+  }
+}
+```
+
+**Respuesta esperada:** tipoMensajes.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "save",
+  "retorno": "ok"
+}
+```
+
+**Errores y límites**
+
+- Un rechazo DIAN con type=0 no es éxito aunque message=save.
+- No se repite automáticamente una emisión cuyo resultado no se pudo confirmar.
+
+**Notas**
+
+- Una sola ruta pública POST admite emitir_nc_sin_fe booleano; si se omite, vale false.
+- false usa la factura electrónica original; true agrega /true al GET nativo para emitir sin factura electrónica previa.
+- La bandera se consume en el wrapper: Java recibe un GET sin cuerpo.
+- Conserva id_nota si la emisión falla; no recrees la nota automáticamente.
 
 ### `ventas-productos-comprados-busquedas`: Buscar productos comprados
 
@@ -1367,6 +1772,10 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 | `es_ingreso` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -1427,6 +1836,7 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 
 - Los resultados se consolidan por id_producto.
 - Las transacciones anuladas se excluyen de forma predeterminada.
+- Los filtros total y subtotal aceptan límites desde/hasta decimales.
 - id_cliente es obligatorio.
 - grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo.
 
@@ -1457,6 +1867,10 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -1518,6 +1932,7 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 
 - Las transacciones anuladas se excluyen de forma predeterminada.
 - La proyección se determina por los grupos solicitados.
+- Los filtros total y subtotal aceptan límites desde/hasta decimales.
 - Los grupos de detalle requieren producto, cantidades, precios o descuento.
 
 **Peticiones habituales:** Descuentos de factura; Descuentos de producto.
@@ -1548,6 +1963,10 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 | `es_nula` | No | `0`, `1` |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -1599,6 +2018,7 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 ```
 
 - Las transacciones anuladas se excluyen de forma predeterminada, salvo que se proporcione es_nula=1.
+- Los filtros total y subtotal aceptan límites desde/hasta decimales.
 - agrupar_por debe ser cliente, empleado o vendedor.
 - grupos no debe estar vacío y debe contener valores únicos.
 
@@ -1641,6 +2061,12 @@ Después incluye `confirmation=confirm:documentos-crear` en los argumentos.
 | `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
 | `ultimo_id` | No | número entero |
 | `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -1788,6 +2214,7 @@ Para `grupos`:
 ```
 
 - detalle es opcional y conserva el orden de los grupos solicitados.
+- Los filtros total, subtotal y descuento aceptan límites desde/hasta decimales.
 - Las respuestas no exponen credenciales ni claves internas.
 - La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.
 - comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
@@ -1834,6 +2261,12 @@ Para `grupos`:
 | `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
 | `ultimo_id` | No | número entero |
 | `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -1981,6 +2414,7 @@ Para `grupos`:
 ```
 
 - detalle es opcional y conserva el orden de los grupos solicitados.
+- Los filtros total, subtotal y descuento aceptan límites desde/hasta decimales.
 - Las respuestas no exponen credenciales ni claves internas.
 - La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.
 - comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
@@ -2027,6 +2461,12 @@ Para `grupos`:
 | `fecha_documento_hasta` | No | fecha y hora en milisegundos Unix |
 | `ultimo_id` | No | número entero |
 | `ultima_fecha` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
+| `descuento_desde` | No | número |
+| `descuento_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -2174,6 +2614,7 @@ Para `grupos`:
 ```
 
 - detalle es opcional y conserva el orden de los grupos solicitados.
+- Los filtros total, subtotal y descuento aceptan límites desde/hasta decimales.
 - Las respuestas no exponen credenciales ni claves internas.
 - La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.
 - comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
@@ -2206,6 +2647,10 @@ Para `grupos`:
 | `tipo_documento` | No | lista de números separados por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -2260,6 +2705,7 @@ Para `grupos`:
 
 - Los productos se agrupan por id_producto y respetan la paginación.
 - No se permite mezclar políticas de buscarProductosComprados.
+- Los filtros total y subtotal aceptan límites desde/hasta decimales.
 - Debe especificar id_cliente o id_vendedor.
 - Los filtros de fecha son inclusivos y usan epoch-milliseconds.
 
@@ -2290,6 +2736,10 @@ Para `grupos`:
 | `tipo_documento` | No | lista de números separados por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -2350,6 +2800,7 @@ Para `grupos`:
 
 - Los grupos producto, cantidades, precios o descuento solicitan el modo detalle.
 - Los resultados solo incluyen documentos con descuentos.
+- Los filtros total y subtotal aceptan límites desde/hasta decimales.
 - Los filtros de fecha son inclusivos y usan epoch-milliseconds.
 
 **Peticiones habituales:** Descuentos por documento (cabecera); Descuentos por producto (detalle).
@@ -2379,6 +2830,10 @@ Para `grupos`:
 | `tipo_documento` | No | lista de números separados por comas |
 | `fecha_desde` | No | fecha y hora en milisegundos Unix |
 | `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `total_desde` | No | número |
+| `total_hasta` | No | número |
+| `subtotal_desde` | No | número |
+| `subtotal_hasta` | No | número |
 
 **Bloques de información que puedes pedir**
 
@@ -2429,6 +2884,7 @@ Para `grupos`:
 
 - El consolidado agrupa documentos por la dimensión seleccionada.
 - Los rangos de fecha incluyen ambos extremos y usan epoch-milliseconds.
+- Los filtros total y subtotal aceptan límites desde/hasta decimales.
 - agrupar_por debe ser cliente, empleado, vendedor o sucursal.
 - Los grupos deben ser únicos y no vacíos.
 
@@ -2466,10 +2922,13 @@ Para `grupos`:
 | `es_activo` | No | `0`, `1` |
 | `mostrar_tienda` | No | `0`, `1` |
 | `con_existencias` | No | `0`, `1` |
+| `id_proveedor` | No | número entero |
+| `nit_proveedor` | No | texto; coincidencia exacta o patrón LIKE con % |
+| `nombre_proveedor` | No | texto; coincidencia parcial |
 
 **Bloques de información que puedes pedir**
 
-- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `sucursal`, `precios`, `inventario`, `categoria`, `marca`, `impuestos`, `medida`, `imagen`, `configuracion`.
+- `grupos`: Conjunto de bloques funcionales solicitados para la respuesta. Valores: `producto`, `sucursal`, `precios`, `inventario`, `categoria`, `marca`, `impuestos`, `medida`, `imagen`, `configuracion`, `composicion`, `empaque`, `presentaciones`, `proveedor`.
 
 **Ejemplo de argumentos:**
 
@@ -2508,6 +2967,7 @@ Para `grupos`:
     {
       "producto": {
         "id_producto": 25,
+        "id_tipo_producto": 1,
         "nombre": "Producto ejemplo",
         "sku": "SKU-001",
         "codigo_barras": "000000000001",
@@ -2580,6 +3040,38 @@ Para `grupos`:
         "tiempo_preparacion": 0,
         "ncm": "0000.00.00",
         "fecha_registro": 1735689600000
+      },
+      "composicion": [
+        {
+          "id_producto": 26,
+          "nombre": "Componente ejemplo",
+          "id_tipo_producto": 1,
+          "unidades": 2,
+          "es_activo": 1,
+          "validar_inventario": 1,
+          "existencias": 10
+        }
+      ],
+      "empaque": {
+        "cantidad_por_paquete": 6,
+        "cantidad_medida_paquete": 1,
+        "id_unidad_medida_paquete": 1,
+        "unidad_medida_paquete": "Unidad",
+        "equivalencia_compra": 6,
+        "sku_proveedor": "PROV-001",
+        "total_paquete": 60,
+        "total_paquete_unidad": "60 Unidad"
+      },
+      "presentaciones": [
+        {
+          "equivalencia": 6,
+          "existencias_disponibles": 60
+        }
+      ],
+      "proveedor": {
+        "id_proveedor": 7,
+        "nit": "PROVEEDOR-EJEMPLO",
+        "nombre": "Proveedor ejemplo"
       }
     }
   ]
@@ -2588,6 +3080,8 @@ Para `grupos`:
 
 - El body acepta columnas o grupos de catálogo; el orden solicitado se conserva.
 - Los valores vacíos de filtros de texto se ignoran.
+- nit_proveedor usa igualdad salvo que el valor incluya %, caso en el que se envía como patrón LIKE.
+- composicion se carga bajo demanda, evita ciclos y anida productos compuestos hasta cinco niveles; presentaciones agrega existencias_disponibles.
 - Los filtros y columnas desconocidos se rechazan.
 - Los valores de paginación deben permanecer entre 0 y 1000 registros por página.
 
@@ -2727,6 +3221,8 @@ Envía una lista con entre 1 y 1000 elementos.
 
 **Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
 
+**Éxito semántico:** la respuesta debe contener `type` = `1`.
+
 **Ejemplo de respuesta:**
 
 ```json
@@ -2778,7 +3274,6 @@ Después incluye `confirmation=confirm:catalogo-productos-impuestos-licores` en 
 ```
 
 - precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
-- route-fixed-selector debe ser 1.
 
 **Peticiones habituales:** Marcas activas.
 
@@ -2933,6 +3428,7 @@ Después incluye `confirmation=confirm:inventario-conteos` en los argumentos.
 | `cantidad_registros` | Sí | número entero; mínimo `1`; máximo `1000` |
 | `nombre` | No | texto; coincidencia parcial |
 | `nit` | No | texto; coincidencia exacta |
+| `exacto` | No | texto |
 | `telefono` | No | texto; coincidencia parcial en tres campos de teléfono |
 | `correo` | No | texto; coincidencia parcial en dos campos de correo |
 | `tipo_tercero` | No | `1` (cliente), `2` (proveedor), `3` (ambos) |
@@ -3075,6 +3571,7 @@ Después incluye `confirmation=confirm:inventario-conteos` en los argumentos.
 
 - La respuesta se publica en la colección clientes y conserva los bloques funcionales del ERP.
 - No incluya NIT, teléfonos, correos ni nombres en las etiquetas de métricas de caché.
+- nit usa coincidencia por prefijo de forma predeterminada, igualdad con exacto=1 o exacto=true, y LIKE cuando el valor incluye %.
 - cantidad_registros es obligatorio según el contrato actual del servidor.
 - grupos no debe estar vacío y debe contener valores únicos.
 - Se rechazan los grupos desconocidos.
@@ -3083,89 +3580,108 @@ Después incluye `confirmation=confirm:inventario-conteos` en los argumentos.
 
 ### `terceros-crear`: Crear tercero
 
-**Para qué sirve:** Crear tercero.
+**Para qué sirve:** Crea un cliente o proveedor nuevo, o actualiza los datos de uno existente.
 
 **Método:** `POST`.
 
 **Ruta:** `/api/v1/terceros`.
 
-**Tipo:** Acción que modifica datos.
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
 
-**Filtros:** no requiere filtros adicionales.
+**Encabezados del REST público**
 
-**Datos que acepta la acción**
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
 
-| Dato | Significado |
-| --- | --- |
-| `nombre_cliente` | Nombre completo o razón social del tercero. |
-| `id_tipo_persona` | Clasificación de persona requerida en creación. |
-| `identificacion` | Documento requerido en creación. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_estado_civil` | Identificador del estado civil seleccionado. |
-| `id_estrato_social` | Identificador del estrato social seleccionado. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
-| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
 
-Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
-Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `nombre_cliente` | Sí | Según el esquema publicado por tools/list. |
+| `id_tipo_persona` | Sí | Según el esquema publicado por tools/list. |
+| `identificacion` | Sí | Según el esquema publicado por tools/list. |
+| `id_empresa_portal` | No | Según el esquema publicado por tools/list. |
+| `id_usuario_portal` | No | Según el esquema publicado por tools/list. |
+| `primer_nombre` | No | Según el esquema publicado por tools/list. |
+| `segundo_nombre` | No | Según el esquema publicado por tools/list. |
+| `primer_apellido` | No | Según el esquema publicado por tools/list. |
+| `segundo_apellido` | No | Según el esquema publicado por tools/list. |
+| `direccion` | No | Según el esquema publicado por tools/list. |
+| `sitio_web` | No | Según el esquema publicado por tools/list. |
+| `facebook` | No | Según el esquema publicado por tools/list. |
+| `twitter` | No | Según el esquema publicado por tools/list. |
+| `instagram` | No | Según el esquema publicado por tools/list. |
+| `snapchat` | No | Según el esquema publicado por tools/list. |
+| `puntos_acumulados` | No | Según el esquema publicado por tools/list. |
+| `nota` | No | Según el esquema publicado por tools/list. |
+| `es_activo` | No | Según el esquema publicado por tools/list. |
+| `fecha_registro` | No | Según el esquema publicado por tools/list. |
+| `id_lista_precios` | No | Según el esquema publicado por tools/list. |
+| `id_ruta_despacho` | No | Según el esquema publicado por tools/list. |
+| `es_cliente` | Sí | Según el esquema publicado por tools/list. |
+| `es_proveedor` | No | Según el esquema publicado por tools/list. |
+| `ciudad` | No | Según el esquema publicado por tools/list. |
+| `zona` | No | Según el esquema publicado por tools/list. |
+| `contacto` | No | Según el esquema publicado por tools/list. |
+| `codigo_interno` | No | Según el esquema publicado por tools/list. |
+| `numero_matricula` | No | Según el esquema publicado por tools/list. |
+| `id_estado_civil` | No | Según el esquema publicado por tools/list. |
+| `id_estrato_social` | No | Según el esquema publicado por tools/list. |
+| `id_clase_cliente` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_cliente` | No | Según el esquema publicado por tools/list. |
+| `fecha_nacimiento` | No | Según el esquema publicado por tools/list. |
+| `sexo` | No | Según el esquema publicado por tools/list. |
+| `saldo_bono` | No | Según el esquema publicado por tools/list. |
+| `permite_cartera_vencida` | No | Según el esquema publicado por tools/list. |
+| `id_centro_costo` | No | Según el esquema publicado por tools/list. |
+| `permite_saldo_cartera` | No | Según el esquema publicado por tools/list. |
+| `cupo_cartera` | No | Según el esquema publicado por tools/list. |
+| `permite_cartera` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_retencion_ventas` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_retencion_compra` | No | Según el esquema publicado por tools/list. |
+| `id_sucursal` | No | Según el esquema publicado por tools/list. |
+| `id_vendedor` | No | Según el esquema publicado por tools/list. |
+| `envioSmsCartera` | No | Según el esquema publicado por tools/list. |
+| `envioSmsProducto` | No | Según el esquema publicado por tools/list. |
+| `pais` | No | Según el esquema publicado por tools/list. |
+| `departamento` | No | Según el esquema publicado por tools/list. |
+| `regimen` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_identificacion` | No | Según el esquema publicado por tools/list. |
+| `medio_pago` | No | Según el esquema publicado por tools/list. |
+| `tipoOperacion` | No | Según el esquema publicado por tools/list. |
+| `cliente_predeterminado` | No | Según el esquema publicado por tools/list. |
+| `legalidad` | No | Según el esquema publicado por tools/list. |
+| `regimenImpuesto` | No | Según el esquema publicado por tools/list. |
+| `fecha_vencimiento_codigo_turismo` | No | Según el esquema publicado por tools/list. |
+| `codigo_turismo` | No | Según el esquema publicado por tools/list. |
+| `alias` | No | Según el esquema publicado por tools/list. |
+| `horario` | No | Según el esquema publicado por tools/list. |
+| `dias_vencimiento_cartera_cliente` | No | Según el esquema publicado por tools/list. |
+| `es_consumidor_final` | No | Según el esquema publicado por tools/list. |
+| `genera_bonos` | No | Según el esquema publicado por tools/list. |
+| `solo_remision2` | No | Según el esquema publicado por tools/list. |
+| `tiene_documentos_asocisados` | No | Según el esquema publicado por tools/list. |
+| `telefonos` | Sí | Según el esquema publicado por tools/list. |
+| `correos` | Sí | Según el esquema publicado por tools/list. |
+| `codigo_tributario` | No | Tipo: entero.; valores: `1`, `2`, `4`, `5`; no admite null |
+| `cucon` | No | Tipo: texto.; no admite null |
+| `es_declarante` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `aplico_retencion_venta` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `aplico_retencion_compra` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `solo_remision3` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `mostrar_precio_venta_orden_compra` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `contactos` | No | Tipo: arreglo.; no admite null |
+| `lstContactoCliente` | No | Tipo: arreglo.; no admite null |
+
+**Cuerpo:** obligatorio.
 
 **Ejemplo de argumentos:**
 
@@ -3176,6 +3692,7 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
     "identificacion": "<id-documento>",
     "id_tipo_persona": 1,
     "es_cliente": 1,
+    "es_proveedor": 0,
     "telefonos": [
       "<teléfono>"
     ],
@@ -3192,123 +3709,149 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 
 ```json
 {
-  "message": "guardar",
+  "message": "save",
   "type": 1,
-  "retorno": "<route-fixed-selector>"
+  "retorno": "<id_generado>"
 }
 ```
 
-- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
-- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
-- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
-- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
+**Errores y límites**
+
 - Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
 - Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
 
-**Peticiones habituales:** Crear; Actualización parcial.
+**Notas**
 
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-Después incluye `confirmation=confirm:terceros-crear` en los argumentos.
+- codigo_tributario acepta 1, 2, 4 o 5; cucon es texto y los flags ext aceptan 0 o 1.
+- contactos es alias de lstContactoCliente. Los contactos omitidos se conservan; [] no elimina contactos existentes.
+- La respuesta pública siempre contiene el id y nunca el JSON completo del cliente. La conversión de fechas asume UTC como zona fija de la JVM del ERP.
+- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+
+- `codigo_tributario: 5` significa No aplica ZZZ. Contactos omitidos se conservan; `[]` no elimina contactos. La aceptación de campos no garantiza persistencia de los hallazgos Java pendientes.
 
 ### `terceros-actualizar`: Actualizar tercero
 
-**Para qué sirve:** Actualizar tercero.
+**Para qué sirve:** Crea un cliente o proveedor nuevo, o actualiza los datos de uno existente.
 
 **Método:** `PUT`.
 
 **Ruta:** `/api/v1/terceros/{id_tercero}`.
 
-**Tipo:** Acción que modifica datos.
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
 
-**Filtros disponibles**
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Parámetros de ruta**
 
 | Dato | Obligatorio | Valores que acepta |
 | --- | --- | --- |
-| `id_tercero` | Sí | número entero; mínimo `1` |
+| `id_tercero` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
 
-**Datos que acepta la acción**
+**Campos del cuerpo**
 
-| Dato | Significado |
-| --- | --- |
-| `nombre_cliente` | Nombre completo o razón social del tercero. |
-| `id_tipo_persona` | Clasificación de persona requerida en creación. |
-| `identificacion` | Documento requerido en creación. |
-| `id_empresa_portal` | Empresa del portal vinculada al tercero. |
-| `id_usuario_portal` | Usuario del portal vinculado al tercero. |
-| `primer_nombre` | Primer nombre de una persona natural. |
-| `segundo_nombre` | Segundo nombre de una persona natural. |
-| `primer_apellido` | Primer apellido de una persona natural. |
-| `segundo_apellido` | Segundo apellido de una persona natural. |
-| `direccion` | Dirección principal del tercero. |
-| `sitio_web` | Sitio web registrado. |
-| `facebook` | Perfil o referencia de Facebook. |
-| `twitter` | Perfil o referencia de X/Twitter. |
-| `instagram` | Perfil o referencia de Instagram. |
-| `snapchat` | Perfil o referencia de Snapchat. |
-| `puntos_acumulados` | Puntos acumulados en programas de fidelización. |
-| `nota` | Observaciones internas sobre el tercero. |
-| `es_activo` | Estado operativo del tercero. |
-| `fecha_registro` | Fecha de registro enviada como entero en milisegundos desde epoch. |
-| `id_lista_precios` | Lista de precios asignada al tercero. |
-| `id_ruta_despacho` | Ruta de despacho asociada. |
-| `es_cliente` | Indica que el tercero puede comprar a la empresa. |
-| `es_proveedor` | Indica que el tercero puede suministrar a la empresa. |
-| `ciudad` | Ciudad registrada; el formato depende del catálogo geográfico. |
-| `zona` | Zona comercial, logística o geográfica asociada. |
-| `contacto` | Nombre o referencia del contacto principal. |
-| `codigo_interno` | Código interno asignado por la empresa. |
-| `numero_matricula` | Número de matrícula mercantil u otro registro equivalente. |
-| `id_estado_civil` | Identificador del estado civil seleccionado. |
-| `id_estrato_social` | Identificador del estrato social seleccionado. |
-| `id_clase_cliente` | Clasificación comercial del cliente. |
-| `id_tipo_cliente` | Tipo de cliente dentro de la segmentación configurada. |
-| `fecha_nacimiento` | Fecha de nacimiento enviada como entero en milisegundos desde epoch; puede ser null. |
-| `sexo` | Clasificación registrada para sexo; validar el catálogo aplicable. |
-| `saldo_bono` | Saldo disponible en bonos asociado al tercero. |
-| `permite_cartera_vencida` | Indica si se permiten operaciones con cartera vencida. |
-| `id_centro_costo` | Centro de costo predeterminado para operaciones del tercero. |
-| `permite_saldo_cartera` | Habilita el manejo de saldos de cartera. |
-| `cupo_cartera` | Límite de crédito autorizado. |
-| `permite_cartera` | Habilita operaciones a crédito para el tercero. |
-| `id_tipo_retencion_ventas` | Tipo de retención predeterminado para ventas. |
-| `id_tipo_retencion_compra` | Tipo de retención predeterminado para compras. |
-| `id_sucursal` | Sucursal principal o de creación del tercero. |
-| `id_vendedor` | Vendedor asignado. |
-| `envioSmsCartera` | Configura el envío de SMS relacionados con cartera. |
-| `envioSmsProducto` | Configura el envío de SMS relacionados con productos. |
-| `pais` | País registrado. |
-| `departamento` | Departamento, estado o región registrada. |
-| `regimen` | Régimen tributario; validar valores contra el catálogo fiscal. |
-| `id_tipo_identificacion` | Identificador del tipo de documento seleccionado. |
-| `medio_pago` | Medio de pago preferido o configurado. |
-| `tipoOperacion` | Tipo de operación tributaria o comercial; validar valores. |
-| `cliente_predeterminado` | Marca al tercero como genérico o predeterminado. |
-| `legalidad` | Configuración fiscal de legalidad para documentos electrónicos. |
-| `regimenImpuesto` | Régimen de impuestos usado por integraciones tributarias. |
-| `fecha_vencimiento_codigo_turismo` | Vencimiento del código de turismo enviado como entero en milisegundos desde epoch; puede ser null. |
-| `codigo_turismo` | Código del registro de turismo. |
-| `alias` | Nombre corto o comercial alternativo. |
-| `horario` | Hora asociada al tercero enviada como entero en milisegundos desde epoch; puede ser null. |
-| `dias_vencimiento_cartera_cliente` | Plazo de cartera predeterminado para el cliente. |
-| `es_consumidor_final` | Marca al tercero como consumidor final para reglas tributarias. |
-| `genera_bonos` | Habilita la generación o acumulación de bonos. |
-| `solo_remision2` | Restringe operaciones a una modalidad específica de remisión. |
-| `tiene_documentos_asocisados` | Indica si existen documentos asociados; conserva el nombre del campo del contrato. |
-| `telefonos` | Hasta tres teléfonos registrados como arreglo. |
-| `correos` | Hasta dos correos electrónicos registrados como arreglo. |
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `nombre_cliente` | Sí | Según el esquema publicado por tools/list. |
+| `id_tipo_persona` | Sí | Según el esquema publicado por tools/list. |
+| `identificacion` | Sí | Según el esquema publicado por tools/list. |
+| `id_empresa_portal` | No | Según el esquema publicado por tools/list. |
+| `id_usuario_portal` | No | Según el esquema publicado por tools/list. |
+| `primer_nombre` | No | Según el esquema publicado por tools/list. |
+| `segundo_nombre` | No | Según el esquema publicado por tools/list. |
+| `primer_apellido` | No | Según el esquema publicado por tools/list. |
+| `segundo_apellido` | No | Según el esquema publicado por tools/list. |
+| `direccion` | No | Según el esquema publicado por tools/list. |
+| `sitio_web` | No | Según el esquema publicado por tools/list. |
+| `facebook` | No | Según el esquema publicado por tools/list. |
+| `twitter` | No | Según el esquema publicado por tools/list. |
+| `instagram` | No | Según el esquema publicado por tools/list. |
+| `snapchat` | No | Según el esquema publicado por tools/list. |
+| `puntos_acumulados` | No | Según el esquema publicado por tools/list. |
+| `nota` | No | Según el esquema publicado por tools/list. |
+| `es_activo` | No | Según el esquema publicado por tools/list. |
+| `fecha_registro` | No | Según el esquema publicado por tools/list. |
+| `id_lista_precios` | No | Según el esquema publicado por tools/list. |
+| `id_ruta_despacho` | No | Según el esquema publicado por tools/list. |
+| `es_cliente` | Sí | Según el esquema publicado por tools/list. |
+| `es_proveedor` | No | Según el esquema publicado por tools/list. |
+| `ciudad` | No | Según el esquema publicado por tools/list. |
+| `zona` | No | Según el esquema publicado por tools/list. |
+| `contacto` | No | Según el esquema publicado por tools/list. |
+| `codigo_interno` | No | Según el esquema publicado por tools/list. |
+| `numero_matricula` | No | Según el esquema publicado por tools/list. |
+| `id_estado_civil` | No | Según el esquema publicado por tools/list. |
+| `id_estrato_social` | No | Según el esquema publicado por tools/list. |
+| `id_clase_cliente` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_cliente` | No | Según el esquema publicado por tools/list. |
+| `fecha_nacimiento` | No | Según el esquema publicado por tools/list. |
+| `sexo` | No | Según el esquema publicado por tools/list. |
+| `saldo_bono` | No | Según el esquema publicado por tools/list. |
+| `permite_cartera_vencida` | No | Según el esquema publicado por tools/list. |
+| `id_centro_costo` | No | Según el esquema publicado por tools/list. |
+| `permite_saldo_cartera` | No | Según el esquema publicado por tools/list. |
+| `cupo_cartera` | No | Según el esquema publicado por tools/list. |
+| `permite_cartera` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_retencion_ventas` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_retencion_compra` | No | Según el esquema publicado por tools/list. |
+| `id_sucursal` | No | Según el esquema publicado por tools/list. |
+| `id_vendedor` | No | Según el esquema publicado por tools/list. |
+| `envioSmsCartera` | No | Según el esquema publicado por tools/list. |
+| `envioSmsProducto` | No | Según el esquema publicado por tools/list. |
+| `pais` | No | Según el esquema publicado por tools/list. |
+| `departamento` | No | Según el esquema publicado por tools/list. |
+| `regimen` | No | Según el esquema publicado por tools/list. |
+| `id_tipo_identificacion` | No | Según el esquema publicado por tools/list. |
+| `medio_pago` | No | Según el esquema publicado por tools/list. |
+| `tipoOperacion` | No | Según el esquema publicado por tools/list. |
+| `cliente_predeterminado` | No | Según el esquema publicado por tools/list. |
+| `legalidad` | No | Según el esquema publicado por tools/list. |
+| `regimenImpuesto` | No | Según el esquema publicado por tools/list. |
+| `fecha_vencimiento_codigo_turismo` | No | Según el esquema publicado por tools/list. |
+| `codigo_turismo` | No | Según el esquema publicado por tools/list. |
+| `alias` | No | Según el esquema publicado por tools/list. |
+| `horario` | No | Según el esquema publicado por tools/list. |
+| `dias_vencimiento_cartera_cliente` | No | Según el esquema publicado por tools/list. |
+| `es_consumidor_final` | No | Según el esquema publicado por tools/list. |
+| `genera_bonos` | No | Según el esquema publicado por tools/list. |
+| `solo_remision2` | No | Según el esquema publicado por tools/list. |
+| `tiene_documentos_asocisados` | No | Según el esquema publicado por tools/list. |
+| `telefonos` | Sí | Según el esquema publicado por tools/list. |
+| `correos` | Sí | Según el esquema publicado por tools/list. |
+| `codigo_tributario` | No | Tipo: entero.; valores: `1`, `2`, `4`, `5`; no admite null |
+| `cucon` | No | Tipo: texto.; no admite null |
+| `es_declarante` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `aplico_retencion_venta` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `aplico_retencion_compra` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `solo_remision3` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `mostrar_precio_venta_orden_compra` | No | Tipo: entero.; valores: `0`, `1`; no admite null |
+| `contactos` | No | Tipo: arreglo.; no admite null |
+| `lstContactoCliente` | No | Tipo: arreglo.; no admite null |
 
-Para crear: route-fixed-selector=-1; nombre_cliente; identificacion; id_tipo_persona; es_cliente=1 o es_proveedor=1; al menos un teléfono; al menos un correo.
-Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al menos un campo editable; Las actualizaciones son parciales.
+**Cuerpo:** obligatorio.
 
 **Ejemplo de argumentos:**
 
 ```json
 {
+  "id_tercero": 1,
   "body": {
     "nombre_cliente": "Tercero de ejemplo",
     "identificacion": "<id-documento>",
     "id_tipo_persona": 1,
     "es_cliente": 1,
+    "es_proveedor": 0,
     "telefonos": [
       "<teléfono>"
     ],
@@ -3325,23 +3868,26 @@ Para actualizar: route-fixed-selector debe ser mayor que cero; Se requiere al me
 
 ```json
 {
-  "message": "guardar",
+  "message": "save",
   "type": 1,
-  "retorno": "<route-fixed-selector>"
+  "retorno": "<id_generado>"
 }
 ```
 
-- El comportamiento verificado del servidor prevalece sobre el informe anterior: omitir route-fixed-selector no crea; route-fixed-selector=-1 crea.
-- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
-- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
-- route-fixed-selector es obligatorio: -1 crea y un valor positivo actualiza.
+**Errores y límites**
+
 - Las operaciones de creación requieren identificación, tipo de persona, condición de cliente o proveedor, un teléfono y un correo.
 - Se rechazan los campos desconocidos del cuerpo y las actualizaciones parciales vacías.
 
-**Peticiones habituales:** Crear; Actualización parcial.
+**Notas**
 
-**Antes de ejecutarla:** consulta el estado actual, explica el cambio y pide confirmación. Ejecútala una sola vez.
-Después incluye `confirmation=confirm:terceros-actualizar` en los argumentos.
+- codigo_tributario acepta 1, 2, 4 o 5; cucon es texto y los flags ext aceptan 0 o 1.
+- contactos es alias de lstContactoCliente. Los contactos omitidos se conservan; [] no elimina contactos existentes.
+- La respuesta pública siempre contiene el id y nunca el JSON completo del cliente. La conversión de fechas asume UTC como zona fija de la JVM del ERP.
+- No exponga clave_portal ni valores personales en registros, fragmentos de código, claves de caché o métricas.
+- Los reintentos automáticos están prohibidos sin idempotencia comprobada.
+
+- `codigo_tributario: 5` significa No aplica ZZZ. Contactos omitidos se conservan; `[]` no elimina contactos. La aceptación de campos no garantiza persistencia de los hallazgos Java pendientes.
 
 ## Impuestos
 
@@ -3649,6 +4195,481 @@ Después incluye `confirmation=confirm:terceros-actualizar` en los argumentos.
 
 **Peticiones habituales:** Medios de pago activos con configuracion.
 
+### `finanzas-abonos-crear`: Registrar abono y consultar comprobante
+
+**Para qué sirve:** Aplica un pago a una transacción existente y devuelve el comprobante de caja generado.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/abonos`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_transacion` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_comprobante_caja` | No | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_sucursal` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `valor` | Sí | Tipo: número.; no admite null |
+| `id_medio_pago` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `fecha_registro` | Sí | Tipo: fecha y hora local (YYYY-MM-DDTHH:mm:ss, sin zona horaria ni epoch).; no admite null |
+| `id_banco` | Sí | Tipo: entero.; mínimo: `0`; no admite null |
+| `nota` | No | Tipo: texto.; no admite null |
+
+**Cuerpo:** obligatorio.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_transacion": 54321,
+    "id_sucursal": 1,
+    "valor": 50000,
+    "id_medio_pago": 1,
+    "id_empleado": 1,
+    "fecha_registro": "2026-10-05T13:30:00",
+    "id_banco": 1,
+    "nota": "Abono remisión"
+  }
+}
+```
+
+**Respuesta esperada:** ComprobanteCaja[]; si la consulta falla, Mensaje { type: 1, message: string, retorno: string } confirma el pago y conserva el ID del comprobante..
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "id_comprobante_caja": 1542,
+    "n_caja": "RV105",
+    "valor": 50000,
+    "es_activo": 1,
+    "fecha_registro": "2026-10-05 13:30:00.0",
+    "id_medio_pago": 1,
+    "nombre_medio_pago": "Efectivo",
+    "id_banco": 1,
+    "nombre_banco": "Caja General"
+  }
+]
+```
+
+**Errores y límites**
+
+- El ERP rechaza valores superiores a la deuda, transacciones sin deuda y comprobantes duplicados; el wrapper devuelve erp_mutation_rejected sin detalles internos.
+- Si no se puede confirmar la escritura, no repita el POST automáticamente.
+
+**Notas**
+
+- id_transacion es el ID interno de la transacción, no necesariamente el número visible de la remisión.
+- id_sucursal es obligatorio dentro del body; el header X-Auth-Token-sucursal no lo sustituye.
+- Un abono parcial conserva el saldo pendiente; el pago total depende de la deuda validada por Java.
+- La consulta del comprobante conserva la autorización y los headers de empresa, sucursal, empleado y zona horaria; no usa cache.
+- Si el comprobante no está disponible, el pago sigue confirmado. Consulte posteriormente el comprobante con el ID de retorno, sin repetir el abono.
+- Los IDs de efectivo, caja y empleado corresponden a los catálogos de la empresa; los valores del ejemplo no son universales.
+
+### `finanzas-anticipos-crear`: Registrar anticipo de cliente
+
+**Para qué sirve:** Registra un anticipo recibido del cliente, no un abono vinculado a id_documento.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/anticipos`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_cliente` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_sucursal` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_medio_pago` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_banco` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `valor` | Sí | Tipo: número.; no admite null |
+| `es_ingreso` | Sí | Tipo: entero.; valores: `1`; no admite null |
+| `nota` | Sí | Tipo: texto.; no admite null; patrón: `\S` |
+| `fecha_registro` | Sí | Tipo: fecha y hora local (YYYY-MM-DDTHH:mm:ss, sin zona horaria ni epoch).; no admite null |
+| `id_centro_costo` | No | Tipo: entero.; mínimo: `1`; no admite null |
+
+**Cuerpo:** obligatorio.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_cliente": 1234,
+    "id_sucursal": 1,
+    "id_empleado": 7,
+    "id_medio_pago": 1,
+    "id_banco": 1,
+    "valor": 50000,
+    "es_ingreso": 1,
+    "nota": "Anticipo de pedido",
+    "fecha_registro": "2026-10-19T10:00:00"
+  }
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 15420,
+    "comprobante": {
+      "id_comprobante_caja": 15420,
+      "valor": 50000,
+      "id_cliente": 1234,
+      "id_sucursal": 1,
+      "es_activo": 1
+    }
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+**Errores y límites**
+
+- Los rechazos y errores técnicos usan errores controlados sin detalles internos.
+- No se debe repetir una escritura cuyo resultado sea desconocido o ya confirmado.
+
+**Notas**
+
+- Registra un anticipo recibido del cliente, no un abono vinculado a id_documento.
+- id_empleado es el ID local del empleado, no id_usuario_portal.
+- Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.
+- El comprobante puede recuperarse por ID sin repetir el POST.
+
+### `finanzas-anticipos-cliente-sucursal`: Consultar anticipos activos de un cliente y sucursal
+
+**Para qué sirve:** Consulta fresca de anticipos recibidos y activos del cliente y sucursal.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/finanzas/anticipos/clientes/{id_cliente}/sucursales/{id_sucursal}`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_cliente` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_sucursal` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+
+**Cuerpo:** sin cuerpo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_cliente": 1234,
+  "id_sucursal": 1
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: { items: AnticipoCliente[] }|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id_comprobante_caja": 15420,
+        "valor": 50000,
+        "valorPagado": null,
+        "id_cliente": 1234,
+        "id_sucursal": 1,
+        "es_activo": 1
+      }
+    ]
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+**Errores y límites**
+
+- Los errores técnicos se devuelven como erp_query_failed sin detalles internos.
+
+**Notas**
+
+- Consulta fresca de anticipos recibidos y activos del cliente y sucursal.
+- Saldo disponible = valor - COALESCE(valorPagado, 0). La lista no filtra automáticamente todos los saldos agotados.
+- No agrega un grupo pagos a la búsqueda de pedidos.
+
+### `finanzas-anticipos-anular`: Anular anticipo de cliente
+
+**Para qué sirve:** Anulación completa del anticipo conforme a las reglas del ERP, incluidos sus cruces existentes.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/anticipos/anulaciones`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_comprobante_caja` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `valor` | Sí | Tipo: número.; no admite null |
+| `nota` | Sí | Tipo: texto.; no admite null; patrón: `\S` |
+| `fecha_registro` | Sí | Tipo: fecha y hora local (YYYY-MM-DDTHH:mm:ss, sin zona horaria ni epoch).; no admite null |
+| `observacion` | No | Tipo: texto.; no admite null |
+
+**Cuerpo:** obligatorio.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_comprobante_caja": 15420,
+    "id_empleado": 7,
+    "valor": 50000,
+    "nota": "Anticipo registrado por error",
+    "fecha_registro": "2026-10-19T10:00:00"
+  }
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 15420,
+    "status": "ANULADO"
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+**Errores y límites**
+
+- Un anticipo inexistente o ya anulado se devuelve como rechazo controlado, no como una nueva anulación exitosa.
+
+**Notas**
+
+- Anulación completa del anticipo conforme a las reglas del ERP, incluidos sus cruces existentes.
+- No crea un nuevo recibo de contrapartida ni expone la opción nativa de retorno a otro banco.
+- data.id_comprobante_caja identifica el comprobante solicitado y status=ANULADO confirma la anulación; no se consulta otro recibo.
+
+### `finanzas-abonos-anular`: Anular completamente un abono
+
+**Para qué sirve:** Anular completamente un abono
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/abonos/anulaciones`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Campos del cuerpo**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_comprobante_caja` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `id_empleado` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+| `valor` | Sí | Tipo: número.; no admite null |
+| `nota` | Sí | Tipo: texto.; no admite null; patrón: `\S` |
+| `fecha_registro` | Sí | Tipo: fecha y hora local (YYYY-MM-DDTHH:mm:ss, sin zona horaria ni epoch).; no admite null |
+| `observacion` | No | Tipo: texto.; no admite null |
+
+**Cuerpo:** obligatorio.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_comprobante_caja": 1542,
+    "id_empleado": 7,
+    "valor": 50000,
+    "nota": "Abono registrado por error",
+    "fecha_registro": "2026-10-19T10:00:00"
+  }
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 1542,
+    "status": "ANULADO"
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+**Errores y límites**
+
+- Un comprobante inexistente o ya anulado es un rechazo controlado.
+- El selector de cruces es interno y no puede suministrarse desde la API pública.
+
+**Notas**
+
+- No permite elegir cruces parciales ni enviar arreglos vacíos al DAO.
+- data.id_comprobante_caja conserva el ID solicitado, nunca el retorno nativo que puede ser cero o un valor financiero.
+
+### `finanzas-comprobante-caja-por-id`: Consultar comprobante de caja por ID
+
+**Para qué sirve:** Consulta el comprobante generado por un abono, dentro de la empresa autenticada.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/finanzas/comprobantes-caja/{id_comprobante_caja}`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `X-Auth-Token-sucursal` | Sí | Identificador de la sucursal afectada. |
+| `X-Id-Empleado` | Sí | Identificador del empleado que ejecuta la operación; no corresponde al ID del usuario del portal (id_usuario_portal). |
+| `X-gtm` | Sí | Zona horaria fija usada para interpretar fechas. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_comprobante_caja` | Sí | Tipo: entero.; mínimo: `1`; no admite null |
+
+**Cuerpo:** sin cuerpo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_comprobante_caja": 1542
+}
+```
+
+**Respuesta esperada:** ComprobanteCaja[].
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "id_comprobante_caja": 1542,
+    "n_caja": "RV105",
+    "valor": 50000,
+    "es_activo": 1,
+    "fecha_registro": "2026-10-05 13:30:00.0",
+    "id_medio_pago": 1,
+    "nombre_medio_pago": "Efectivo",
+    "id_banco": 1,
+    "nombre_banco": "Caja General"
+  }
+]
+```
+
+**Errores y límites**
+
+- Los errores técnicos se devuelven como erp_query_failed sin detalles internos.
+
+**Notas**
+
+- Retorna [] si el ID no existe o no pertenece a la empresa autenticada.
+- La consulta es de solo lectura y no se almacena en cache.
+
 ### `finanzas-cartera-cobrar-busquedas`: Buscar cuentas por cobrar
 
 **Para qué sirve:** Buscar cuentas por cobrar. Su resultado principal es `cartera`.
@@ -3743,7 +4764,6 @@ Después incluye `confirmation=confirm:terceros-actualizar` en los argumentos.
 - Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
 - Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
 - Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
 **Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
@@ -3842,7 +4862,6 @@ Después incluye `confirmation=confirm:terceros-actualizar` en los argumentos.
 - Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
 - Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
 - Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 
 **Peticiones habituales:** Cuentas por cobrar; Cuentas por pagar; Cuentas por cobrar vencidas.
@@ -3921,7 +4940,6 @@ Después incluye `confirmation=confirm:terceros-actualizar` en los argumentos.
 
 - Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
 - Las cuentas por cobrar y por pagar nunca se mezclan.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
 - grupos no debe estar vacío y debe contener valores únicos.
 
 **Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
@@ -4000,7 +5018,6 @@ Después incluye `confirmation=confirm:terceros-actualizar` en los argumentos.
 
 - Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
 - Las cuentas por cobrar y por pagar nunca se mezclan.
-- route-fixed-selector es obligatorio y debe ser 0 o 1.
 - grupos no debe estar vacío y debe contener valores únicos.
 
 **Peticiones habituales:** Resumen de cuentas por cobrar; Resumen de cuentas por pagar.
@@ -4407,7 +5424,7 @@ Para `grupos`:
 
 ### `restaurante-comandas-busquedas`: Obtener comandas de cocina
 
-**Para qué sirve:** Obtener comandas de cocina. Su resultado principal es `comandas`.
+**Para qué sirve:** Consulta las comandas que están siendo atendidas por la cocina.
 
 **Método:** `POST`.
 
@@ -4415,65 +5432,45 @@ Para `grupos`:
 
 **Tipo:** Consulta.
 
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
 **Filtros disponibles**
 
 | Dato | Obligatorio | Valores que acepta |
 | --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_sucursal` | Sí | número entero |
-| `id_transacion` | No | número entero |
-| `numero_mesa` | No | número entero |
-| `estado` | No | número entero |
-| `id_cocina` | No | número entero |
-| `id_empleado` | No | número entero |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `pagina` | No | Tipo: entero.; mínimo: `0`; valor habitual: `0`; no admite null |
+| `cantidad_registros` | No | Tipo: entero.; mínimo: `1`; máximo: `1000`; valor habitual: `30`; no admite null |
+| `id_sucursal` | No | Tipo: entero.; mínimo: `1`; valor habitual: `1`; no admite null |
+| `id_transacion` | No | Tipo: entero.; no admite null |
+| `numero_mesa` | No | Tipo: entero.; no admite null |
+| `estado` | No | Tipo: entero.; no admite null |
+| `id_cocina` | No | Tipo: entero.; no admite null |
+| `id_empleado` | No | Tipo: entero.; no admite null |
+| `fecha_desde` | No | Tipo: milisegundos desde epoch.; no admite null |
+| `fecha_hasta` | No | Tipo: milisegundos desde epoch.; no admite null |
+
+**Cuerpo:** opcional.
 
 **Bloques de información que puedes pedir**
 
-Para `grupos`:
 - `codigos`: Identificadores y números que permiten localizar el registro. Incluye `id_transacion_mesa`, `id_transacion`.
-  - `id_transacion_mesa`: Identificador único de la línea de comanda.
-  - `id_transacion`: Documento de venta asociado.
 - `sucursal`: Sucursal donde se originó o aplica la operación. Incluye `id_sucursal`.
-  - `id_sucursal`: Sucursal de la comanda.
 - `mesa`: Identificación de la mesa y datos de sus comensales. Incluye `numero_mesa`, `nombre_mesa`, `comensales`, `turno`.
-  - `numero_mesa`: Número de mesa.
-  - `nombre_mesa`: Nombre visible de la mesa.
-  - `comensales`: Cantidad de personas registrada en la mesa.
-  - `turno`: Turno o rotación de ocupación de la mesa.
 - `producto`: Identificación, descripción y presentación del producto. Incluye `id_producto`, `nombre`, `cantidad`, `precio`, `nota`, `formato_presentacion`, `configuracion_plato`.
-  - `id_producto`: Producto o plato solicitado.
-  - `nombre`: Nombre del producto o plato.
-  - `cantidad`: Cantidad solicitada.
-  - `precio`: Precio registrado para el plato.
-  - `nota`: Instrucción u observación de preparación.
-  - `formato_presentacion`: Formato comercial de presentación.
-  - `configuracion_plato`: Adiciones o variantes configuradas para el plato.
-- `empleado`: Empleado asociado al comentario o a la operación. Incluye `id_empleado`, `nombre_empleado`.
-  - `id_empleado`: Empleado que registró o atiende.
-  - `nombre_empleado`: Nombre del empleado.
+- `empleado`: Empleado que registró o gestionó la operación. Incluye `id_empleado`, `nombre_empleado`.
 - `fecha`: Fecha de registro del evento operativo. Incluye `fecha_registro`.
-  - `fecha_registro`: Fecha y hora de registro.
-- `estado`: Estado operativo de la línea de comanda. Incluye `estado`, `es_activo`, `id_cocina`.
-  - `estado`: Estado operativo de la línea de comanda.
-  - `es_activo`: Indica que la línea permanece activa.
-  - `id_cocina`: Cocina o estación asignada.
+- `estado`: Indicadores del estado operativo, financiero o documental. Incluye `estado`, `es_activo`, `id_cocina`.
 - `preparacion`: Tiempos y estación de preparación de la comanda. Incluye `tiempo_preparacion_producto`, `tiempo_preparacion_plato`, `tiempo_entrega`.
-  - `tiempo_preparacion_producto`: Tiempo de preparación configurado para el producto.
-  - `tiempo_preparacion_plato`: Tiempo registrado o calculado para el plato.
-  - `tiempo_entrega`: Tiempo asociado a la entrega; validar unidad temporal.
 - `pedido`: Referencias del pedido en línea y sus órdenes. Incluye `es_pedido_linea`, `id_pedido_linea`, `numero_orden`, `numero_orden2`.
-  - `es_pedido_linea`: Indica si proviene de un pedido en línea.
-  - `id_pedido_linea`: Identificador del pedido en línea.
-  - `numero_orden`: Número de orden principal.
-  - `numero_orden2`: Segunda referencia de orden.
 - `impresion`: Configuración de plantillas, contenido y opciones de impresión. Incluye `impreso`, `imprimio_prefactura`, `marca`, `observacion`.
-  - `impreso`: Indica si la comanda fue impresa.
-  - `imprimio_prefactura`: Indica si se imprimió prefactura.
-  - `marca`: Señal usada en el flujo de impresión o preparación; validar regla exacta.
-  - `observacion`: Observación operativa.
 
 **Ejemplo de argumentos:**
 
@@ -4512,35 +5509,72 @@ Para `grupos`:
         "id_transacion_mesa": 1,
         "id_transacion": 1
       },
+      "sucursal": {
+        "id_sucursal": 1
+      },
       "mesa": {
         "numero_mesa": 1,
         "nombre_mesa": "Mesa ejemplo",
-        "comensales": 2
+        "comensales": 2,
+        "turno": 1
       },
       "producto": {
         "id_producto": 25,
         "nombre": "Producto ejemplo",
         "cantidad": 1,
-        "precio": 10000
+        "precio": 10000,
+        "nota": "Sin modificaciones",
+        "formato_presentacion": "Unidad",
+        "configuracion_plato": "{}"
+      },
+      "empleado": {
+        "id_empleado": 1,
+        "nombre_empleado": "Empleado ejemplo"
+      },
+      "fecha": {
+        "fecha_registro": 1735689600000
       },
       "estado": {
         "estado": 1,
-        "es_activo": 1
+        "es_activo": 1,
+        "id_cocina": 1
+      },
+      "preparacion": {
+        "tiempo_preparacion_producto": 10,
+        "tiempo_preparacion_plato": 15,
+        "tiempo_entrega": 20
+      },
+      "pedido": {
+        "es_pedido_linea": 0,
+        "id_pedido_linea": null,
+        "numero_orden": 1,
+        "numero_orden2": 1
+      },
+      "impresion": {
+        "impreso": 0,
+        "imprimio_prefactura": 0,
+        "marca": "",
+        "observacion": ""
       }
     }
   ]
 }
 ```
 
-- Solo se devuelven comandas de cocina activas cuyo estado sea diferente de 4.
-- id_sucursal es obligatorio.
-- grupos no debe estar vacío, debe contener valores únicos y limitarse al catálogo.
+**Errores y límites**
 
-**Peticiones habituales:** Comandas activas de la sucursal.
+- id_sucursal debe ser positivo; si se omite se utiliza 1.
+- Si se envía grupos, debe contener valores únicos del catálogo y no estar vacío.
+
+**Notas**
+
+- Consulta table-transactions-sync; no se envía a Java.
+- El cuerpo vacío o {} solicita todos los grupos. Los filtros de fecha son epoch-ms.
+- No requiere headers de empleado, sucursal ni zona horaria; la sucursal se selecciona en query.
 
 ### `restaurante-platos-eliminados-busquedas`: Buscar platos eliminados
 
-**Para qué sirve:** Buscar platos eliminados. Su resultado principal es `platos_eliminados`.
+**Para qué sirve:** Consulta el historial de productos retirados de las mesas.
 
 **Método:** `POST`.
 
@@ -4548,39 +5582,39 @@ Para `grupos`:
 
 **Tipo:** Consulta.
 
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Tipo de contenido del cuerpo JSON. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
 **Filtros disponibles**
 
 | Dato | Obligatorio | Valores que acepta |
 | --- | --- | --- |
-| `pagina` | No | número entero; mínimo `0`; valor habitual `0` |
-| `cantidad_registros` | No | número entero; mínimo `1`; máximo `1000`; valor habitual `30` |
-| `id_sucursal` | Sí | número entero |
-| `id_empleado` | No | número entero |
-| `mesa` | No | número entero |
-| `fecha_desde` | No | fecha y hora en milisegundos Unix |
-| `fecha_hasta` | No | fecha y hora en milisegundos Unix |
+| `pagina` | No | Tipo: entero.; mínimo: `0`; valor habitual: `0`; no admite null |
+| `cantidad_registros` | No | Tipo: entero.; mínimo: `1`; máximo: `1000`; valor habitual: `30`; no admite null |
+| `id_sucursal` | No | Tipo: entero.; mínimo: `1`; valor habitual: `1`; no admite null |
+| `id_empleado` | No | Tipo: entero.; no admite null |
+| `mesa` | No | Tipo: entero.; no admite null |
+| `fecha_desde` | No | Tipo: milisegundos desde epoch.; no admite null |
+| `fecha_hasta` | No | Tipo: milisegundos desde epoch.; no admite null |
+
+**Cuerpo:** opcional.
 
 **Bloques de información que puedes pedir**
 
-Para `grupos`:
 - `codigos`: Identificadores y números que permiten localizar el registro. Incluye `id_auditoria`.
-  - `id_auditoria`: Identificador único del registro de auditoría.
 - `fecha`: Fecha de registro del evento operativo. Incluye `fecha_registro`.
-  - `fecha_registro`: Momento de la eliminación.
 - `sucursal`: Sucursal donde se originó o aplica la operación. Incluye `id_sucursal`, `nombre_sucursal`.
-  - `id_sucursal`: Sucursal donde ocurrió la eliminación.
-  - `nombre_sucursal`: Nombre de la sucursal.
-- `empleado`: Empleado asociado al comentario o a la operación. Incluye `id_empleado`, `nombre_empleado`.
-  - `id_empleado`: Empleado asociado a la eliminación.
-  - `nombre_empleado`: Nombre del empleado.
+- `empleado`: Empleado que registró o gestionó la operación. Incluye `id_empleado`, `nombre_empleado`.
 - `producto`: Identificación, descripción y presentación del producto. Incluye `nombre_producto`, `cantidad`.
-  - `nombre_producto`: Nombre del plato o producto eliminado.
-  - `cantidad`: Cantidad eliminada.
-- `mesa`: Número de mesa guardado en la auditoría. Incluye `mesa`, `nombre_mesa`.
-  - `mesa`: Número de mesa guardado en la auditoría.
-  - `nombre_mesa`: Nombre visible de la mesa.
-- `motivo`: Nota o motivo registrado para la eliminación del plato. Incluye `nota`.
-  - `nota`: Motivo u observación de la eliminación.
+- `mesa`: Identificación de la mesa y datos de sus comensales. Incluye `mesa`, `nombre_mesa`.
+- `eliminacion`: Motivo y datos registrados al eliminar el plato. Incluye `nota`.
 
 **Ejemplo de argumentos:**
 
@@ -4597,7 +5631,7 @@ Para `grupos`:
       "empleado",
       "producto",
       "mesa",
-      "motivo"
+      "eliminacion"
     ]
   }
 }
@@ -4618,11 +5652,23 @@ Para `grupos`:
       "fecha": {
         "fecha_registro": 1735689600000
       },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal"
+      },
+      "empleado": {
+        "id_empleado": 1,
+        "nombre_empleado": "Empleado ejemplo"
+      },
       "producto": {
         "nombre_producto": "Producto ejemplo",
         "cantidad": 1
       },
-      "motivo": {
+      "mesa": {
+        "mesa": 1,
+        "nombre_mesa": "Mesa ejemplo"
+      },
+      "eliminacion": {
         "nota": "Motivo de ejemplo"
       }
     }
@@ -4630,14 +5676,69 @@ Para `grupos`:
 }
 ```
 
-- El punto de acceso expone únicamente campos respaldados por la tabla de auditoría de eliminación de platos.
-- id_sucursal es obligatorio.
+**Errores y límites**
+
+- id_sucursal debe ser positivo; si se omite se utiliza 1.
 - Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
 - grupos no debe estar vacío y debe contener valores únicos.
 
-**Peticiones habituales:** Auditoría de eliminaciones por sucursal.
+**Notas**
 
-## Restaurante
+- Consulta table-transactions-sync; no se envía a Java.
+- El cuerpo vacío o {} solicita todos los grupos. El grupo de eliminación se llama eliminacion.
+- No requiere headers de empleado, sucursal ni zona horaria; la sucursal se selecciona en query.
+
+### `restaurante-mesas-ocupadas`: Consultar mesas ocupadas
+
+**Para qué sirve:** Lista las mesas con comandas abiertas de una sucursal.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/restaurante/mesas-ocupadas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Authorization` | Sí | Token de acceso con un único prefijo Bearer. |
+| `X-Auth-Token-empresa` | Sí | Identificador de la empresa. |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_sucursal` | No | Tipo: entero.; mínimo: `1`; valor habitual: `1`; no admite null |
+
+**Cuerpo:** sin cuerpo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_sucursal": 1
+}
+```
+
+**Respuesta esperada:** JSON de mesas ocupadas agrupadas, sin transformación.
+
+**Ejemplo de respuesta:**
+
+```json
+[]
+```
+
+**Errores y límites**
+
+- id_sucursal debe ser positivo; si se omite se utiliza 1.
+
+**Notas**
+
+- Consulta table-transactions-sync sin cache para obtener el estado actual de las mesas.
+- Incluye cantidad de platos, total de cuenta y mesero según la respuesta del servicio.
 
 ### `restaurante-comandas-crear`: Crear comanda de restaurante
 
@@ -4645,7 +5746,7 @@ Para `grupos`:
 
 **Método:** `POST`.
 
-**Ruta:** `/api/v1/restaurante/comandas` a través de Envoy.
+**Ruta:** `/api/v1/restaurante/comandas` a través del gateway Cuenti.
 
 **Tipo:** Mutación idempotente; requiere confirmación explícita.
 
@@ -4720,7 +5821,7 @@ Los clientes REST deben enviar únicamente los datos de negocio, incluidos `gui_
 - Para domicilio o para llevar, envía `numero_mesa: null` y `domicilio: 1`.
 - Los datos comerciales del plato se confían al cliente de sincronización y no se consultan contra el ERP.
 - No repitas manualmente la tool si la respuesta es incierta; la operación conserva sus UUIDs durante el reintento.
-- La ruta pública se alcanza a través de Envoy y se traduce internamente al servicio de sincronización.
+- La ruta pública se alcanza a través de NGINX y se traduce internamente al servicio de sincronización.
 - La operación no utiliza cache porque modifica datos.
 
 **Antes de ejecutarla:** explica el destino y pide confirmación. Después incluye `confirmation=confirm:restaurante-comandas-crear` en los argumentos.

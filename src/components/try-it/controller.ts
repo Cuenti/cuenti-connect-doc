@@ -62,7 +62,7 @@ export const useTryItController = ({
     body,
     credentials,
   };
-  const credentialsConfigured = hasRequiredCredentials(credentials);
+  const credentialsConfigured = hasRequiredCredentials(credentials, endpoint);
 
   const applyPreset = (preset: EndpointPreset) => {
     setPathValues((current) => ({ ...current, ...preset.path }));
@@ -92,7 +92,7 @@ export const useTryItController = ({
   const execute = async () => {
     if (!credentialsConfigured) {
       setError(
-        'Configura empresa, sucursal, empleado, zona horaria y token desde el candado antes de enviar solicitudes.',
+        'Configura los encabezados obligatorios de esta operación desde el candado antes de enviar solicitudes.',
       );
       return;
     }

@@ -54,7 +54,103 @@ describe('projectResponseExample', () => {
       'medida',
       'imagen',
       'configuracion',
+      'composicion',
+      'empaque',
+      'presentaciones',
+      'proveedor',
     ]);
+  });
+
+  it('keeps the completed canonical examples visible for their selected groups', () => {
+    const expectations: Array<[string, string, string[]]> = [
+      [
+        'buscarCartera',
+        'cartera',
+        [
+          'transaccion',
+          'fechas',
+          'sucursal',
+          'tercero',
+          'vendedor',
+          'saldo',
+          'estado',
+        ],
+      ],
+      [
+        'obtenerComandas',
+        'comandas',
+        [
+          'codigos',
+          'sucursal',
+          'mesa',
+          'producto',
+          'empleado',
+          'fecha',
+          'estado',
+          'preparacion',
+          'pedido',
+          'impresion',
+        ],
+      ],
+      [
+        'platosEliminados',
+        'platos_eliminados',
+        [
+          'codigos',
+          'fecha',
+          'sucursal',
+          'empleado',
+          'producto',
+          'mesa',
+          'eliminacion',
+        ],
+      ],
+      [
+        'buscarProductosDocumentosComerciales',
+        'productos',
+        ['producto', 'cantidades', 'totales', 'costos', 'fechas'],
+      ],
+    ];
+
+    for (const [endpointId, collection, groups] of expectations) {
+      const endpoint = endpointFor(endpointId);
+      const response = projectResponseExample(
+        endpoint,
+        endpoint.requestExample,
+      ) as Record<string, Array<Record<string, unknown>>>;
+      expect(Object.keys(response[collection][0]).sort(), endpointId).toEqual(
+        [...groups].sort(),
+      );
+    }
+  });
+
+  it('includes every selected detail group in transaction examples', () => {
+    for (const endpointId of [
+      'buscarTransacciones',
+      'buscarDocumentosComerciales',
+      'buscarDescuentos',
+      'buscarDescuentosDocumentosComerciales',
+    ]) {
+      const endpoint = endpointFor(endpointId);
+      const response = projectResponseExample(
+        endpoint,
+        endpoint.requestExample,
+      ) as Record<string, unknown>;
+      const collection = Object.values(response).find(Array.isArray) as Array<{
+        detalle?: Array<Record<string, unknown>>;
+      }>;
+      const item = collection[0];
+      const detail = item.detalle?.[0] ?? item;
+      expect(Object.keys(detail), endpointId).toEqual(
+        expect.arrayContaining([
+          'producto',
+          'cantidades',
+          'precios',
+          'descuento',
+          'totales',
+        ]),
+      );
+    }
   });
 
   it('projects detail groups independently', () => {

@@ -1,6 +1,11 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { isDeepStrictEqual, parseArgs } from 'node:util';
+
+const { values } = parseArgs({
+  options: { 'source-registry': { type: 'string' } },
+});
 
 const root = resolve(import.meta.dirname, '..');
 const erpRegistryPath = resolve(root, 'contracts/j4/endpoints.json');
@@ -11,6 +16,15 @@ const oldSkillArchive = resolve(root, 'public/skills/cuenti-mcp.zip');
 const externalRegistry = JSON.parse(readFileSync(externalToolsPath, 'utf8'));
 const erpRegistry = JSON.parse(readFileSync(erpRegistryPath, 'utf8'));
 const statsRegistry = JSON.parse(readFileSync(statsRegistryPath, 'utf8'));
+
+if (values['source-registry'] !== undefined) {
+  const canonical = JSON.parse(readFileSync(values['source-registry'], 'utf8'));
+  if (!isDeepStrictEqual(erpRegistry, canonical)) {
+    throw new Error(
+      'El registro ERP local no coincide con la fuente canónica.',
+    );
+  }
+}
 
 const skills = [
   {
@@ -117,6 +131,9 @@ for (const skill of skills) {
   }
 }
 
+if (values['source-registry'] !== undefined) {
+  console.log('Canonical registry verified.');
+}
 console.log(
   `Public artifacts verified: ${skills.map((skill) => `${skill.id} (${skill.publishedIds.length} tools)`).join(', ')}.`,
 );

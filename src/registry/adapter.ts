@@ -246,6 +246,8 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
     object: 'objeto',
     'integer-list': 'lista de enteros',
     'epoch-milliseconds': 'milisegundos desde epoch',
+    'local-date-time':
+      'fecha y hora local (YYYY-MM-DDTHH:mm:ss, sin zona horaria ni epoch)',
   };
   const ruleLabels: Record<string, string> = {
     partial: 'Coincidencia parcial.',
@@ -259,6 +261,8 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
     'partial across two email fields':
       'Coincidencia parcial en los dos campos de correo.',
     'Clamp to 1..1000': 'El valor se limita al intervalo de 1 a 1000.',
+    'local-date-time':
+      'Formato: YYYY-MM-DDTHH:mm:ss, sin zona horaria ni epoch.',
   };
   const type = asString(item.type);
   const nullable = item.nullable === true;
@@ -794,7 +798,9 @@ const projectPublicRoute = (
     body.fields = asArray(body.fields).filter(
       (field) =>
         !hiddenBody.has(
-          asString(first(asRecord(field), ['name', 'nombre', 'key'])),
+          typeof field === 'string'
+            ? field
+            : asString(first(asRecord(field), ['name', 'nombre', 'key'])),
         ),
     );
     body.example = removeKeys(body.example, hiddenBody);
@@ -957,52 +963,32 @@ const normalizeEndpoint = (
     );
   }
 
-  const requiredHeaders: HeaderSpec[] = asArray(
-    first(item, ['requiredHeaders', 'headers', 'cabeceras']),
+  const declaredHeaders = first(item, [
+    'requiredHeaders',
+    'headers',
+    'cabeceras',
+  ]);
+  const mergedHeaders: HeaderSpec[] = asArray(
+    declaredHeaders ?? defaultHeaders(method),
   ).map((header) => {
     const normalized = normalizeHeader(header);
     const definition = asRecord(headerDefinitions[normalized.name]);
+    const defaults = globalHeaders.find(
+      (entry) => entry.name === normalized.name,
+    );
     return {
+      ...defaults,
       ...normalized,
-      required: true,
+      required: asBoolean(asRecord(header).required, true),
       description:
         normalized.description ||
         headerDescriptions[normalized.name] ||
         'Encabezado obligatorio para esta operación.',
       example: asString(definition.example) || normalized.example,
       sensitive: asBoolean(definition.sensitive, normalized.sensitive),
+      defaultValue: normalized.defaultValue ?? defaults?.defaultValue,
     };
   });
-  const mergedHeaders = [...requiredHeaders];
-  for (const globalHeader of globalHeaders) {
-    const current = mergedHeaders.find(
-      (header) => header.name.toLowerCase() === globalHeader.name.toLowerCase(),
-    );
-    if (current) {
-      Object.assign(current, {
-        ...current,
-        ...globalHeader,
-        example: current.example ?? globalHeader.example,
-        required: true,
-        defaultValue: current.defaultValue ?? globalHeader.defaultValue,
-      });
-    } else {
-      mergedHeaders.push({ ...globalHeader });
-    }
-  }
-  if (
-    method !== 'GET' &&
-    !mergedHeaders.some(
-      (header) => header.name.toLowerCase() === 'content-type',
-    )
-  ) {
-    mergedHeaders.unshift({
-      name: 'Content-Type',
-      description: 'Cuerpo JSON.',
-      required: true,
-      sensitive: false,
-    });
-  }
   const bodyGroups = mergeGroups(
     normalizeBodyGroups(first(body, ['groups', 'grupos'])),
   );
@@ -1083,7 +1069,7 @@ const normalizeEndpoint = (
       kind,
       first(item, ['invalidates', 'invalidations', 'invalida']),
     ),
-    headers: mergedHeaders.length ? mergedHeaders : defaultHeaders(method),
+    headers: mergedHeaders,
     pathParams: normalizeParameters(
       first(item, ['pathParams', 'pathParameters']) ??
         first(params, ['path', 'ruta']),
@@ -1197,18 +1183,19 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
     }),
   );
   const routes = asArray(root.routes);
-  const source = routes.length
-    ? routes.map((route) => {
-        const item = asRecord(route);
-        const contract = contracts.get(asString(item.contract));
-        if (!contract) {
-          throw new Error(
-            `Contrato público no encontrado: ${asString(item.contract)}`,
-          );
-        }
-        return projectPublicRoute(contract, item);
-      })
-    : asArray(first(root, ['endpoints', 'rutas']));
+  if (!routes.length) {
+    throw new Error('El registro público debe declarar sus rutas públicas.');
+  }
+  const source = routes.map((route) => {
+    const item = asRecord(route);
+    const contract = contracts.get(asString(item.contract));
+    if (!contract) {
+      throw new Error(
+        `Contrato público no encontrado: ${asString(item.contract)}`,
+      );
+    }
+    return projectPublicRoute(contract, item);
+  });
   const externalSource = asArray(asRecord(externalTools).tools).map(
     externalToolEndpoint,
   );
@@ -1257,16 +1244,19 @@ export const adaptRegistry = (value: unknown): CanonicalRegistry => {
       }
     }
   }
-  if (endpoints.length !== 38) {
-    throw new Error(
-      `El registro público debe contener 38 operaciones; contiene ${endpoints.length}.`,
-    );
-  }
   if (
     new Set(endpoints.map((endpoint) => endpoint.id)).size !== endpoints.length
   ) {
     throw new Error(
       'El registro canónico contiene identificadores duplicados.',
+    );
+  }
+  if (
+    new Set(endpoints.map((endpoint) => `${endpoint.method} ${endpoint.path}`))
+      .size !== endpoints.length
+  ) {
+    throw new Error(
+      'El registro público contiene un método y ruta duplicados.',
     );
   }
   return {

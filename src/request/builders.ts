@@ -34,25 +34,26 @@ const bearerToken = (token: string) =>
     .replace(/^(?:Bearer(?:\s+|$))+/i, '')
     .trim();
 
-export const hasRequiredCredentials = (credentials: Credentials) => {
-  const company = credentials.company.trim();
-  const branch = credentials.branch.trim();
-  const employee = credentials.employee.trim();
-  const token = bearerToken(credentials.token);
-  return (
-    Boolean(company) &&
-    !/\s/.test(company) &&
-    Boolean(branch) &&
-    !/\s/.test(branch) &&
-    Boolean(employee) &&
-    !/\s/.test(employee) &&
-    (credentials.timezone.trim() || DEFAULT_TIMEZONE) === DEFAULT_TIMEZONE &&
-    Boolean(token) &&
-    !/\s/.test(token)
-  );
+export const hasRequiredCredentials = (
+  credentials: Credentials,
+  endpoint?: Pick<EndpointDoc, 'headers'>,
+) => {
+  const values = headerValues(credentials);
+  const required = endpoint
+    ? endpoint.headers
+        .filter((header) => header.required)
+        .map((header) => header.name)
+    : Object.keys(values);
+  return required.every((name) => {
+    const value = values[name as keyof typeof values];
+    if (name === 'Authorization') return /^Bearer \S+$/.test(value ?? '');
+    if (name === 'X-gtm') return value === DEFAULT_TIMEZONE;
+    return Boolean(value) && !/\s/.test(value);
+  });
 };
 
 const headerValues = (credentials: Credentials) => ({
+  'Content-Type': 'application/json',
   'X-Auth-Token-empresa': credentials.company.trim(),
   'X-gtm': credentials.timezone.trim() || DEFAULT_TIMEZONE,
   Authorization: bearerToken(credentials.token)
@@ -116,13 +117,22 @@ export const buildRequest = (
   validateRequired(endpoint.queryParams, draft.query, errors);
 
   const requestHeaderValues = headerValues(draft.credentials);
-  if (/\s/.test(requestHeaderValues['X-Auth-Token-empresa'])) {
+  const sendsHeader = (name: string) =>
+    endpoint.headers.some((header) => header.name === name);
+  if (
+    sendsHeader('X-Auth-Token-empresa') &&
+    /\s/.test(requestHeaderValues['X-Auth-Token-empresa'])
+  ) {
     errors.push('X-Auth-Token-empresa no puede contener espacios.');
   }
-  if (requestHeaderValues['X-gtm'] !== DEFAULT_TIMEZONE) {
+  if (
+    sendsHeader('X-gtm') &&
+    requestHeaderValues['X-gtm'] !== DEFAULT_TIMEZONE
+  ) {
     errors.push(`X-gtm debe ser ${DEFAULT_TIMEZONE}.`);
   }
   if (
+    sendsHeader('Authorization') &&
     requestHeaderValues.Authorization &&
     !/^Bearer \S+$/.test(requestHeaderValues.Authorization)
   ) {
@@ -238,7 +248,10 @@ export const buildCurl = (
   draft: RequestDraft,
   baseUrl: string,
 ) => {
-  const includeCredentials = hasRequiredCredentials(draft.credentials);
+  const includeCredentials = hasRequiredCredentials(
+    draft.credentials,
+    endpoint,
+  );
   const path = Object.fromEntries(
     endpoint.pathParams.map((parameter) => {
       const value = draft.path[parameter.name]?.trim() ?? '';
@@ -286,7 +299,7 @@ export const defaultDraft = (endpoint: EndpointDoc): RequestDraft => ({
     ]),
   ),
   body:
-    (endpoint.tryIt?.body ?? endpoint.requestExample) === undefined
+    (endpoint.tryIt?.body ?? endpoint.requestExample) == null
       ? ''
       : JSON.stringify(
           endpoint.tryIt?.body ?? endpoint.requestExample,

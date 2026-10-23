@@ -459,7 +459,7 @@ test('muestra la interfaz en español y ejecuta GET y POST', async ({
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page).toHaveTitle('Guía de integración de Cuenti');
   await expect(
-    page.getByRole('heading', { name: '38 operaciones' }),
+    page.getByRole('heading', { name: '49 operaciones' }),
   ).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Probar consulta' }),

@@ -54,6 +54,15 @@ describe('documentation application', () => {
     ).toHaveAttribute('aria-hidden', 'true');
   });
 
+  it('documents controlled ERP errors without exposing internal details', () => {
+    render(<App />);
+
+    expect(screen.getByText('erp_query_failed')).toBeVisible();
+    expect(screen.getByText('erp_mutation_outcome_unknown')).toBeVisible();
+    expect(screen.getByText('request_id')).toBeVisible();
+    expect(screen.getByText('X-Request-ID')).toBeVisible();
+  });
+
   it('collapses and expands the desktop sidebar accessibly', async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -112,7 +121,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '38 operaciones' }),
+      screen.getByRole('heading', { name: '49 operaciones' }),
     ).toBeVisible();
   });
 

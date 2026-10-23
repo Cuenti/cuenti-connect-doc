@@ -23,6 +23,8 @@ const groupDescriptions: Record<string, string> = {
   contabilidad: 'Cuentas y configuración contable asociadas al registro.',
   contacto: 'Teléfonos, correos y datos de contacto del tercero.',
   comision: 'Comisión configurada y reglas de cálculo aplicadas al empleado.',
+  composicion:
+    'Productos componentes, cantidades y existencias de un producto compuesto.',
   consecutivo: 'Configuración de numeración usada por el documento.',
   cuenta: 'Cuenta bancaria y referencia contable asociada.',
   costos: 'Costos acumulados o proporcionales del producto comprado.',
@@ -31,7 +33,9 @@ const groupDescriptions: Record<string, string> = {
   descuento: 'Valores y porcentajes de descuento aplicados.',
   documento: 'Referencias documentales y comerciales relacionadas.',
   documentos: 'Cantidad y estado de los documentos del conjunto.',
+  eliminacion: 'Motivo y datos registrados al eliminar el plato.',
   empleado: 'Empleado que registró o gestionó la operación.',
+  empaque: 'Configuración de compra y equivalencias del empaque del proveedor.',
   empresa: 'Datos compartidos de la empresa del contexto de respuesta.',
   estado: 'Indicadores del estado operativo, financiero o documental.',
   estado_electronico: 'Estado de envío, validación y contingencia electrónica.',
@@ -59,6 +63,8 @@ const groupDescriptions: Record<string, string> = {
   medio_pago: 'Medio de pago configurado o usado en la operación.',
   pagos: 'Comprobantes y movimientos aplicados como pago.',
   presentacion: 'Equivalencias y datos de la presentación comercial.',
+  presentaciones:
+    'Presentaciones comerciales con su equivalencia y existencias disponibles.',
   preparacion: 'Tiempos y estación de preparación de la comanda.',
   precios: 'Precios base, de venta y ajustes comerciales.',
   producto: 'Identificación, descripción y presentación del producto.',
@@ -68,6 +74,7 @@ const groupDescriptions: Record<string, string> = {
   politicas_precios: 'Políticas de precios aplicadas entre sucursales.',
   pos: 'Configuración operativa del punto de venta.',
   qr: 'Datos usados para construir o consultar el código QR.',
+  proveedor: 'Proveedor principal y referencia comercial asociada al producto.',
   retenciones: 'Retenciones aplicadas, sus bases, porcentajes y valores.',
   ruta_despacho: 'Ruta de despacho asignada al documento.',
   rangos: 'Rangos y límites de numeración configurados.',
@@ -100,6 +107,9 @@ const commonFieldDescriptions: Record<string, string> = {
   codigo_barras: 'Código de barras principal o de la presentación consultada.',
   codigo_empleado: 'Código interno asignado al empleado.',
   codigo_sucursal: 'Código interno o de integración de la sucursal.',
+  cantidad_medida_paquete:
+    'Cantidad de la unidad de medida incluida en cada paquete.',
+  cantidad_por_paquete: 'Número de unidades incluidas en cada paquete.',
   comision:
     'Comisión configurada; su unidad se interpreta con el tipo de comisión.',
   config:
@@ -126,6 +136,10 @@ const commonFieldDescriptions: Record<string, string> = {
   estado: 'Código del estado operativo de la línea o documento.',
   fecha_registro: 'Fecha y hora de creación o registro.',
   fecha_vencimiento: 'Fecha límite de pago o vencimiento de la autorización.',
+  equivalencia_compra:
+    'Factor usado para convertir el empaque de compra a unidades del producto.',
+  existencias_disponibles:
+    'Existencias disponibles expresadas en la equivalencia de la presentación.',
   identificacion: 'Documento de identidad o identificación tributaria.',
   id_bodega: 'Identificador de la bodega asociada.',
   id_cliente: 'Identificador interno del tercero.',
@@ -137,8 +151,13 @@ const commonFieldDescriptions: Record<string, string> = {
   id_estrato_social: 'Identificador del estrato social seleccionado.',
   id_imagen: 'Identificador del recurso de imagen.',
   id_producto: 'Identificador maestro del producto.',
+  id_proveedor: 'Identificador del proveedor principal asociado al producto.',
   id_sucursal: 'Identificador interno de la sucursal.',
   id_tipo_identificacion: 'Identificador del tipo de documento seleccionado.',
+  id_tipo_producto:
+    'Clasificación que determina el comportamiento del producto.',
+  id_unidad_medida_paquete:
+    'Identificador de la unidad de medida usada por el empaque.',
   id_tipo_persona: 'Identificador de la clasificación de persona.',
   impuesto: 'Impuesto principal aplicado al registro.',
   impuestos: 'Impuestos asociados al registro.',
@@ -150,16 +169,19 @@ const commonFieldDescriptions: Record<string, string> = {
   nombre_completo: 'Nombre completo del empleado.',
   nombre_empleado: 'Nombre visible del empleado.',
   nombre_producto: 'Nombre comercial del producto.',
+  nombre_proveedor: 'Nombre o razón social del proveedor principal.',
   nombre_sucursal: 'Nombre visible de la sucursal.',
   nota: 'Observación o nota asociada al registro.',
   numero_cuenta:
     'Número de cuenta tratado como texto para conservar ceros iniciales; puede ser sensible.',
   numero_matricula:
     'Número de matrícula mercantil u otro registro equivalente.',
+  nit_proveedor: 'Identificación tributaria del proveedor principal.',
   pais: 'País registrado o país de aplicación.',
   prefijo: 'Prefijo que antecede la numeración documental.',
   saldo: 'Saldo registrado o pendiente financiero; puede ser sensible.',
   sku: 'Código interno o SKU usado para identificar el producto.',
+  sku_proveedor: 'Código con el que el proveedor identifica el producto.',
   sucursales:
     'Configuración de sucursales; JSON válido se estructura y el histórico inválido se conserva como texto.',
   telefonos: 'Lista de teléfonos registrados para el tercero.',
@@ -175,7 +197,11 @@ const commonFieldDescriptions: Record<string, string> = {
     'Valor del impuesto al consumo asociado al producto o documento.',
   total_impuestos: 'Suma de los impuestos principales del documento.',
   total_neto: 'Total neto del documento después de ajustes aplicables.',
+  total_paquete: 'Cantidad total de unidades contenidas en el paquete.',
+  total_paquete_unidad:
+    'Total del paquete acompañado por la unidad de medida correspondiente.',
   unidad: 'Unidad usada para expresar la medida o cantidad.',
+  unidad_medida_paquete: 'Nombre de la unidad de medida usada por el empaque.',
   url_imagen: 'Dirección para consultar la imagen del producto.',
   id_concepto: 'Concepto contable del movimiento; el conteo usa -1.',
   es_entrada: 'Indica el sentido del movimiento; el conteo usa 1.',

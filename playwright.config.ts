@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      'ERP_PROXY_TARGET=http://127.0.0.1:8081 pnpm exec rsbuild dev --host 127.0.0.1 --port 3100',
+      'ERP_PROXY_TARGET=http://127.0.0.1:8083 pnpm exec rsbuild dev --host 127.0.0.1 --port 3100',
     url: 'http://127.0.0.1:3100',
     reuseExistingServer: false,
     timeout: 120_000,
