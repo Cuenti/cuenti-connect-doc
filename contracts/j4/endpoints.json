@@ -2198,6 +2198,31 @@
       "summary": "Consulta los consecutivos y rangos disponibles para los documentos."
     },
     {
+      "id": "consultarCentro_costo2",
+      "title": "Consultar centros de costo",
+      "category": "Organización",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/inv/centro_costo/consultarCentro_costo2/1",
+      "operation": "query",
+      "cache": {"policy": "bypass", "domain": "cost-centers", "tags": []},
+      "invalidates": [],
+      "requiredHeaders": ["X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {"type": "none", "required": false, "example": null},
+      "expectedCollection": null,
+      "response": {
+        "envelope": "items",
+        "shape": "{ success: boolean, data: { items: CentroCosto[] }|null, error: object|null, request_id: string }",
+        "itemFields": ["id_centro_costo", "nombre_centro_costo", "es_activo", "fecha_registro", "error", "codigo"],
+        "example": {"success": true, "data": {"items": [{"id_centro_costo": 1, "nombre_centro_costo": "Generico", "es_activo": 1, "fecha_registro": 1746470115000, "error": "", "codigo": "01"}]}, "error": null, "request_id": "0123456789abcdef0123456789abcdef"}
+      },
+      "presets": [],
+      "errors": ["Los rechazos, errores técnicos y respuestas inválidas del ERP usan errores controlados sin detalles internos."],
+      "notes": ["Conserva literalmente el sufijo /1 de la consulta ERP; la ruta pública no expone un selector para él.", "Una lista vacía es una consulta exitosa con data.items=[].", "Omite caché y conserva los campos de cada centro de costo sin reinterpretarlos."],
+      "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": null},
+      "cost": {"tier": "low", "factors": ["Consulta de centros de costo sin caché"]}
+    },
+    {
       "id": "buscarSucursales",
       "projectionPolicy": "groups-or-empty",
       "title": "Buscar sucursales",
@@ -5327,6 +5352,13 @@
             "minimum": 1
           },
           {
+            "name": "emitir_electronicamente",
+            "type": "integer",
+            "required": false,
+            "nullable": true,
+            "description": "Indicador de emisión electrónica enviado al ERP."
+          },
+          {
             "name": "codigo_unico",
             "type": "string",
             "required": true,
@@ -5354,6 +5386,20 @@
             "type": "integer",
             "required": true,
             "minimum": 1
+          },
+          {
+            "name": "bodega_destino",
+            "type": "integer",
+            "required": false,
+            "nullable": true,
+            "description": "ID de la bodega de destino o sucursal de producción."
+          },
+          {
+            "name": "id_documento",
+            "type": "integer",
+            "required": false,
+            "nullable": true,
+            "description": "ID del documento que se referencia, por ejemplo un pedido al crear una factura."
           },
           {
             "name": "id_vendedor",
@@ -5632,6 +5678,7 @@
           "objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.",
           "cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.",
           "type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.",
+          "emitir_electronicamente, bodega_destino e id_documento son opcionales, aceptan enteros sin mínimo o null y se reenvían sin cambios; si se omiten, el wrapper no los agrega.",
           "Para gasto, tipoDocumento=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo."
         ],
         "validation": {
@@ -8086,6 +8133,14 @@
       "method": "POST",
       "path": "/api/v1/organizacion/empleados/busquedas",
       "contract": "buscarEmpleados",
+      "translation": {}
+    },
+    {
+      "routeId": "organizacion-centros-costo",
+      "category": "Organización",
+      "method": "GET",
+      "path": "/api/v1/organizacion/centros-costo",
+      "contract": "consultarCentro_costo2",
       "translation": {}
     },
     {

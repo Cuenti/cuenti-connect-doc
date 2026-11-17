@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json",
     "artifacts:check": "node tools/verify-public-artifacts.mjs",
+    "artifacts:generate": "node tools/generate-erp-reference.mjs",
     "verify": "pnpm run lint && pnpm run typecheck && pnpm run typecheck:e2e && pnpm run test && pnpm run artifacts:check"
   },
   "dependencies": {

@@ -35,6 +35,7 @@ test('exposes all newly documented public routes', async ({ page }) => {
     'finanzas-anticipos-anular',
     'finanzas-abonos-anular',
     'finanzas-comprobante-caja-por-id',
+    'organizacion-centros-costo',
     'restaurante-mesas-ocupadas',
   ]) {
     await page.goto(`/?endpoint=${id}`);
@@ -45,6 +46,77 @@ test('exposes all newly documented public routes', async ({ page }) => {
     );
     await expect(page.locator('.endpoint-detail h1')).not.toBeEmpty();
   }
+});
+
+test('preserves order references and nullable document integers and displays the unchanged rejection contract', async ({
+  page,
+}) => {
+  const requests: unknown[] = [];
+  await page.route('**/api/v1/**', async (route) => {
+    requests.push(route.request().postDataJSON());
+    await route.fulfill({
+      status: 422,
+      json: {
+        error: 'erp_mutation_rejected',
+        message:
+          'El ERP rechazó la operación. codigo_error:1050:Producto de ejemplo sin existencia',
+        request_id: '0123456789abcdef0123456789abcdef',
+        retryable: false,
+      },
+    });
+  });
+  await page.goto('/?endpoint=documentos-crear');
+  await configure(page, true);
+  const editor = page.getByLabel('Cuerpo JSON', { exact: true });
+  const body = {
+    ...JSON.parse(await editor.inputValue()),
+    id_documento: 12345,
+    bodega_destino: null,
+    emitir_electronicamente: 0,
+  };
+  await editor.fill(JSON.stringify(body));
+  await page
+    .getByRole('checkbox', { name: /Entiendo que esta operación/ })
+    .check();
+  await page.getByRole('button', { name: 'Enviar solicitud' }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0]).toEqual(body);
+  await expect(page.locator('.response-panel')).toContainText(
+    'Estado HTTP 422',
+  );
+  await expect(page.locator('.response-panel')).toContainText(
+    'codigo_error:1050:Producto de ejemplo sin existencia',
+  );
+});
+
+test('sends cost-center queries without body or filters and shows their standard envelope', async ({
+  page,
+}) => {
+  const requests: Array<{ method: string; body: string | null; url: string }> =
+    [];
+  const response = rawRegistry.endpoints.find(
+    (endpoint) => endpoint.id === 'consultarCentro_costo2',
+  )?.response.example;
+  await page.route('**/api/v1/**', async (route) => {
+    const request = route.request();
+    requests.push({
+      method: request.method(),
+      body: request.postData(),
+      url: request.url(),
+    });
+    await route.fulfill({ json: response });
+  });
+  await page.goto('/?endpoint=organizacion-centros-costo');
+  await configure(page, true);
+  await page.getByRole('button', { name: 'Enviar solicitud' }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0].method).toBe('GET');
+  expect(requests[0].body).toBeNull();
+  expect(new URL(requests[0].url).search).toBe('');
+  await expect(page.locator('.response-panel')).toContainText(
+    'nombre_centro_costo',
+  );
+  await expect(page.locator('.response-panel')).toContainText('request_id');
 });
 
 test('sends reduced-header restaurant queries without a body or unused credentials', async ({

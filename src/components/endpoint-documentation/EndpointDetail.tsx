@@ -84,6 +84,30 @@ export const EndpointDetail = ({
   );
   const [requestValue, setRequestValue] = useState(endpoint.requestExample);
   const [requestError, setRequestError] = useState('');
+  const rejection = {
+    code:
+      endpoint.kind === 'mutation'
+        ? 'erp_mutation_rejected'
+        : 'erp_query_failed',
+    message:
+      endpoint.kind === 'mutation'
+        ? 'El ERP rechazó la operación.'
+        : 'No fue posible consultar la información en el ERP.',
+    retryable: endpoint.kind === 'query',
+  };
+  if (endpoint.contractId === 'grabarDocumentoSimple') {
+    rejection.message +=
+      ' codigo_error:1050:Producto de ejemplo sin existencia';
+  }
+  const requestId = '0123456789abcdef0123456789abcdef';
+  const rejectionExample = endpoint.responseEnvelope
+    ? { success: false, data: null, error: rejection, request_id: requestId }
+    : {
+        error: rejection.code,
+        message: rejection.message,
+        request_id: requestId,
+        retryable: rejection.retryable,
+      };
 
   useEffect(() => {
     setRequestText(JSON.stringify(endpoint.requestExample ?? {}, null, 2));
@@ -315,6 +339,18 @@ export const EndpointDetail = ({
                   value={projectResponseExample(endpoint, requestValue)}
                   fallback="No hay un ejemplo de respuesta documentado para esta operación."
                 />
+                {endpoint.responseFallbackExample !== undefined ? (
+                  <>
+                    <h4>
+                      Respuesta alternativa: pago confirmado sin comprobante
+                      enriquecido
+                    </h4>
+                    <p>
+                      Consulta el comprobante por ID; no repitas la escritura.
+                    </p>
+                    <JsonBlock value={endpoint.responseFallbackExample} />
+                  </>
+                ) : null}
               </CardContent>
             </Card>
           </div>
@@ -372,6 +408,27 @@ export const EndpointDetail = ({
                 JDBC. Las respuestas exitosas conservan el formato de cada
                 contrato.
               </p>
+              {endpoint.id !== 'restaurante-comandas-crear' ? (
+                <>
+                  <h4>
+                    Ejemplo de error HTTP{' '}
+                    {endpoint.kind === 'mutation' ? '422' : '502'}
+                  </h4>
+                  <JsonBlock value={rejectionExample} />
+                  <p>
+                    {endpoint.responseEnvelope
+                      ? 'Este contrato usa {success,data,error,request_id}; el código y message están dentro de error.'
+                      : 'Este contrato conserva el error plano {error,message,request_id,retryable}. Una validación HTTP 400 usa {error:"invalid_request",field}.'}
+                  </p>
+                  <p>
+                    Un rechazo de negocio reconocido puede ampliar únicamente
+                    <code> message</code> con información útil, sin cambiar el
+                    estado HTTP, el código ni <code>retryable</code>. SQL,
+                    trazas y credenciales permanecen ocultos. Un error no se
+                    almacena en caché.
+                  </p>
+                </>
+              ) : null}
             </div>
           </div>
           {endpoint.notes.length ? (

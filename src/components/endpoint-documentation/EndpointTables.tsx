@@ -110,6 +110,9 @@ export const ParameterTable = ({
               <td>{parameter.typeLabel ?? parameter.type ?? '—'}</td>
               <td>
                 {parameter.description || 'Sin descripción adicional.'}
+                {formatFieldConstraints(parameter) ? (
+                  <small> {formatFieldConstraints(parameter)}</small>
+                ) : null}
                 {parameter.allowedValues?.length ? (
                   <small>
                     {' '}
@@ -153,11 +156,17 @@ const formatPattern = (pattern?: string) => {
   return 'Formato: debe cumplir la regla definida para este campo.';
 };
 
-const formatFieldConstraints = (field: ParameterSpec) =>
+const formatFieldConstraints = (field: FieldSpec) =>
   [
     formatPattern(field.pattern),
     field.minimum !== undefined ? `Mínimo: ${field.minimum}` : undefined,
     field.maximum !== undefined ? `Máximo: ${field.maximum}` : undefined,
+    field.exclusiveMinimum !== undefined
+      ? `Mayor que: ${field.exclusiveMinimum}`
+      : undefined,
+    field.minimumItems !== undefined
+      ? `Mínimo de elementos: ${field.minimumItems}`
+      : undefined,
   ]
     .filter(Boolean)
     .join(' · ');

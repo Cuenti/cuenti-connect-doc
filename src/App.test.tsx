@@ -121,7 +121,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '49 operaciones' }),
+      screen.getByRole('heading', { name: '50 operaciones' }),
     ).toBeVisible();
   });
 
@@ -340,6 +340,54 @@ describe('documentation application', () => {
       within(guidance as HTMLElement).getAllByText('objDetalle[].code'),
     ).toHaveLength(2);
     expect(screen.getByText('Modo 1: ID interno')).toBeVisible();
+    for (const field of [
+      'id_documento',
+      'bodega_destino',
+      'emitir_electronicamente',
+    ]) {
+      const row = screen.getByText(field).closest('tr');
+      expect(row).toHaveTextContent('entero | null');
+      expect(row).not.toHaveTextContent('Mínimo:');
+    }
+    expect(
+      screen.getByRole('heading', { name: 'Ejemplo de error HTTP 422' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/codigo_error:1050:Producto de ejemplo sin existencia/),
+    ).toBeVisible();
+    expect(screen.getByText(/Para gasto, tipoDocumento=7/)).toBeVisible();
+  });
+
+  it('renders cost centers with their actual success and error envelopes without a request body', () => {
+    window.history.replaceState(
+      {},
+      '',
+      '/?endpoint=organizacion-centros-costo',
+    );
+    render(<App />);
+    expect(
+      screen.getByRole('heading', { name: 'Consultar centros de costo' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/Este contrato usa \{success,data,error,request_id\}/),
+    ).toBeVisible();
+    expect(
+      screen.getByText(/Una lista vacía es una consulta exitosa/),
+    ).toBeVisible();
+    expect(
+      screen.queryByLabelText('Solicitud JSON de ejemplo'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders the documented confirmed-payment fallback and positive amount constraint', () => {
+    window.history.replaceState({}, '', '/?endpoint=finanzas-anticipos-crear');
+    render(<App />);
+    expect(
+      screen.getByRole('heading', {
+        name: 'Respuesta alternativa: pago confirmado sin comprobante enriquecido',
+      }),
+    ).toBeVisible();
+    expect(screen.getByText('Mayor que: 0')).toBeVisible();
   });
 
   it('does not render capabilities pending implementation', () => {

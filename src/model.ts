@@ -27,6 +27,7 @@ export interface ParameterSpec {
   pattern?: string;
   minimum?: number;
   maximum?: number;
+  exclusiveMinimum?: number;
   nullable?: boolean;
 }
 
@@ -112,6 +113,8 @@ export interface EndpointDoc {
   requestExample?: unknown;
   responseContract?: string;
   responseExample?: unknown;
+  responseEnvelope?: string;
+  responseFallbackExample?: unknown;
   groups: FieldGroup[];
   columns: string[];
   compatibility?: CompatibilityMetadata;

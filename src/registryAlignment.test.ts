@@ -18,8 +18,113 @@ const endpointFor = (contractId: string) => {
 };
 
 describe('current wrapper public surface', () => {
+  it('does not advertise mutation body fields as selectable response columns', () => {
+    for (const endpoint of registry.endpoints.filter(
+      (item) => item.kind === 'mutation',
+    )) {
+      expect(endpoint.columns, endpoint.id).toEqual([]);
+    }
+  });
+  it('does not turn partial third-party updates into creation payloads', () => {
+    const update = registry.endpoints.find(
+      (endpoint) => endpoint.id === 'terceros-actualizar',
+    );
+    expect(update?.bodyFields.every((field) => !field.required)).toBe(true);
+    expect(update?.notes).toContain('Las actualizaciones son parciales');
+    const creation = registry.endpoints.find(
+      (endpoint) => endpoint.id === 'terceros-crear',
+    );
+    expect(
+      creation?.bodyFields.find((field) => field.name === 'es_cliente')
+        ?.required,
+    ).toBe(false);
+    expect(creation?.notes).toContain('es_cliente=1 o es_proveedor=1');
+  });
+  it('preserves every public response, fallback and declared request header from its contract', () => {
+    for (const route of rawRegistry.routes) {
+      const source = rawRegistry.endpoints.find(
+        (item) => item.id === route.contract,
+      );
+      const endpoint = registry.endpoints.find(
+        (item) => item.id === route.routeId,
+      );
+      expect(endpoint, route.routeId).toBeDefined();
+      expect(endpoint?.method).toBe(route.method);
+      expect(endpoint?.path).toBe(route.path);
+      expect(endpoint?.responseExample).toEqual(source?.response.example);
+      expect(endpoint?.responseEnvelope).toBe(source?.response.envelope);
+      expect(endpoint?.responseFallbackExample).toEqual(
+        source?.response.fallbackExample,
+      );
+      expect(endpoint?.headers.map((header) => header.name)).toEqual(
+        source?.requiredHeaders,
+      );
+    }
+  });
+
+  it('documents cost centers as a bodyless uncached query with the standard envelope', () => {
+    const endpoint = endpointFor('consultarCentro_costo2');
+    expect(endpoint.path).toBe('/api/v1/organizacion/centros-costo');
+    expect(endpoint.method).toBe('GET');
+    expect(endpoint.bodyType).toBe('none');
+    expect(endpoint.cache.mode).toBe('bypass');
+    expect(endpoint.responseEnvelope).toBe('items');
+    expect(endpoint.responseExample).toHaveProperty(
+      'data.items.0.id_centro_costo',
+      1,
+    );
+    expect(
+      buildCurl(endpoint, defaultDraft(endpoint), 'http://127.0.0.1:8083'),
+    ).not.toContain('--data');
+  });
+
+  it('preserves nullable document integers and exposes all canonical body rules and monetary bounds', () => {
+    const endpoint = endpointFor('grabarDocumentoSimple');
+    for (const name of [
+      'emitir_electronicamente',
+      'bodega_destino',
+      'id_documento',
+    ]) {
+      expect(
+        endpoint.bodyFields.find((field) => field.name === name),
+      ).toMatchObject({
+        type: 'integer',
+        nullable: true,
+        required: false,
+        minimum: undefined,
+      });
+      const draft = defaultDraft(endpoint);
+      draft.credentials = {
+        company: 'example-company',
+        token: 'example-token',
+        branch: '1',
+        employee: '1',
+        timezone: 'GMT-0500',
+      };
+      for (const value of [null, -1, 0, 1]) {
+        draft.body = JSON.stringify({
+          ...(endpoint.requestExample as object),
+          [name]: value,
+        });
+        expect(
+          JSON.parse(buildRequest(endpoint, draft).init.body as string)[name],
+        ).toBe(value);
+      }
+    }
+    const source = rawRegistry.endpoints.find(
+      (item) => item.id === 'grabarDocumentoSimple',
+    );
+    for (const rule of source?.body.rules ?? [])
+      expect(endpoint.notes).toContain(rule);
+    expect(
+      endpointFor('agregarPagoAnticipo').bodyFields.find(
+        (field) => field.name === 'valor',
+      )?.exclusiveMinimum,
+    ).toBe(0);
+  });
+
   it('covers the declared public catalog without exposing private descriptors', () => {
-    expect(registry.endpoints).toHaveLength(49);
+    expect(registry.endpoints).toHaveLength(50);
     expect(registry.endpoints.map((item) => item.id)).toEqual([
       ...rawRegistry.routes.map((route) => route.routeId),
       ...externalTools.tools.map((tool) => tool.id),

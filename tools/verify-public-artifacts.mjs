@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { isDeepStrictEqual, parseArgs } from 'node:util';
+import { renderErpReference } from './generate-erp-reference.mjs';
 
 const { values } = parseArgs({
   options: { 'source-registry': { type: 'string' } },
@@ -16,6 +17,16 @@ const oldSkillArchive = resolve(root, 'public/skills/cuenti-mcp.zip');
 const externalRegistry = JSON.parse(readFileSync(externalToolsPath, 'utf8'));
 const erpRegistry = JSON.parse(readFileSync(erpRegistryPath, 'utf8'));
 const statsRegistry = JSON.parse(readFileSync(statsRegistryPath, 'utf8'));
+if (
+  readFileSync(
+    resolve(root, 'public/skills/cuenti-mcp-erp/references/endpoints.md'),
+    'utf8',
+  ) !== renderErpReference(erpRegistry, externalRegistry)
+) {
+  throw new Error(
+    'La referencia ERP difiere del registro; ejecuta pnpm run artifacts:generate.',
+  );
+}
 
 if (values['source-registry'] !== undefined) {
   const canonical = JSON.parse(readFileSync(values['source-registry'], 'utf8'));

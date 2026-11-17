@@ -16,7 +16,7 @@ IDs que normalmente dependen de la empresa y no deben inventarse:
 | Campo | Qué representa | Cómo obtenerlo |
 | --- | --- | --- |
 | `id_plan_cuentas` / `id_plan_cuenta` | Cuenta contable del ERP. | No hay catálogo MCP dedicado; pregunta el ID. |
-| `id_centro_costo` | Centro de costos. | No hay catálogo MCP dedicado; pregunta el ID. |
+| `id_centro_costo` | Centro de costos. | Consulta `organizacion-centros-costo` y elige `data.items[].id_centro_costo`. |
 | `id_bodega` | Bodega asociada al movimiento o empleado. | No hay catálogo MCP dedicado; pregunta el ID. |
 | `id_lista_precios` | Lista de precios. | No hay catálogo MCP dedicado; pregunta el ID. |
 | `id_ruta_despacho` | Ruta de despacho. | No hay catálogo MCP dedicado; pregunta el ID. |
@@ -27,15 +27,16 @@ Catálogos MCP disponibles:
 
 | Necesitas el ID de... | Consulta |
 | --- | --- |
-| Producto | `buscarProductosCatalogo` |
-| Categoría | `buscarCategorias` |
-| Sucursal | `buscarSucursales` |
-| Banco | `buscarBancos` |
-| Impuesto | `buscarImpuestos` |
-| Medio de pago | `buscarMediosPago` |
-| Consecutivo | `buscarConsecutivos` |
-| Empleado | `buscarEmpleados` |
-| Tercero | `buscarTercero` |
+| Producto | `catalogo-productos-busquedas` |
+| Categoría | `catalogo-categorias-busquedas` |
+| Sucursal | `organizacion-sucursales-busquedas` |
+| Banco | `finanzas-bancos-busquedas` |
+| Impuesto | `tributario-impuestos-busquedas` |
+| Medio de pago | `finanzas-medios-pago-busquedas` |
+| Consecutivo | `facturacion-consecutivos-busquedas` |
+| Empleado | `organizacion-empleados-busquedas` |
+| Tercero | `terceros-busquedas` |
+| Centro de costo | `organizacion-centros-costo` (REST: `GET /api/v1/organizacion/centros-costo`, sin cuerpo) |
 
 ## Valores base
 

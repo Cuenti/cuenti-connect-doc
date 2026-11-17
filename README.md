@@ -79,11 +79,28 @@ Las consultas de comandas y platos eliminados requieren `Content-Type`, empresa 
 | Registrar un abono nuevo | `POST /api/v1/finanzas/abonos` sin `id_comprobante_caja`: crea un nuevo recibo. |
 | Aplicar un anticipo existente | La misma ruta con `id_comprobante_caja`: usa saldo ya recibido. No ejecutes ambas variantes como si fueran la misma operación. |
 | Consultar un anticipo o comprobante | Usa las consultas de anticipos por cliente/sucursal o de comprobante por ID; no repitas una escritura para recuperar su respuesta. |
+| Crear una factura referenciada a un pedido | `POST /api/v1/documentos` con `tipoDocumento: 1` e `id_documento` del pedido. Envía el payload completo de creación: cliente, detalle, consecutivo y demás campos requeridos; no copia el pedido automáticamente ni es una asociación posterior. |
+| Consultar centros de costo | `GET /api/v1/organizacion/centros-costo`, sin cuerpo ni filtros. Requiere empresa, sucursal, empleado, `GMT-0500` y autorización. Devuelve `data.items` dentro del sobre estándar, sin caché. |
 | Anular un pedido u otro documento comercial | `POST /api/v1/documentos/{id_documento}/anulaciones/{id_empleado}`, sin cuerpo. Usa el ID de `vent_documento` y el empleado local. Devuelve `{ "success": true, "status": "ANULADO" }` o `YA_ESTABA_ANULADO`; no llames al GET Java ni a la anulación de transacciones. |
 
 Las fechas financieras `fecha_registro` usan `YYYY-MM-DDTHH:mm:ss`, sin `Z`, offset ni epoch; por ejemplo, `2026-10-21T15:30:00`. Los filtros de fecha de restaurante usan milisegundos Unix. Los IDs de empleado, sucursal, banco y medio de pago pertenecen al ERP de la empresa, no al usuario del portal.
 
-Solo creación, consulta y anulación de anticipos y anulación de abonos usan `{success,data,error,request_id}`. Los abonos existentes, terceros y anulaciones de documentos conservan sus formatos específicos. Si el comprobante enriquecido es `null` tras confirmar un pago, consulta por ID: no significa que haya fallado. Ante un resultado de mutación desconocido, consulta el estado y no reintentes automáticamente.
+Creación, consulta y anulación de anticipos, anulación de abonos y consulta de centros de costo usan `{success,data,error,request_id}`. En errores, `data` es `null` y `error` contiene `code`, `message`, `retryable` y, cuando aplica, `field`. Los abonos existentes, terceros y anulaciones de documentos conservan sus formatos específicos. Si el comprobante enriquecido es `null` tras confirmar un pago, consulta por ID: no significa que haya fallado. Ante un resultado de mutación desconocido, consulta el estado y no reintentes automáticamente.
+
+En la creación de documentos, `emitir_electronicamente`, `bodega_destino` e `id_documento` son enteros opcionales que aceptan `null`, sin mínimo. Se reenvían sin convertirlos a booleanos ni añadirlos si se omiten. Para gasto (`tipoDocumento: 7`) se exige `id_centro_costo` y cada línea usa `id_plan_cuentas`; consulta los centros antes de elegir el ID.
+
+Los errores controlados de contratos sin sobre conservan `{error,message,request_id,retryable}`; las validaciones HTTP 400 usan `{error:"invalid_request",field}`. Por ejemplo, la creación de una factura rechazada por inventario devuelve HTTP 422:
+
+```json
+{
+  "error": "erp_mutation_rejected",
+  "message": "El ERP rechazó la operación. codigo_error:1050:Producto de ejemplo sin existencia",
+  "request_id": "0123456789abcdef0123456789abcdef",
+  "retryable": false
+}
+```
+
+Solo se amplía `message` con texto de negocio seguro, hasta 1024 bytes; no cambia el estado HTTP, el código ni `retryable`. SQL, trazas y credenciales permanecen ocultos. Los errores controlados llevan `Cache-Control: no-store` y `X-Request-ID`. `erp_mutation_outcome_unknown` nunca autoriza repetir automáticamente una escritura. El panel de respuesta muestra también las alternativas documentadas para pagos confirmados sin comprobante enriquecido.
 
 El catálogo actual permite crear y anular documentos, pero no publica una modificación de pedidos ni la asociación propuesta entre un documento existente y una transacción. Tampoco ofrece una asociación directa de un anticipo a un documento existente sin transacción. `lstPagos[].id_comprobante_caja` es una referencia opcional en la creación del documento, no una ruta de asociación posterior.
 
@@ -105,6 +122,7 @@ No guardes tokens, contraseñas, credenciales de empresa ni datos personales en 
 ```bash
 pnpm run verify
 pnpm run build
+pnpm exec playwright install chromium --only-shell
 pnpm run test:e2e
 ```
 
@@ -117,6 +135,8 @@ node tools/verify-public-artifacts.mjs --source-registry /ruta/al/wrapper/contra
 ```
 
 El chequeo falla ante cualquier diferencia de contenido, aunque coincidan los conteos. Sin esa opción conserva las verificaciones locales de secciones Markdown y del contenido y orden de los ZIP, sin depender de un checkout hermano. Esta actualización toma como referencia el árbol local del wrapper; no demuestra qué versión está desplegada.
+
+Después de sincronizar `contracts/j4/endpoints.json` con la fuente canónica del wrapper, ejecuta `pnpm run artifacts:generate` para regenerar la referencia ERP y su ZIP. `artifacts:check` compara también todo el Markdown generado (payloads de solicitud, respuesta, alternativas y restricciones), no solo sus IDs. La generación requiere Node, Python 3 y su biblioteca estándar; la verificación de ZIP requiere `unzip`. Stats conserva sus artefactos independientes.
 
 ## Arquitectura
 
@@ -145,4 +165,4 @@ El dominio no depende de React ni de APIs del navegador. Los componentes reciben
 | `src/request.ts` | Validación de campos, URL del proxy, normalización de Bearer, generación de curl y preparación de solicitudes. |
 | `src/TryIt.tsx` | Credenciales solo en memoria, tiempo límite, confirmación de mutaciones e inspección de respuestas. |
 
-El catálogo actual contiene **48 rutas públicas ERP y una herramienta externa: 49 operaciones**. Los descriptores privados, incluido `consultarClienteId`, no se publican. El adaptador exige rutas públicas explícitas, referencias válidas, IDs únicos y pares método/ruta únicos, en lugar de imponer un conteo fijo. Stats conserva su catálogo independiente.
+El catálogo actual contiene **49 rutas públicas ERP y una herramienta externa: 50 operaciones**. Los descriptores privados, incluido `consultarClienteId`, no se publican. El adaptador exige rutas públicas explícitas, referencias válidas, IDs únicos y pares método/ruta únicos, en lugar de imponer un conteo fijo. Stats conserva su catálogo independiente.

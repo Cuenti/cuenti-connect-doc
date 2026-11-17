@@ -7,7 +7,7 @@ const dynamicIds = [
   [
     'id_centro_costo',
     'Centro de costos',
-    'Preguntar el ID; no hay catálogo MCP dedicado.',
+    'GET /api/v1/organizacion/centros-costo; usa data.items[].id_centro_costo.',
   ],
   [
     'id_bodega',
@@ -84,6 +84,11 @@ export const CatalogGuide = () => (
           headers={['Campo', 'Representa']}
           rows={dynamicIds.map(([field, meaning]) => [field, meaning])}
         />
+        <p>
+          Consulta <code>GET /api/v1/organizacion/centros-costo</code> para
+          obtener los centros de costo de la empresa en <code>data.items</code>,
+          sin cuerpo ni filtros. No inventes sus identificadores.
+        </p>
       </section>
 
       <section

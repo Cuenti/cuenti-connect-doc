@@ -284,6 +284,7 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
     ),
     type ? `Tipo: ${typeLabels[type] ?? type}.` : '',
     ruleLabels[rule] ?? '',
+    item.inclusive === true ? 'Límite inclusivo.' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -305,6 +306,7 @@ const normalizeParameter = (value: unknown): ParameterSpec => {
     pattern: asString(item.pattern) || undefined,
     minimum: asNumber(item.minimum),
     maximum: asNumber(item.maximum),
+    exclusiveMinimum: asNumber(item.exclusiveMinimum),
   };
 };
 
@@ -824,7 +826,10 @@ const projectPublicRoute = (
   projected.category = asString(route.category) || asString(projected.category);
   projected.publicRoute = true;
   projected.descriptionId = asString(route.contract);
-  return redactTerms(projected, hidden) as UnknownRecord;
+  return {
+    ...asRecord(redactTerms(projected, hidden)),
+    response: projected.response,
+  };
 };
 
 const normalizeErrors = (value: unknown): ErrorSpec[] =>
@@ -997,6 +1002,7 @@ const normalizeEndpoint = (
     path,
   );
   const columns =
+    kind === 'mutation' ||
     first(item, ['projectionPolicy']) === 'groups-or-empty'
       ? []
       : first(body, ['allowColumns']) === false
@@ -1007,9 +1013,13 @@ const normalizeEndpoint = (
             ? strings(first(body, ['columns', 'columnas']))
             : normalizeFieldNames(first(body, ['fields', 'campos']));
   const creationRequired = new Set(
-    strings(body.createRequired).map((rule) => rule.split('=')[0].trim()),
+    method === 'PUT'
+      ? []
+      : strings(body.createRequired).filter((rule) =>
+          /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(rule),
+        ),
   );
-  if (contractId === 'guardarTercero') {
+  if (contractId === 'guardarTercero' && method !== 'PUT') {
     if (strings(body.createRequired).some((rule) => /teléfono/i.test(rule))) {
       creationRequired.add('telefonos');
     }
@@ -1024,7 +1034,15 @@ const normalizeEndpoint = (
   const retiredKitchenWrite = ['grabar', 'mesas'].join('');
   const retiredTaxFlag = ['impuesto', 'saludable'].join('_');
   const omittedDishField = ['id', 'transacion'].join('_');
-  const notes = strings(first(item, ['notes', 'notas'])).filter((note) => {
+  const notes = [
+    ...new Set([
+      ...strings(first(item, ['notes', 'notas'])),
+      ...strings(body.rules),
+      ...strings(
+        method === 'PUT' ? body.updateRules : body.createRequired,
+      ).filter((rule) => !rule.includes('route-fixed-selector')),
+    ]),
+  ].filter((note) => {
     const normalizedNote = note.toLowerCase();
     if (
       normalizedNote.includes(retiredKitchenWrite) ||
@@ -1082,11 +1100,30 @@ const normalizeEndpoint = (
     bodyType: asString(body.type) || undefined,
     bodyFields,
     bodyDescription:
-      asString(first(item, ['bodyDescription', 'descripcionBody'])) ||
-      asString(first(body, ['description', 'descripcion'])) ||
-      (asBoolean(first(body, ['required', 'obligatorio']))
-        ? 'El cuerpo JSON es obligatorio y debe respetar los campos o grupos documentados.'
-        : undefined),
+      [
+        asString(first(item, ['bodyDescription', 'descripcionBody'])) ||
+          asString(first(body, ['description', 'descripcion'])) ||
+          (asBoolean(first(body, ['required', 'obligatorio']))
+            ? 'El cuerpo JSON es obligatorio y debe respetar los campos o grupos documentados.'
+            : ''),
+        body.type === 'array'
+          ? 'Envía un arreglo de objetos, no un objeto individual.'
+          : '',
+        body.minimumItems !== undefined
+          ? `Mínimo de elementos: ${body.minimumItems}.`
+          : '',
+        body.maximumItems !== undefined
+          ? `Máximo de elementos: ${body.maximumItems}.`
+          : '',
+        body.emptyBodyAllowed === true
+          ? body.required === true
+            ? 'Acepta {} como cuerpo para solicitar la proyección completa; no omitas el cuerpo.'
+            : 'Admite cuerpo ausente o {}.'
+          : '',
+        body.strict === true ? 'No admite campos desconocidos.' : '',
+      ]
+        .filter(Boolean)
+        .join(' ') || undefined,
     requestExample:
       first(item, ['requestExample', 'request']) ??
       first(examples, ['request', 'solicitud']) ??
@@ -1097,6 +1134,8 @@ const normalizeEndpoint = (
       first(item, ['responseExample']) ??
       first(examples, ['response', 'respuesta']) ??
       first(response, ['example', 'ejemplo']),
+    responseEnvelope: asString(response.envelope) || undefined,
+    responseFallbackExample: response.fallbackExample,
     groups: classifiedGroups,
     columns,
     compatibility:

@@ -12,7 +12,7 @@ const findEndpoint = (id: string) =>
   );
 
 describe('canonical documentation registry', () => {
-  it('exposes all 49 approved public method/path tuples', () => {
+  it('exposes all 50 approved public method/path tuples', () => {
     const tuples = registry.endpoints.map(
       (endpoint) => `${endpoint.method} ${endpoint.path}`,
     );
@@ -62,6 +62,7 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/finanzas/cartera/cuentas-por-pagar/resumenes-por-tercero/busquedas',
         'POST /api/v1/organizacion/sucursales/busquedas',
         'POST /api/v1/organizacion/empleados/busquedas',
+        'GET /api/v1/organizacion/centros-costo',
         'POST /api/v1/facturacion/consecutivos/busquedas',
         'POST /api/v1/restaurante/comandas/busquedas',
         'POST /api/v1/restaurante/comandas/platos-eliminados/busquedas',
@@ -69,7 +70,7 @@ describe('canonical documentation registry', () => {
         'GET /api/v1/restaurante/mesas-ocupadas',
       ]),
     );
-    expect(tuples).toHaveLength(49);
+    expect(tuples).toHaveLength(50);
     expect(tuples.every((tuple) => tuple.includes('/api/v1/'))).toBe(true);
     expect(JSON.stringify(registry)).not.toContain('/jServerj4ErpPro');
     expect(
@@ -78,7 +79,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('keeps the public query and mutation split', () => {
-    expect(registry.endpoints).toHaveLength(49);
+    expect(registry.endpoints).toHaveLength(50);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -92,7 +93,7 @@ describe('canonical documentation registry', () => {
     ).toHaveLength(14);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(17);
+    ).toHaveLength(18);
   });
 
   it('keeps the flat public service distribution', () => {
@@ -110,7 +111,7 @@ describe('canonical documentation registry', () => {
       'Transacciones y documentos': 19,
       Impuestos: 2,
       'Finanzas y cartera': 12,
-      Organización: 2,
+      Organización: 3,
       Facturación: 1,
       Restaurante: 4,
     });

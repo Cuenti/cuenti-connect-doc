@@ -24,13 +24,51 @@ const fixture = () => {
     writeFileSync(target, value);
   };
   const registry = {
-    endpoints: [{ id: 'public-contract' }, { id: 'private-contract' }],
-    routes: [{ routeId: 'public-route', contract: 'public-contract' }],
+    headerDefinitions: {},
+    endpoints: [
+      {
+        id: 'public-contract',
+        title: 'Public',
+        category: 'Organización',
+        method: 'GET',
+        operation: 'query',
+        requiredHeaders: [],
+        params: { path: [], query: [] },
+        body: { type: 'none' },
+        response: { shape: 'object', example: { value: 1 } },
+      },
+      { id: 'private-contract' },
+    ],
+    routes: [
+      {
+        routeId: 'public-route',
+        contract: 'public-contract',
+        title: 'Public',
+        category: 'Organización',
+        method: 'GET',
+        path: '/api/v1/public',
+        translation: {},
+      },
+    ],
   };
   write('contracts/j4/endpoints.json', JSON.stringify(registry));
   write(
     'contracts/mcp/external-tools.json',
-    '{"tools":[{"id":"external-tool"}]}',
+    JSON.stringify({
+      tools: [
+        {
+          id: 'external-tool',
+          title: 'External',
+          category: 'Restaurante',
+          method: 'POST',
+          path: '/api/v1/external',
+          operation: 'mutation',
+          requiredHeaders: [],
+          body: { type: 'object', example: {} },
+          response: { shape: 'object', example: {} },
+        },
+      ],
+    }),
   );
   write(
     'contracts/stats/endpoints.json',
@@ -40,6 +78,10 @@ const fixture = () => {
   copyFileSync(
     resolve('tools/verify-public-artifacts.mjs'),
     join(root, 'tools/verify-public-artifacts.mjs'),
+  );
+  copyFileSync(
+    resolve('tools/generate-erp-reference.mjs'),
+    join(root, 'tools/generate-erp-reference.mjs'),
   );
   for (const [id, reference, tools] of [
     ['cuenti-mcp-erp', 'endpoints.md', ['public-route', 'external-tool']],
@@ -67,6 +109,9 @@ const fixture = () => {
       },
     );
   }
+  execFileSync(process.execPath, ['tools/generate-erp-reference.mjs'], {
+    cwd: root,
+  });
   const run = (...args: string[]) =>
     spawnSync(
       process.execPath,
@@ -102,6 +147,15 @@ describe('public artifact verification CLI', () => {
     const result = run('--source-registry', join(root, 'canonical.json'));
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain('no coincide con la fuente canónica');
+  });
+
+  it('rejects outdated request/response documentation even when IDs are unchanged', () => {
+    const { write, run } = fixture();
+    write(
+      'public/skills/cuenti-mcp-erp/references/endpoints.md',
+      '### `public-route`: Outdated\n\n### `external-tool`: Outdated\n',
+    );
+    expect(run().stderr).toContain('La referencia ERP difiere del registro');
   });
 
   it('rejects missing values and unknown explicit options', () => {
