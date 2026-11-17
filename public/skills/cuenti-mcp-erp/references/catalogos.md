@@ -132,17 +132,28 @@ Los valores siguen el orden de la configuración mostrada:
 
 ### Tipo de documento
 
-Usa estos valores en los filtros y en `documentos-crear`. La creación cubre
-transacciones como facturas, compras y remisiones, además de documentos
-comerciales como órdenes de compra, cotizaciones y despachos. Consulta el
-catálogo ERP para los tipos adicionales habilitados. Cuando un filtro acepta
-varios documentos, envía los valores separados por comas.
+En `documentos-crear` el campo es `tipoDocumento`; en los filtros que lo declaran,
+`tipo_documento`. No todas las operaciones aceptan todos los tipos: respeta el
+contrato y la configuración de la empresa. Cuando un filtro acepta varios
+documentos, envía los valores separados por comas.
 
-| Valor de ejemplo | Significado |
+| Valor | Tipo de documento |
 | --- | --- |
 | `1` | Factura |
-| `7` | Compra o gasto |
-| `9` | Prefactura o remisión |
+| `2` | Plan separe |
+| `3` | Despacho agrupado |
+| `4` | Pedidos |
+| `5` | Cotizaciones |
+| `6` | Otros ingresos |
+| `7` | Compra/gasto |
+| `8` | Despacho |
+| `9` | Remisiones |
+| `12` | Órdenes de producción |
+| `13` | Factura de venta recurrente |
+| `14` | Compras/gastos recurrentes |
+| `18` | Préstamos |
+| `23` | Orden de compra |
+| `24` | Orden de compra interna |
 
 ### Estado de comanda
 

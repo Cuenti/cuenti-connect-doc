@@ -51,7 +51,7 @@ const CatalogTable = ({
         {rows.map((row) => (
           <tr key={row.join('-')}>
             {row.map((cell, index) => (
-              <td key={`${row[0]}-${cell}`}>
+              <td key={`${row[0]}-${headers[index]}`}>
                 {index === 0 ? <code>{cell}</code> : cell}
               </td>
             ))}
@@ -198,18 +198,29 @@ export const CatalogGuide = () => (
         />
         <h3>Tipo de documento</h3>
         <p>
-          Usa estos valores en los filtros y en `documentos-crear`. La creación
-          cubre transacciones como facturas, compras y remisiones, además de
-          documentos comerciales como órdenes de compra, cotizaciones y
-          despachos. Consulta el catálogo ERP para los tipos adicionales
-          habilitados.
+          En la creación de documentos el campo es <code>tipoDocumento</code>.
+          En los filtros que lo declaran, <code>tipo_documento</code>. No todas
+          las operaciones aceptan todos los tipos: respeta el contrato y la
+          configuración de la empresa.
         </p>
         <CatalogTable
-          headers={['Valor de ejemplo', 'Significado']}
+          headers={['Valor', 'Tipo de documento']}
           rows={[
             ['1', 'Factura'],
-            ['7', 'Compra o gasto'],
-            ['9', 'Prefactura o remisión'],
+            ['2', 'Plan separe'],
+            ['3', 'Despacho agrupado'],
+            ['4', 'Pedidos'],
+            ['5', 'Cotizaciones'],
+            ['6', 'Otros ingresos'],
+            ['7', 'Compra/gasto'],
+            ['8', 'Despacho'],
+            ['9', 'Remisiones'],
+            ['12', 'Órdenes de producción'],
+            ['13', 'Factura de venta recurrente'],
+            ['14', 'Compras/gastos recurrentes'],
+            ['18', 'Préstamos'],
+            ['23', 'Orden de compra'],
+            ['24', 'Orden de compra interna'],
           ]}
         />
       </section>
