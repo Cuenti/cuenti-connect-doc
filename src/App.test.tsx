@@ -121,7 +121,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '50 operaciones' }),
+      screen.getByRole('heading', { name: '54 operaciones' }),
     ).toBeVisible();
   });
 

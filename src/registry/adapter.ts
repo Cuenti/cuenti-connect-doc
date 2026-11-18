@@ -16,6 +16,7 @@ import {
   type HttpMethod,
   type ParameterSpec,
 } from '../model';
+import { publicContract } from './publicContract.mjs';
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -751,7 +752,7 @@ const projectPublicRoute = (
   contract: UnknownRecord,
   route: UnknownRecord,
 ): UnknownRecord => {
-  const projected = cloneRecord(contract);
+  const projected = publicContract(cloneRecord(contract), route);
   const translation = asRecord(route.translation);
   const hiddenQuery = new Set(Object.keys(asRecord(translation.fixedQuery)));
   const hiddenBody = new Set(Object.keys(asRecord(translation.fixedBody)));

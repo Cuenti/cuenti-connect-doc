@@ -7,25 +7,2343 @@
 - Elige la herramienta por necesidad y contrasta siempre los argumentos con `tools/list` del servidor MCP.
 - Los ejemplos de argumentos son MCP. Para REST usa únicamente `body` como cuerpo y los parámetros de ruta/consulta donde corresponda; nunca envíes `confirmation` al ERP.
 - Solicita confirmación antes de cada mutación. Ante un resultado desconocido consulta el estado; no repitas automáticamente.
-- Usa los IDs reales de la empresa y páginas pequeñas. Los ejemplos no demuestran despliegue en producción.
-- El catálogo contiene 49 rutas ERP y 1 herramienta externa.
+- Usa los IDs reales de la empresa; pagina solo cuando el contrato lo admita. Los ejemplos no demuestran despliegue en producción.
+- El catálogo contiene 53 rutas ERP y 1 herramienta externa.
 - Consulta [Finanzas y documentos](mcp-guide.md#finanzas-y-documentos) para errores, pagos y referencias de pedidos.
 
 ## Herramientas por necesidad
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Transacciones y documentos | `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `documentos-crear`, `transacciones-anular`, `documentos-anular`, `transacciones-notas-crear`, `transacciones-notas-credito-emitir`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas`, `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
+| Finanzas y cartera | `finanzas-comprobantes-caja-busquedas`, `finanzas-bancos-movimientos-busquedas`, `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `finanzas-abonos-crear`, `finanzas-anticipos-crear`, `finanzas-anticipos-cliente-sucursal`, `finanzas-anticipos-anular`, `finanzas-abonos-anular`, `finanzas-comprobante-caja-por-id`, `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
+| Inventario | `inventario-kardex-busquedas`, `inventario-conteos` |
+| Transacciones y documentos | `operativas-ordenes-produccion-busquedas`, `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `documentos-crear`, `transacciones-anular`, `documentos-anular`, `transacciones-notas-crear`, `transacciones-notas-credito-emitir`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas`, `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
 | Catálogo | `catalogo-productos-busquedas`, `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `catalogo-marcas`, `catalogo-marca-por-id` |
-| Inventario | `inventario-conteos` |
 | Terceros | `terceros-busquedas`, `terceros-crear`, `terceros-actualizar` |
 | Impuestos | `tributario-impuestos-busquedas`, `tributario-impuesto-por-id` |
-| Finanzas y cartera | `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `finanzas-abonos-crear`, `finanzas-anticipos-crear`, `finanzas-anticipos-cliente-sucursal`, `finanzas-anticipos-anular`, `finanzas-abonos-anular`, `finanzas-comprobante-caja-por-id`, `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
 | Organización | `organizacion-sucursales-busquedas`, `organizacion-empleados-busquedas`, `organizacion-centros-costo` |
 | Facturación | `facturacion-consecutivos-busquedas` |
 | Restaurante | `restaurante-comandas-busquedas`, `restaurante-platos-eliminados-busquedas`, `restaurante-mesas-ocupadas`, `restaurante-comandas-crear` |
 
+## Finanzas y cartera
+
+### `finanzas-comprobantes-caja-busquedas`: Buscar comprobantes de caja
+
+**Para qué sirve:** Buscar comprobantes de caja
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/comprobantes-caja/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `fecha_desde` | Sí | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | Sí | Tipo: epoch-milliseconds; no admite null |
+| `es_ingreso` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `id_cliente` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `id_banco` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `id_medio_pago` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `n_caja` | No | Tipo: string; no admite null |
+| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+
+**Cuerpo:** opcional; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `grupos` | No | Tipo: array; no admite null; mínimo de elementos: 1 |
+
+**Reglas del cuerpo**
+
+- Cuerpo ausente o {} devuelve la proyección SAFE completa, no el resultado crudo del ERP.
+- grupos, si se envía, debe ser una lista no vacía, sin duplicados y solo con grupos permitidos.
+- No admite columnas, detalle ni paginación; devuelve el resultado completo acotado.
+- Admite cuerpo ausente o {}.
+- No admite campos desconocidos en el cuerpo.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      {
+        "name": "comprobante",
+        "fields": [
+          "id_comprobante_caja",
+          "n_caja",
+          "es_ingreso",
+          "valor"
+        ]
+      },
+      {
+        "name": "fechas",
+        "fields": [
+          "fecha_registro"
+        ]
+      },
+      {
+        "name": "tercero",
+        "fields": [
+          "id_cliente",
+          "nombre_cliente",
+          "identificacion"
+        ]
+      },
+      {
+        "name": "banco",
+        "fields": [
+          "id_banco",
+          "nombre"
+        ]
+      },
+      {
+        "name": "medio_pago",
+        "fields": [
+          "id_medio_pago"
+        ]
+      },
+      {
+        "name": "sucursal",
+        "fields": [
+          "id_sucursal"
+        ]
+      },
+      {
+        "name": "empleado",
+        "fields": [
+          "id_empleado",
+          "nombre"
+        ]
+      },
+      {
+        "name": "estado",
+        "fields": [
+          "es_activo",
+          "es_cerrado"
+        ]
+      },
+      {
+        "name": "nota",
+        "fields": [
+          "nota"
+        ]
+      }
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_sucursal": "{{id_sucursal}}",
+  "fecha_desde": "{{fecha_desde}}",
+  "fecha_hasta": "{{fecha_hasta}}",
+  "body": {}
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: { items: ComprobanteCajaAgrupado[] } | null, error: { code: string, message: string, field?: string, retryable: boolean } | null, request_id: string }; dates are epoch-milliseconds.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "comprobante": {
+          "id_comprobante_caja": 101,
+          "n_caja": "RC-EJEMPLO-001",
+          "es_ingreso": 1,
+          "valor": 12500.25
+        },
+        "fechas": {
+          "fecha_registro": 1735744272123
+        },
+        "tercero": {
+          "id_cliente": 8,
+          "nombre_cliente": "Cliente ficticio",
+          "identificacion": "EJEMPLO-008"
+        },
+        "banco": {
+          "id_banco": 9,
+          "nombre": "Banco ficticio"
+        },
+        "medio_pago": {
+          "id_medio_pago": 2
+        },
+        "sucursal": {
+          "id_sucursal": 7
+        },
+        "empleado": {
+          "id_empleado": 42,
+          "nombre": "Empleado ficticio"
+        },
+        "estado": {
+          "es_activo": 1,
+          "es_cerrado": 0
+        },
+        "nota": {
+          "nota": "Comprobante ficticio de ejemplo"
+        }
+      }
+    ]
+  },
+  "error": null,
+  "request_id": "00000000000000000000000000000000"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Notas**
+
+- Las fechas públicas son epoch-milliseconds entre 0 y 253402300799999. Los timestamps SQL sin zona usan X-gtm (GMT-0500); los offsets RFC3339 explícitos se respetan.
+- Rango máximo de 31 días; filtros locales AND sobre el resultado completo. es_ingreso omitido consulta ambas direcciones, todo o error. valor es tc.valor (abono_recibo), no asignaciones. es_anticipo=0 incluye todos.
+- Fechas epoch-milliseconds obligatorias y ordenadas (fecha_desde <= fecha_hasta); máximo 31 días.
+- Consulta de solo lectura: no requiere confirmación. Cache bypass; Cache-Control: no-store.
+- Fechas de salida en epoch-milliseconds; las relaciones ausentes conservan null.
+
+### `finanzas-bancos-movimientos-busquedas`: Buscar movimientos bancarios
+
+**Para qué sirve:** Buscar movimientos bancarios
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/bancos/{id_banco}/movimientos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `fecha_desde` | Sí | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | Sí | Tipo: epoch-milliseconds; no admite null |
+
+**Cuerpo:** opcional; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `grupos` | No | Tipo: array; no admite null; mínimo de elementos: 1 |
+
+**Reglas del cuerpo**
+
+- Cuerpo ausente o {} devuelve la proyección SAFE completa, no el resultado crudo del ERP.
+- grupos, si se envía, debe ser una lista no vacía, sin duplicados y solo con grupos permitidos.
+- No admite columnas, detalle ni paginación; devuelve el resultado completo acotado.
+- Admite cuerpo ausente o {}.
+- No admite campos desconocidos en el cuerpo.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      {
+        "name": "movimiento",
+        "fields": [
+          "id_movimiento",
+          "valor",
+          "es_entrada",
+          "nota"
+        ]
+      },
+      {
+        "name": "fechas",
+        "fields": [
+          "fecha_registro",
+          "fecha_transaccion"
+        ]
+      },
+      {
+        "name": "banco",
+        "fields": [
+          "id_banco"
+        ]
+      },
+      {
+        "name": "sucursal",
+        "fields": [
+          "id_sucursal"
+        ]
+      },
+      {
+        "name": "comprobante",
+        "fields": [
+          "id_comprobante_caja",
+          "n_caja",
+          "es_activo",
+          "es_ingreso"
+        ]
+      },
+      {
+        "name": "tercero",
+        "fields": [
+          "id_cliente",
+          "nombre_cliente",
+          "identificacion"
+        ]
+      },
+      {
+        "name": "empleado",
+        "fields": [
+          "id_empleado",
+          "nombre"
+        ]
+      },
+      {
+        "name": "medio_pago",
+        "fields": [
+          "nombre"
+        ]
+      },
+      {
+        "name": "transaccion",
+        "fields": [
+          "id_transacion",
+          "tipo_documento",
+          "n_factura",
+          "n_transacion"
+        ]
+      }
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_banco": "{{id_banco}}",
+  "id_sucursal": "{{id_sucursal}}",
+  "fecha_desde": "{{fecha_desde}}",
+  "fecha_hasta": "{{fecha_hasta}}",
+  "body": {}
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: { items: MovimientoBancoAgrupado[] } | null, error: { code: string, message: string, field?: string, retryable: boolean } | null, request_id: string }; dates are epoch-milliseconds.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "movimiento": {
+          "id_movimiento": 201,
+          "valor": -12500.25,
+          "es_entrada": 0,
+          "nota": "Movimiento ficticio de ejemplo"
+        },
+        "fechas": {
+          "fecha_registro": 1735744272123,
+          "fecha_transaccion": null
+        },
+        "banco": {
+          "id_banco": 9
+        },
+        "sucursal": {
+          "id_sucursal": 7
+        },
+        "comprobante": null,
+        "tercero": null,
+        "empleado": {
+          "id_empleado": 42,
+          "nombre": "Empleado ficticio"
+        },
+        "medio_pago": null,
+        "transaccion": null
+      }
+    ]
+  },
+  "error": null,
+  "request_id": "00000000000000000000000000000000"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Notas**
+
+- Las fechas públicas son epoch-milliseconds entre 0 y 253402300799999. Los timestamps SQL sin zona usan X-gtm (GMT-0500); los offsets RFC3339 explícitos se respetan.
+- El origen expande fechas al día local completo 00:00..23:59:59; no ofrece precisión intradía. valor conserva su signo. es_activo pertenece al comprobante, no al movimiento. Sin saldos históricos ni filtro exclusivo de transferencias.
+- Fechas epoch-milliseconds obligatorias y ordenadas (fecha_desde <= fecha_hasta); máximo 31 días.
+- Consulta de solo lectura: no requiere confirmación. Cache bypass; Cache-Control: no-store.
+- Fechas de salida en epoch-milliseconds; las relaciones ausentes conservan null.
+- Máximo 31 días calendario inclusivos en GMT-0500; el origen expande ambos extremos al día local completo, sin precisión intradía.
+
+### `finanzas-bancos-busquedas`: Buscar bancos
+
+**Para qué sirve:** Consulta las cuentas bancarias y cajas disponibles para la empresa.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/bancos/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
+| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
+| `id_banco` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `id_sucursal` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `nombre` | No | Tipo: string; no admite null |
+| `numero_cuenta` | No | Tipo: string; no admite null |
+| `codigo` | No | Tipo: string; no admite null |
+| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1`; predeterminado: 1 |
+
+**Cuerpo:** obligatorio; object.
+
+**Reglas del cuerpo**
+
+- Acepta {} como cuerpo para solicitar la proyección completa; no omitas el cuerpo.
+- Proyección sin selección: full.
+
+**Columnas permitidas**
+
+`id_banco`, `nombre`, `numero_cuenta`, `saldo`, `descripcion`, `es_activo`, `id_plan_cuenta`, `codigo`, `id_sucursal`, `nombre_sucursal`, `config`
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      "banco",
+      "sucursal",
+      "contabilidad",
+      "configuracion"
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 30,
+  "body": {
+    "grupos": [
+      "banco",
+      "sucursal",
+      "contabilidad",
+      "configuracion"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, bancos: Banco[] }; Banco.config: JsonValue | string | null.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 1,
+  "bancos": [
+    {
+      "banco": {
+        "id_banco": 1,
+        "nombre": "Cuenta ejemplo",
+        "numero_cuenta": "CUENTA-EJEMPLO",
+        "saldo": 100000,
+        "descripcion": "Cuenta de ejemplo",
+        "es_activo": 1
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal"
+      },
+      "contabilidad": {
+        "id_plan_cuenta": 1,
+        "codigo": "11000001"
+      },
+      "configuracion": {
+        "config": "{}"
+      }
+    }
+  ]
+}
+```
+
+**Errores y límites**
+
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
+
+**Notas**
+
+- config se devuelve como arreglo u objeto cuando contiene JSON valido; un valor historico vacio o malformado se conserva como string y null permanece null.
+- numero_cuenta y saldo pueden ser datos empresariales sensibles; evite incluirlos en registros y etiquetas de metricas.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+
+### `finanzas-medios-pago-busquedas`: Buscar medios de pago
+
+**Para qué sirve:** Consulta los medios de pago habilitados, como efectivo, tarjetas y transferencias.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/medios-pago/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
+| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
+| `id_medio_pago` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `id_sucursal` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `nombre_medio_pago` | No | Tipo: string; no admite null |
+| `codigo` | No | Tipo: string; no admite null |
+| `codigo_pago_fisco` | No | Tipo: string; no admite null |
+| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1`; predeterminado: 1 |
+
+**Cuerpo:** obligatorio; object.
+
+**Reglas del cuerpo**
+
+- Acepta {} como cuerpo para solicitar la proyección completa; no omitas el cuerpo.
+- Proyección sin selección: full.
+
+**Columnas permitidas**
+
+`id_medio_pago`, `nombre_medio_pago`, `nota`, `es_activo`, `codigo`, `id_sucursal`, `nombre_sucursal`, `comision`, `codigo_pago_fisco`, `config`
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      "medio_pago",
+      "sucursal",
+      "configuracion"
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 30,
+  "body": {
+    "grupos": [
+      "medio_pago",
+      "sucursal",
+      "configuracion"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, medios_pago: MedioPago[] }; MedioPago.config: JsonValue | string | null.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 1,
+  "medios_pago": [
+    {
+      "medio_pago": {
+        "id_medio_pago": 1,
+        "nombre_medio_pago": "Medio de pago ejemplo",
+        "nota": "Nota de ejemplo",
+        "codigo": "MP-001",
+        "comision": 0,
+        "codigo_pago_fisco": "01",
+        "es_activo": 1
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre_sucursal": "Sucursal principal"
+      },
+      "configuracion": {
+        "config": "{}"
+      }
+    }
+  ]
+}
+```
+
+**Errores y límites**
+
+- es_activo debe ser 0 o 1.
+- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
+
+**Notas**
+
+- config se devuelve como arreglo u objeto cuando contiene JSON valido; un valor historico vacio o malformado se conserva como string y null permanece null.
+- No se asumen propiedades internas adicionales para config.
+- Consulta de datos maestros; la cache esta aislada por empresa.
+- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
+
+### `finanzas-abonos-crear`: Registrar abono y consultar comprobante
+
+**Para qué sirve:** Aplica un pago a una transacción existente y devuelve el comprobante de caja generado.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/abonos`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_transacion` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_comprobante_caja` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+| `id_medio_pago` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
+| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 0 |
+| `nota` | No | Tipo: string; no admite null |
+
+**Reglas del cuerpo**
+
+- No admite campos desconocidos en el cuerpo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_transacion": 54321,
+    "id_sucursal": 1,
+    "valor": 50000,
+    "id_medio_pago": 1,
+    "id_empleado": 1,
+    "fecha_registro": "2026-10-05T13:30:00",
+    "id_banco": 1,
+    "nota": "Abono remisión"
+  },
+  "confirmation": "confirm:finanzas-abonos-crear"
+}
+```
+
+**Respuesta esperada:** ComprobanteCaja[]; si la consulta falla, Mensaje { type: 1, message: string, retorno: string } confirma el pago y conserva el ID del comprobante..
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "id_comprobante_caja": 1542,
+    "n_caja": "RV105",
+    "valor": 50000,
+    "es_activo": 1,
+    "fecha_registro": "2026-10-05 13:30:00.0",
+    "id_medio_pago": 1,
+    "nombre_medio_pago": "Efectivo",
+    "id_banco": 1,
+    "nombre_banco": "Caja General"
+  }
+]
+```
+
+**Respuesta alternativa de pago confirmado:**
+
+Si falta el comprobante enriquecido, consulta por ID sin repetir la escritura.
+
+```json
+{
+  "type": 1,
+  "message": "save",
+  "retorno": "1542"
+}
+```
+
+**Errores y límites**
+
+- El ERP rechaza valores superiores a la deuda, transacciones sin deuda y comprobantes duplicados; el wrapper devuelve erp_mutation_rejected sin detalles internos.
+- Si no se puede confirmar la escritura, no repita el POST automáticamente.
+
+**Notas**
+
+- id_transacion es el ID interno de la transacción, no necesariamente el número visible de la remisión.
+- id_sucursal es obligatorio dentro del body; el header X-Auth-Token-sucursal no lo sustituye.
+- Un abono parcial conserva el saldo pendiente; el pago total depende de la deuda validada por Java.
+- La consulta del comprobante conserva la autorización y los headers de empresa, sucursal, empleado y zona horaria; no usa cache.
+- Si el comprobante no está disponible, el pago sigue confirmado. Consulte posteriormente el comprobante con el ID de retorno, sin repetir el abono.
+- Los IDs de efectivo, caja y empleado corresponden a los catálogos de la empresa; los valores del ejemplo no son universales.
+
+### `finanzas-anticipos-crear`: Registrar anticipo de cliente
+
+**Para qué sirve:** Registrar anticipo de cliente
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/anticipos`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_cliente` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_medio_pago` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+| `es_ingreso` | Sí | Tipo: integer; no admite null; valores: `1` |
+| `nota` | Sí | Tipo: string; no admite null; patrón: `\S` |
+| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
+| `id_centro_costo` | No | Tipo: integer; no admite null; mínimo: 1 |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_cliente": 1234,
+    "id_sucursal": 1,
+    "id_empleado": 7,
+    "id_medio_pago": 1,
+    "id_banco": 1,
+    "valor": 50000,
+    "es_ingreso": 1,
+    "nota": "Anticipo de pedido",
+    "fecha_registro": "2026-10-19T10:00:00"
+  },
+  "confirmation": "confirm:finanzas-anticipos-crear"
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 15420,
+    "comprobante": {
+      "id_comprobante_caja": 15420,
+      "valor": 50000,
+      "id_cliente": 1234,
+      "id_sucursal": 1,
+      "es_activo": 1
+    }
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+**Respuesta alternativa de pago confirmado:**
+
+Si falta el comprobante enriquecido, consulta por ID sin repetir la escritura.
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 15420,
+    "comprobante": null
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Errores y límites**
+
+- Los rechazos y errores técnicos usan errores controlados sin detalles internos.
+- No se debe repetir una escritura cuyo resultado sea desconocido o ya confirmado.
+
+**Notas**
+
+- Registra un anticipo recibido del cliente, no un abono vinculado a id_documento.
+- id_empleado es el ID local del empleado, no id_usuario_portal.
+- Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.
+- El comprobante puede recuperarse por ID sin repetir el POST.
+
+### `finanzas-anticipos-cliente-sucursal`: Consultar anticipos activos de un cliente y sucursal
+
+**Para qué sirve:** Consultar anticipos activos de un cliente y sucursal
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/finanzas/anticipos/clientes/{id_cliente}/sucursales/{id_sucursal}`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_cliente` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+
+**Cuerpo:** sin cuerpo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_cliente": 1234,
+  "id_sucursal": 1
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: { items: AnticipoCliente[] }|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id_comprobante_caja": 15420,
+        "valor": 50000,
+        "valorPagado": null,
+        "id_cliente": 1234,
+        "id_sucursal": 1,
+        "es_activo": 1
+      }
+    ]
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Errores y límites**
+
+- Los errores técnicos se devuelven como erp_query_failed sin detalles internos.
+
+**Notas**
+
+- Consulta fresca de anticipos recibidos y activos del cliente y sucursal.
+- Saldo disponible = valor - COALESCE(valorPagado, 0). La lista no filtra automáticamente todos los saldos agotados.
+- No agrega un grupo pagos a la búsqueda de pedidos.
+
+### `finanzas-anticipos-anular`: Anular anticipo de cliente
+
+**Para qué sirve:** Anular anticipo de cliente
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/anticipos/anulaciones`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_comprobante_caja` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+| `nota` | Sí | Tipo: string; no admite null; patrón: `\S` |
+| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
+| `observacion` | No | Tipo: string; no admite null |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_comprobante_caja": 15420,
+    "id_empleado": 7,
+    "valor": 50000,
+    "nota": "Anticipo registrado por error",
+    "fecha_registro": "2026-10-19T10:00:00"
+  },
+  "confirmation": "confirm:finanzas-anticipos-anular"
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 15420,
+    "status": "ANULADO"
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Errores y límites**
+
+- Un anticipo inexistente o ya anulado se devuelve como rechazo controlado, no como una nueva anulación exitosa.
+
+**Notas**
+
+- Anulación completa del anticipo conforme a las reglas del ERP, incluidos sus cruces existentes.
+- No crea un nuevo recibo de contrapartida ni expone la opción nativa de retorno a otro banco.
+- data.id_comprobante_caja identifica el comprobante solicitado y status=ANULADO confirma la anulación; no se consulta otro recibo.
+
+### `finanzas-abonos-anular`: Anular completamente un abono
+
+**Para qué sirve:** Anular completamente un abono
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/abonos/anulaciones`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_comprobante_caja` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+| `nota` | Sí | Tipo: string; no admite null; patrón: `\S` |
+| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
+| `observacion` | No | Tipo: string; no admite null |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_comprobante_caja": 1542,
+    "id_empleado": 7,
+    "valor": 50000,
+    "nota": "Abono registrado por error",
+    "fecha_registro": "2026-10-19T10:00:00"
+  },
+  "confirmation": "confirm:finanzas-abonos-anular"
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 1542,
+    "status": "ANULADO"
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Errores y límites**
+
+- Un comprobante inexistente o ya anulado es un rechazo controlado.
+- El selector de cruces es interno y no puede suministrarse desde la API pública.
+
+**Notas**
+
+- La ruta pública inyecta id_transacion_comprobante_transacion=[-1] para anular el comprobante completo.
+- No permite elegir cruces parciales ni enviar arreglos vacíos al DAO.
+- data.id_comprobante_caja conserva el ID solicitado, nunca el retorno nativo que puede ser cero o un valor financiero.
+
+### `finanzas-comprobante-caja-por-id`: Consultar comprobante de caja por ID
+
+**Para qué sirve:** Consulta el comprobante generado por un abono, dentro de la empresa autenticada.
+
+**Método:** `GET`.
+
+**Ruta:** `/api/v1/finanzas/comprobantes-caja/{id_comprobante_caja}`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_comprobante_caja` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+
+**Cuerpo:** sin cuerpo.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_comprobante_caja": 1542
+}
+```
+
+**Respuesta esperada:** ComprobanteCaja[].
+
+**Ejemplo de respuesta:**
+
+```json
+[
+  {
+    "id_comprobante_caja": 1542,
+    "n_caja": "RV105",
+    "valor": 50000,
+    "es_activo": 1,
+    "fecha_registro": "2026-10-05 13:30:00.0",
+    "id_medio_pago": 1,
+    "nombre_medio_pago": "Efectivo",
+    "id_banco": 1,
+    "nombre_banco": "Caja General"
+  }
+]
+```
+
+**Errores y límites**
+
+- Los errores técnicos se devuelven como erp_query_failed sin detalles internos.
+
+**Notas**
+
+- Retorna [] si el ID no existe o no pertenece a la empresa autenticada.
+- La consulta es de solo lectura y no se almacena en cache.
+
+### `finanzas-cartera-cobrar-busquedas`: Buscar cuentas por cobrar
+
+**Para qué sirve:** Buscar cuentas por cobrar
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
+| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
+| `id_transacion` | No | Tipo: integer; no admite null |
+| `id_cliente` | No | Tipo: integer; no admite null |
+| `id_vendedor` | No | Tipo: integer; no admite null |
+| `id_sucursal` | No | Tipo: integer; no admite null |
+| `tipo_documento` | No | Tipo: integer-list; no admite null |
+| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
+| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+
+**Cuerpo:** obligatorio; object.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      "transaccion",
+      "fechas",
+      "sucursal",
+      "tercero",
+      "vendedor",
+      "saldo",
+      "estado"
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 30,
+  "body": {
+    "grupos": [
+      "transaccion",
+      "fechas",
+      "sucursal",
+      "tercero",
+      "vendedor",
+      "saldo",
+      "estado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, totales: { total_deuda: number, total_abono: number, total_pendiente: number }, cartera: DocumentoCartera[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "totales": {
+    "total_deuda": 100,
+    "total_abono": 20,
+    "total_pendiente": 80
+  },
+  "cartera": [
+    {
+      "transaccion": {
+        "id_transacion": 1,
+        "n_factura": 1,
+        "prefijo": "DOC"
+      },
+      "fechas": {
+        "fecha_registro": 1735689600000,
+        "fecha_vencimiento": 1738281600000,
+        "dias_vencimiento": 30
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre": "Sucursal principal"
+      },
+      "saldo": {
+        "total_factura": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      },
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "estado": {
+        "estado_cartera": "Pendiente",
+        "dias_vencidos": 0
+      }
+    }
+  ]
+}
+```
+
+**Errores y límites**
+
+- es_ingreso es obligatorio y debe ser 0 o 1.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Notas**
+
+- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
+- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
+- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
+
+### `finanzas-cartera-pagar-busquedas`: Buscar cuentas por pagar
+
+**Para qué sirve:** Buscar cuentas por pagar
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
+| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
+| `id_transacion` | No | Tipo: integer; no admite null |
+| `id_cliente` | No | Tipo: integer; no admite null |
+| `id_vendedor` | No | Tipo: integer; no admite null |
+| `id_sucursal` | No | Tipo: integer; no admite null |
+| `tipo_documento` | No | Tipo: integer-list; no admite null |
+| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
+| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+
+**Cuerpo:** obligatorio; object.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      "transaccion",
+      "fechas",
+      "sucursal",
+      "tercero",
+      "vendedor",
+      "saldo",
+      "estado"
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 30,
+  "body": {
+    "grupos": [
+      "transaccion",
+      "fechas",
+      "sucursal",
+      "tercero",
+      "vendedor",
+      "saldo",
+      "estado"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, totales: { total_deuda: number, total_abono: number, total_pendiente: number }, cartera: DocumentoCartera[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "totales": {
+    "total_deuda": 100,
+    "total_abono": 20,
+    "total_pendiente": 80
+  },
+  "cartera": [
+    {
+      "transaccion": {
+        "id_transacion": 1,
+        "n_factura": 1,
+        "prefijo": "DOC"
+      },
+      "fechas": {
+        "fecha_registro": 1735689600000,
+        "fecha_vencimiento": 1738281600000,
+        "dias_vencimiento": 30
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre": "Sucursal principal"
+      },
+      "saldo": {
+        "total_factura": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      },
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "estado": {
+        "estado_cartera": "Pendiente",
+        "dias_vencidos": 0
+      }
+    }
+  ]
+}
+```
+
+**Errores y límites**
+
+- es_ingreso es obligatorio y debe ser 0 o 1.
+- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
+
+**Notas**
+
+- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
+- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
+- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
+
+### `finanzas-resumen-cobrar-busquedas`: Buscar resumen de cuentas por cobrar
+
+**Para qué sirve:** Buscar resumen de cuentas por cobrar
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/resumenes-por-tercero/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
+| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
+| `id_transacion` | No | Tipo: integer; no admite null |
+| `id_cliente` | No | Tipo: integer; no admite null |
+| `id_vendedor` | No | Tipo: integer; no admite null |
+| `id_sucursal` | No | Tipo: integer; no admite null |
+| `tipo_documento` | No | Tipo: integer-list; no admite null |
+| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
+| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+
+**Cuerpo:** obligatorio; object.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      "tercero",
+      "documentos",
+      "saldo"
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 30,
+  "body": {
+    "grupos": [
+      "tercero",
+      "documentos",
+      "saldo"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, resumen_terceros: SaldoTercero[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "resumen_terceros": [
+    {
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "documentos": {
+        "total_documentos": 1
+      },
+      "saldo": {
+        "total_deuda": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      }
+    }
+  ]
+}
+```
+
+**Errores y límites**
+
+- es_ingreso es obligatorio y debe ser 0 o 1.
+- grupos no debe estar vacío y debe contener valores únicos.
+
+**Notas**
+
+- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
+- Las cuentas por cobrar y por pagar nunca se mezclan.
+
+### `finanzas-resumen-pagar-busquedas`: Buscar resumen de cuentas por pagar
+
+**Para qué sirve:** Buscar resumen de cuentas por pagar
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/resumenes-por-tercero/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
+| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
+| `id_transacion` | No | Tipo: integer; no admite null |
+| `id_cliente` | No | Tipo: integer; no admite null |
+| `id_vendedor` | No | Tipo: integer; no admite null |
+| `id_sucursal` | No | Tipo: integer; no admite null |
+| `tipo_documento` | No | Tipo: integer-list; no admite null |
+| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
+| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+
+**Cuerpo:** obligatorio; object.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      "tercero",
+      "documentos",
+      "saldo"
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad_registros": 30,
+  "body": {
+    "grupos": [
+      "tercero",
+      "documentos",
+      "saldo"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, resumen_terceros: SaldoTercero[] }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "resumen_terceros": [
+    {
+      "tercero": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "documentos": {
+        "total_documentos": 1
+      },
+      "saldo": {
+        "total_deuda": 100,
+        "total_abono": 20,
+        "saldo_pendiente": 80
+      }
+    }
+  ]
+}
+```
+
+**Errores y límites**
+
+- es_ingreso es obligatorio y debe ser 0 o 1.
+- grupos no debe estar vacío y debe contener valores únicos.
+
+**Notas**
+
+- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
+- Las cuentas por cobrar y por pagar nunca se mezclan.
+
+## Inventario
+
+### `inventario-kardex-busquedas`: Buscar kardex
+
+**Para qué sirve:** Buscar kardex
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/inventario/kardex/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_producto` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `fecha_desde` | Sí | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | Sí | Tipo: epoch-milliseconds; no admite null |
+
+**Cuerpo:** opcional; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `grupos` | No | Tipo: array; no admite null; mínimo de elementos: 1 |
+
+**Reglas del cuerpo**
+
+- Cuerpo ausente o {} devuelve la proyección SAFE completa, no el resultado crudo del ERP.
+- grupos, si se envía, debe ser una lista no vacía, sin duplicados y solo con grupos permitidos.
+- No admite columnas, detalle ni paginación; devuelve el resultado completo acotado.
+- Admite cuerpo ausente o {}.
+- No admite campos desconocidos en el cuerpo.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      {
+        "name": "movimiento",
+        "fields": [
+          "id_movimiento",
+          "id_concepto",
+          "es_entrada",
+          "nota"
+        ]
+      },
+      {
+        "name": "producto",
+        "fields": [
+          "id_producto",
+          "nombre",
+          "id_producto_sucursal"
+        ]
+      },
+      {
+        "name": "cantidades",
+        "fields": [
+          "cantidad",
+          "cantidad_real_presentacion",
+          "presentacion",
+          "equivalencia"
+        ]
+      },
+      {
+        "name": "costos",
+        "fields": [
+          "costo_actual"
+        ]
+      },
+      {
+        "name": "fechas",
+        "fields": [
+          "fecha_registro"
+        ]
+      },
+      {
+        "name": "referencias",
+        "fields": [
+          "id_documento",
+          "id_transacion",
+          "id_encabezado",
+          "n_factura",
+          "id_traslado",
+          "n_traslado",
+          "numero_consecutivo_inv"
+        ]
+      },
+      {
+        "name": "lote",
+        "fields": [
+          "lote"
+        ]
+      }
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_producto": "{{id_producto}}",
+  "id_sucursal": "{{id_sucursal}}",
+  "fecha_desde": "{{fecha_desde}}",
+  "fecha_hasta": "{{fecha_hasta}}",
+  "body": {}
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: { items: MovimientoKardexAgrupado[] } | null, error: { code: string, message: string, field?: string, retryable: boolean } | null, request_id: string }; dates are epoch-milliseconds.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "movimiento": {
+          "id_movimiento": 301,
+          "id_concepto": 2,
+          "es_entrada": 0,
+          "nota": "Movimiento ficticio de ejemplo"
+        },
+        "producto": {
+          "id_producto": 5,
+          "nombre": "SKU-EJEMPLO-Producto ficticio",
+          "id_producto_sucursal": 51
+        },
+        "cantidades": {
+          "cantidad": -2.5,
+          "cantidad_real_presentacion": -1,
+          "presentacion": "Caja ficticia",
+          "equivalencia": 2.5
+        },
+        "costos": {
+          "costo_actual": 5000.125
+        },
+        "fechas": {
+          "fecha_registro": 1735744272123
+        },
+        "referencias": {
+          "id_documento": 401,
+          "id_transacion": null,
+          "id_encabezado": 501,
+          "n_factura": null,
+          "id_traslado": null,
+          "n_traslado": null,
+          "numero_consecutivo_inv": "INV-EJEMPLO-001"
+        },
+        "lote": null
+      }
+    ]
+  },
+  "error": null,
+  "request_id": "00000000000000000000000000000000"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Notas**
+
+- Las fechas públicas son epoch-milliseconds entre 0 y 253402300799999. Los timestamps SQL sin zona usan X-gtm (GMT-0500); los offsets RFC3339 explícitos se respetan.
+- Fecha real (fecha_registro_factura=0), máximo 31 días y producto positivo obligatorio. cantidad conserva signo y costo_actual es histórico; no se reconstruyen saldos ni se usa costo de catálogo.
+- Fechas epoch-milliseconds obligatorias y ordenadas (fecha_desde <= fecha_hasta); máximo 31 días.
+- Consulta de solo lectura: no requiere confirmación. Cache bypass; Cache-Control: no-store.
+- Fechas de salida en epoch-milliseconds; las relaciones ausentes conservan null.
+
+### `inventario-conteos`: Registrar conteo de inventario
+
+**Para qué sirve:** Registra un conteo o ajuste de inventario para uno o varios productos.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/inventario/conteos`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; array.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `nombre` | Sí | Tipo: string; no admite null |
+| `nota` | Sí | Tipo: string; no admite null |
+| `id_concepto` | Sí | Tipo: integer; no admite null; valores: `-1`; predeterminado: -1 |
+| `es_entrada` | Sí | Tipo: integer; no admite null; valores: `1`; predeterminado: 1 |
+| `cantidad` | Sí | Tipo: number; no admite null; mínimo: 0 |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_bodega` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_producto` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `fecha_registro` | Sí | Tipo: epoch-milliseconds; no admite null |
+| `id_centro_costo` | No | Tipo: integer; no admite null; mínimo: 1 |
+
+**Reglas del cuerpo**
+
+- id_bodega debe ser igual a id_sucursal.
+- id_concepto debe ser -1 y es_entrada debe ser 1.
+- fecha_registro usa milisegundos desde la época Unix.
+- El cuerpo exige al menos 1 elementos.
+- El cuerpo admite como máximo 1000 elementos.
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": [
+    {
+      "nombre": "Conteo físico",
+      "nota": "",
+      "id_concepto": -1,
+      "es_entrada": 1,
+      "cantidad": 1,
+      "id_sucursal": 1,
+      "id_bodega": 1,
+      "id_producto": 25,
+      "id_empleado": 1,
+      "fecha_registro": 1735689600000
+    }
+  ],
+  "confirmation": "confirm:inventario-conteos"
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "guardar",
+  "type": 1,
+  "retorno": ""
+}
+```
+
+**Errores y límites**
+
+- El cuerpo debe ser un arreglo no vacío.
+- Cada movimiento debe incluir id_empleado con un valor entero mayor o igual a 1.
+- id_bodega debe coincidir con id_sucursal.
+- La respuesta type=0 indica que el ERP rechazó el movimiento y no invalida la caché.
+- No se reintentan automáticamente escrituras sin idempotencia comprobada.
+
+**Notas**
+
+- Registra un conteo de inventario por producto y sucursal.
+- El header X-Id-Empleado no sustituye el campo id_empleado dentro de cada elemento del body.
+- La operación no se almacena en caché y solo invalida productos e inventario cuando la respuesta contiene type=1 y message=save.
+
 ## Transacciones y documentos
+
+### `operativas-ordenes-produccion-busquedas`: Buscar órdenes de producción
+
+**Para qué sirve:** Requiere sucursal, rango de hasta 31 días y body.grupos no vacío; detalle es opcional. Fechas públicas en epoch-milliseconds (0..253402300799999): timestamps SQL sin zona usan X-gtm GMT-0500 y RFC3339 conserva su offset explícito. No representa consumo real de producción.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/transacciones/operativas/ordenes-produccion/busquedas`.
+
+**Tipo:** Consulta.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Filtros disponibles**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
+| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
+| `id_documento` | No | Tipo: integer; no admite null; mínimo: 1 |
+| `n_documento` | No | Tipo: integer; no admite null |
+| `id_cliente` | No | Tipo: integer; no admite null |
+| `id_empleado` | No | Tipo: integer; no admite null |
+| `id_vendedor` | No | Tipo: integer; no admite null |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_ruta_despacho` | No | Tipo: integer; no admite null |
+| `id_transacion` | No | Tipo: integer; no admite null |
+| `id_canal` | No | Tipo: integer; no admite null |
+| `es_facturado` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `es_facturado_manual` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `es_devolucion` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `es_nula` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `pago_realizado` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `fecha_desde` | Sí | Tipo: epoch-milliseconds; no admite null |
+| `fecha_hasta` | Sí | Tipo: epoch-milliseconds; no admite null |
+| `fecha_documento_desde` | No | Tipo: epoch-milliseconds; no admite null |
+| `fecha_documento_hasta` | No | Tipo: epoch-milliseconds; no admite null |
+| `ultimo_id` | No | Tipo: integer; no admite null |
+| `ultima_fecha` | No | Tipo: epoch-milliseconds; no admite null |
+| `total_desde` | No | Tipo: number; no admite null |
+| `total_hasta` | No | Tipo: number; no admite null |
+| `subtotal_desde` | No | Tipo: number; no admite null |
+| `subtotal_hasta` | No | Tipo: number; no admite null |
+| `descuento_desde` | No | Tipo: number; no admite null |
+| `descuento_hasta` | No | Tipo: number; no admite null |
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `grupos` | Sí | Tipo: array; no admite null; valores: `codigos`, `fechas`, `sucursal`, `cliente`, `empleado`, `vendedor`, `totales`, `bodegas`, `ruta_despacho`, `logistica`, `estado`, `documento`, `nota`, `comentarios`, `adjuntos`, `archivos`; mínimo de elementos: 1 |
+
+**Reglas del cuerpo**
+
+- El cuerpo es obligatorio: grupos debe ser una lista no vacía, sin duplicados y solo con grupos permitidos. {} no es válido; detalle es opcional.
+
+**Grupos permitidos**
+
+```json
+[
+  {
+    "key": "grupos",
+    "allowed": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota",
+      {
+        "name": "comentarios",
+        "level": "header",
+        "type": "array",
+        "items": {
+          "fields": [
+            "id_comentario",
+            "comentario",
+            "id_empleado",
+            "empleado",
+            "leido",
+            "fecha_registro"
+          ]
+        }
+      },
+      {
+        "name": "adjuntos",
+        "level": "header",
+        "type": "array",
+        "aliases": [
+          "archivos"
+        ],
+        "items": {
+          "fields": [
+            "id_adjunto",
+            "nombre_real",
+            "tipo",
+            "etiqueta",
+            "ruta",
+            "fecha_registro"
+          ]
+        }
+      },
+      "archivos"
+    ]
+  },
+  {
+    "key": "detalle",
+    "allowed": [
+      "producto",
+      "cantidades",
+      "precios",
+      "impuestos",
+      "descuento",
+      "totales"
+    ]
+  }
+]
+```
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_sucursal": "{{id_sucursal}}",
+  "fecha_desde": "{{fecha_desde}}",
+  "fecha_hasta": "{{fecha_hasta}}",
+  "body": {
+    "grupos": [
+      "codigos",
+      "fechas",
+      "sucursal",
+      "cliente",
+      "empleado",
+      "vendedor",
+      "totales",
+      "bodegas",
+      "ruta_despacho",
+      "logistica",
+      "estado",
+      "documento",
+      "nota"
+    ],
+    "detalle": [
+      "producto",
+      "cantidades",
+      "precios",
+      "impuestos",
+      "descuento",
+      "totales"
+    ]
+  }
+}
+```
+
+**Respuesta esperada:** { pagina: integer, cantidad: integer, documentos: Documento[] }; Documento.comentarios?: Comentario[]; Documento.adjuntos?: Adjunto[]; Documento.archivos?: Archivo[].
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "pagina": 0,
+  "cantidad": 1,
+  "documentos": [
+    {
+      "codigos": {
+        "id_documento": 1,
+        "n_documento": "DOC-001",
+        "tipo_documento": 12
+      },
+      "fechas": {
+        "fecha_documento": 1735689600000,
+        "fecha_registro": 1735689600000
+      },
+      "sucursal": {
+        "id_sucursal": 1,
+        "nombre": "Sucursal principal"
+      },
+      "cliente": {
+        "id_cliente": 1,
+        "identificacion": "DOCUMENTO-EJEMPLO",
+        "nombre_cliente": "Cliente ejemplo"
+      },
+      "empleado": {
+        "id_empleado": 1,
+        "nombre": "Empleado ejemplo"
+      },
+      "vendedor": {
+        "id_vendedor": 1,
+        "nombre_vendedor": "Vendedor ejemplo"
+      },
+      "totales": {
+        "subtotal": 10000,
+        "descuento": 0,
+        "impuestos": {
+          "impuesto": 1900,
+          "impoconsumo": 0,
+          "estampilla": 0,
+          "total": 1900
+        },
+        "total_neto": 11900
+      },
+      "bodegas": {
+        "id_bodega_insumos": 1,
+        "bodega_insumos": "Bodega de insumos",
+        "id_bodega_destino": 2,
+        "bodega_destino": "Bodega destino",
+        "id_bodega_testeo": null,
+        "id_bodega_reserva": null,
+        "bodega_reserva": null
+      },
+      "ruta_despacho": {
+        "id_ruta": 1,
+        "nombre": "Ruta ejemplo",
+        "es_activo": 1
+      },
+      "logistica": {
+        "alias_direccion": "Principal",
+        "nota_direccion": "Dirección de ejemplo",
+        "estado_tienda_online": 1,
+        "tiempo_aprox_prestamo": 30
+      },
+      "estado": {
+        "es_activo": 1,
+        "es_nula": 0,
+        "estado": 1,
+        "pago_realizado": 0,
+        "tasa_cumplimiento": 100
+      },
+      "documento": {
+        "id_consecutivo_varios": 1,
+        "id_lista_precio": 1,
+        "id_canal": 1,
+        "orden_servicio": "OS-001",
+        "observacion": "Observación de ejemplo"
+      },
+      "nota": "Nota de ejemplo",
+      "comentarios": [
+        {
+          "id_comentario": 1,
+          "comentario": "Comentario ficticio de integración",
+          "id_empleado": 1,
+          "empleado": "Empleado ejemplo",
+          "leido": 1,
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "adjuntos": [
+        {
+          "id_adjunto": 1,
+          "nombre_real": "pedido-ejemplo.pdf",
+          "tipo": "application/pdf",
+          "etiqueta": "Documento",
+          "ruta": "https://example.invalid/archivos/pedido-ejemplo.pdf",
+          "fecha_registro": 1735689600000
+        }
+      ],
+      "detalle": [
+        {
+          "producto": {
+            "id_producto": 25,
+            "sku": "SKU-001",
+            "nombre": "Producto ejemplo"
+          },
+          "cantidades": {
+            "facturada": 1,
+            "real": 1,
+            "real_presentacion": 1,
+            "original_pedido": 1
+          },
+          "precios": {
+            "precio_real": 10000,
+            "precio_venta": 10000,
+            "costo": 7000,
+            "costo_produccion": 6500
+          },
+          "impuestos": {
+            "impuesto": {
+              "base": 10000,
+              "porcentaje": 19,
+              "valor": 1900
+            },
+            "impoconsumo": {
+              "valor_unitario": 0,
+              "valor_total": 0
+            },
+            "estampilla": {
+              "valor_unitario": 0,
+              "valor_total": 0
+            }
+          },
+          "descuento": {
+            "porcentaje": 0,
+            "valor": 0
+          },
+          "totales": {
+            "subtotal": 10000,
+            "impuestos": {
+              "impuesto": 1900,
+              "impoconsumo": 0,
+              "estampilla": 0,
+              "total": 1900
+            },
+            "total": 11900
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Errores y límites**
+
+- Los grupos desconocidos, duplicados o vacíos se rechazan.
+- Los filtros de fecha usan rangos inclusivos en epoch-milliseconds.
+
+**Notas**
+
+- detalle es opcional y conserva el orden de los grupos solicitados.
+- Los filtros total, subtotal y descuento aceptan límites desde/hasta decimales.
+- Las respuestas no exponen credenciales ni claves internas.
+- La identificación del padre se devuelve dentro de codigos; documento es el grupo de documentos, no un alias de transacion.
+- comentarios, adjuntos y archivos son grupos de cabecera opcionales y se cargan bajo demanda; archivos conserva ese nombre en la respuesta y, si se solicitan ambos, adjuntos tiene precedencia.
+- Los ejemplos usan valores ficticios y URLs example.invalid.
+- Sucursal positiva y fechas epoch-milliseconds obligatorias, ordenadas; máximo 31 días.
+- Cobertura parcial: líneas comerciales de la orden, no consumos reales de producción. Sin filtro estado ni bodega.
+- Conserva grupos, detalle y paginación nativa de documentos; consulta de solo lectura sin confirmación.
 
 ### `ventas-facturas-busquedas`: Buscar facturas
 
@@ -110,7 +2428,6 @@ En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los ar
       "facturacion_electronica",
       "consecutivo",
       "impresion",
-      "cartera_cliente",
       "empresa",
       "sucursal_configuracion",
       "taller",
@@ -196,7 +2513,6 @@ En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los ar
       "facturacion_electronica",
       "consecutivo",
       "impresion",
-      "cartera_cliente",
       "empresa",
       "sucursal_configuracion",
       "taller",
@@ -338,12 +2654,6 @@ En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los ar
         "tipo_consecutivo": 1
       },
       "impresion": {},
-      "cartera_cliente": {
-        "id_cliente": 1,
-        "es_ingreso": 1,
-        "saldo_pendiente": 11900,
-        "documentos_pendientes": 1
-      },
       "sucursal_configuracion": {
         "id_sucursal": 1,
         "activar_documento_preelectronico": 0,
@@ -5042,107 +7352,6 @@ En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los ar
 
 - precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
 
-## Inventario
-
-### `inventario-conteos`: Registrar conteo de inventario
-
-**Para qué sirve:** Registra un conteo o ajuste de inventario para uno o varios productos.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/inventario/conteos`.
-
-**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Cuerpo:** obligatorio; array.
-
-**Campos del cuerpo**
-
-Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `nombre` | Sí | Tipo: string; no admite null |
-| `nota` | Sí | Tipo: string; no admite null |
-| `id_concepto` | Sí | Tipo: integer; no admite null; valores: `-1`; predeterminado: -1 |
-| `es_entrada` | Sí | Tipo: integer; no admite null; valores: `1`; predeterminado: 1 |
-| `cantidad` | Sí | Tipo: number; no admite null; mínimo: 0 |
-| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_bodega` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_producto` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `fecha_registro` | Sí | Tipo: epoch-milliseconds; no admite null |
-| `id_centro_costo` | No | Tipo: integer; no admite null; mínimo: 1 |
-
-**Reglas del cuerpo**
-
-- id_bodega debe ser igual a id_sucursal.
-- id_concepto debe ser -1 y es_entrada debe ser 1.
-- fecha_registro usa milisegundos desde la época Unix.
-- El cuerpo exige al menos 1 elementos.
-- El cuerpo admite como máximo 1000 elementos.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": [
-    {
-      "nombre": "Conteo físico",
-      "nota": "",
-      "id_concepto": -1,
-      "es_entrada": 1,
-      "cantidad": 1,
-      "id_sucursal": 1,
-      "id_bodega": 1,
-      "id_producto": 25,
-      "id_empleado": 1,
-      "fecha_registro": 1735689600000
-    }
-  ],
-  "confirmation": "confirm:inventario-conteos"
-}
-```
-
-**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "message": "guardar",
-  "type": 1,
-  "retorno": ""
-}
-```
-
-**Errores y límites**
-
-- El cuerpo debe ser un arreglo no vacío.
-- Cada movimiento debe incluir id_empleado con un valor entero mayor o igual a 1.
-- id_bodega debe coincidir con id_sucursal.
-- La respuesta type=0 indica que el ERP rechazó el movimiento y no invalida la caché.
-- No se reintentan automáticamente escrituras sin idempotencia comprobada.
-
-**Notas**
-
-- Registra un conteo de inventario por producto y sucursal.
-- El header X-Id-Empleado no sustituye el campo id_empleado dentro de cada elemento del body.
-- La operación no se almacena en caché y solo invalida productos e inventario cuando la respuesta contiene type=1 y message=save.
-
 ## Terceros
 
 ### `terceros-busquedas`: Buscar terceros
@@ -5861,1280 +8070,6 @@ En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los ar
 **Notas**
 
 - Consulta de datos maestros por identificador; la respuesta es un arreglo.
-
-## Finanzas y cartera
-
-### `finanzas-bancos-busquedas`: Buscar bancos
-
-**Para qué sirve:** Consulta las cuentas bancarias y cajas disponibles para la empresa.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/bancos/busquedas`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
-| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
-| `id_banco` | No | Tipo: integer; no admite null; mínimo: 1 |
-| `id_sucursal` | No | Tipo: integer; no admite null; mínimo: 1 |
-| `nombre` | No | Tipo: string; no admite null |
-| `numero_cuenta` | No | Tipo: string; no admite null |
-| `codigo` | No | Tipo: string; no admite null |
-| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1`; predeterminado: 1 |
-
-**Cuerpo:** obligatorio; object.
-
-**Reglas del cuerpo**
-
-- Acepta {} como cuerpo para solicitar la proyección completa; no omitas el cuerpo.
-- Proyección sin selección: full.
-
-**Columnas permitidas**
-
-`id_banco`, `nombre`, `numero_cuenta`, `saldo`, `descripcion`, `es_activo`, `id_plan_cuenta`, `codigo`, `id_sucursal`, `nombre_sucursal`, `config`
-
-**Grupos permitidos**
-
-```json
-[
-  {
-    "key": "grupos",
-    "allowed": [
-      "banco",
-      "sucursal",
-      "contabilidad",
-      "configuracion"
-    ]
-  }
-]
-```
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "body": {
-    "grupos": [
-      "banco",
-      "sucursal",
-      "contabilidad",
-      "configuracion"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, bancos: Banco[] }; Banco.config: JsonValue | string | null.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 1,
-  "bancos": [
-    {
-      "banco": {
-        "id_banco": 1,
-        "nombre": "Cuenta ejemplo",
-        "numero_cuenta": "CUENTA-EJEMPLO",
-        "saldo": 100000,
-        "descripcion": "Cuenta de ejemplo",
-        "es_activo": 1
-      },
-      "sucursal": {
-        "id_sucursal": 1,
-        "nombre_sucursal": "Sucursal principal"
-      },
-      "contabilidad": {
-        "id_plan_cuenta": 1,
-        "codigo": "11000001"
-      },
-      "configuracion": {
-        "config": "{}"
-      }
-    }
-  ]
-}
-```
-
-**Errores y límites**
-
-- es_activo debe ser 0 o 1.
-- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
-
-**Notas**
-
-- config se devuelve como arreglo u objeto cuando contiene JSON valido; un valor historico vacio o malformado se conserva como string y null permanece null.
-- numero_cuenta y saldo pueden ser datos empresariales sensibles; evite incluirlos en registros y etiquetas de metricas.
-- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
-
-### `finanzas-medios-pago-busquedas`: Buscar medios de pago
-
-**Para qué sirve:** Consulta los medios de pago habilitados, como efectivo, tarjetas y transferencias.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/medios-pago/busquedas`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
-| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
-| `id_medio_pago` | No | Tipo: integer; no admite null; mínimo: 1 |
-| `id_sucursal` | No | Tipo: integer; no admite null; mínimo: 1 |
-| `nombre_medio_pago` | No | Tipo: string; no admite null |
-| `codigo` | No | Tipo: string; no admite null |
-| `codigo_pago_fisco` | No | Tipo: string; no admite null |
-| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1`; predeterminado: 1 |
-
-**Cuerpo:** obligatorio; object.
-
-**Reglas del cuerpo**
-
-- Acepta {} como cuerpo para solicitar la proyección completa; no omitas el cuerpo.
-- Proyección sin selección: full.
-
-**Columnas permitidas**
-
-`id_medio_pago`, `nombre_medio_pago`, `nota`, `es_activo`, `codigo`, `id_sucursal`, `nombre_sucursal`, `comision`, `codigo_pago_fisco`, `config`
-
-**Grupos permitidos**
-
-```json
-[
-  {
-    "key": "grupos",
-    "allowed": [
-      "medio_pago",
-      "sucursal",
-      "configuracion"
-    ]
-  }
-]
-```
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "body": {
-    "grupos": [
-      "medio_pago",
-      "sucursal",
-      "configuracion"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, cantidad: integer, medios_pago: MedioPago[] }; MedioPago.config: JsonValue | string | null.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad": 1,
-  "medios_pago": [
-    {
-      "medio_pago": {
-        "id_medio_pago": 1,
-        "nombre_medio_pago": "Medio de pago ejemplo",
-        "nota": "Nota de ejemplo",
-        "codigo": "MP-001",
-        "comision": 0,
-        "codigo_pago_fisco": "01",
-        "es_activo": 1
-      },
-      "sucursal": {
-        "id_sucursal": 1,
-        "nombre_sucursal": "Sucursal principal"
-      },
-      "configuracion": {
-        "config": "{}"
-      }
-    }
-  ]
-}
-```
-
-**Errores y límites**
-
-- es_activo debe ser 0 o 1.
-- Los grupos o columnas deben ser no vacíos, únicos y limitarse al catálogo.
-
-**Notas**
-
-- config se devuelve como arreglo u objeto cuando contiene JSON valido; un valor historico vacio o malformado se conserva como string y null permanece null.
-- No se asumen propiedades internas adicionales para config.
-- Consulta de datos maestros; la cache esta aislada por empresa.
-- El body {} es valido y devuelve la proyeccion completa; se recomienda grupos y columnas se conserva por compatibilidad plana.
-
-### `finanzas-abonos-crear`: Registrar abono y consultar comprobante
-
-**Para qué sirve:** Aplica un pago a una transacción existente y devuelve el comprobante de caja generado.
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/abonos`.
-
-**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Cuerpo:** obligatorio; object.
-
-**Campos del cuerpo**
-
-Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_transacion` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_comprobante_caja` | No | Tipo: integer; no admite null; mínimo: 1 |
-| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
-| `id_medio_pago` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
-| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 0 |
-| `nota` | No | Tipo: string; no admite null |
-
-**Reglas del cuerpo**
-
-- No admite campos desconocidos en el cuerpo.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "id_transacion": 54321,
-    "id_sucursal": 1,
-    "valor": 50000,
-    "id_medio_pago": 1,
-    "id_empleado": 1,
-    "fecha_registro": "2026-10-05T13:30:00",
-    "id_banco": 1,
-    "nota": "Abono remisión"
-  },
-  "confirmation": "confirm:finanzas-abonos-crear"
-}
-```
-
-**Respuesta esperada:** ComprobanteCaja[]; si la consulta falla, Mensaje { type: 1, message: string, retorno: string } confirma el pago y conserva el ID del comprobante..
-
-**Ejemplo de respuesta:**
-
-```json
-[
-  {
-    "id_comprobante_caja": 1542,
-    "n_caja": "RV105",
-    "valor": 50000,
-    "es_activo": 1,
-    "fecha_registro": "2026-10-05 13:30:00.0",
-    "id_medio_pago": 1,
-    "nombre_medio_pago": "Efectivo",
-    "id_banco": 1,
-    "nombre_banco": "Caja General"
-  }
-]
-```
-
-**Respuesta alternativa de pago confirmado:**
-
-Si falta el comprobante enriquecido, consulta por ID sin repetir la escritura.
-
-```json
-{
-  "type": 1,
-  "message": "save",
-  "retorno": "1542"
-}
-```
-
-**Errores y límites**
-
-- El ERP rechaza valores superiores a la deuda, transacciones sin deuda y comprobantes duplicados; el wrapper devuelve erp_mutation_rejected sin detalles internos.
-- Si no se puede confirmar la escritura, no repita el POST automáticamente.
-
-**Notas**
-
-- id_transacion es el ID interno de la transacción, no necesariamente el número visible de la remisión.
-- id_sucursal es obligatorio dentro del body; el header X-Auth-Token-sucursal no lo sustituye.
-- Un abono parcial conserva el saldo pendiente; el pago total depende de la deuda validada por Java.
-- La consulta del comprobante conserva la autorización y los headers de empresa, sucursal, empleado y zona horaria; no usa cache.
-- Si el comprobante no está disponible, el pago sigue confirmado. Consulte posteriormente el comprobante con el ID de retorno, sin repetir el abono.
-- Los IDs de efectivo, caja y empleado corresponden a los catálogos de la empresa; los valores del ejemplo no son universales.
-
-### `finanzas-anticipos-crear`: Registrar anticipo de cliente
-
-**Para qué sirve:** Registrar anticipo de cliente
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/anticipos`.
-
-**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Cuerpo:** obligatorio; object.
-
-**Campos del cuerpo**
-
-Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_cliente` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_medio_pago` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
-| `es_ingreso` | Sí | Tipo: integer; no admite null; valores: `1` |
-| `nota` | Sí | Tipo: string; no admite null; patrón: `\S` |
-| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
-| `id_centro_costo` | No | Tipo: integer; no admite null; mínimo: 1 |
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "id_cliente": 1234,
-    "id_sucursal": 1,
-    "id_empleado": 7,
-    "id_medio_pago": 1,
-    "id_banco": 1,
-    "valor": 50000,
-    "es_ingreso": 1,
-    "nota": "Anticipo de pedido",
-    "fecha_registro": "2026-10-19T10:00:00"
-  },
-  "confirmation": "confirm:finanzas-anticipos-crear"
-}
-```
-
-**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "id_comprobante_caja": 15420,
-    "comprobante": {
-      "id_comprobante_caja": 15420,
-      "valor": 50000,
-      "id_cliente": 1234,
-      "id_sucursal": 1,
-      "es_activo": 1
-    }
-  },
-  "error": null,
-  "request_id": "0123456789abcdef0123456789abcdef"
-}
-```
-
-**Respuesta alternativa de pago confirmado:**
-
-Si falta el comprobante enriquecido, consulta por ID sin repetir la escritura.
-
-```json
-{
-  "success": true,
-  "data": {
-    "id_comprobante_caja": 15420,
-    "comprobante": null
-  },
-  "error": null,
-  "request_id": "0123456789abcdef0123456789abcdef"
-}
-```
-
-Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
-
-**Errores y límites**
-
-- Los rechazos y errores técnicos usan errores controlados sin detalles internos.
-- No se debe repetir una escritura cuyo resultado sea desconocido o ya confirmado.
-
-**Notas**
-
-- Registra un anticipo recibido del cliente, no un abono vinculado a id_documento.
-- id_empleado es el ID local del empleado, no id_usuario_portal.
-- Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.
-- El comprobante puede recuperarse por ID sin repetir el POST.
-
-### `finanzas-anticipos-cliente-sucursal`: Consultar anticipos activos de un cliente y sucursal
-
-**Para qué sirve:** Consultar anticipos activos de un cliente y sucursal
-
-**Método:** `GET`.
-
-**Ruta:** `/api/v1/finanzas/anticipos/clientes/{id_cliente}/sucursales/{id_sucursal}`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Parámetros de ruta**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_cliente` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-
-**Cuerpo:** sin cuerpo.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "id_cliente": 1234,
-  "id_sucursal": 1
-}
-```
-
-**Respuesta esperada:** { success: boolean, data: { items: AnticipoCliente[] }|null, error: object|null, request_id: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "items": [
-      {
-        "id_comprobante_caja": 15420,
-        "valor": 50000,
-        "valorPagado": null,
-        "id_cliente": 1234,
-        "id_sucursal": 1,
-        "es_activo": 1
-      }
-    ]
-  },
-  "error": null,
-  "request_id": "0123456789abcdef0123456789abcdef"
-}
-```
-
-Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
-
-**Errores y límites**
-
-- Los errores técnicos se devuelven como erp_query_failed sin detalles internos.
-
-**Notas**
-
-- Consulta fresca de anticipos recibidos y activos del cliente y sucursal.
-- Saldo disponible = valor - COALESCE(valorPagado, 0). La lista no filtra automáticamente todos los saldos agotados.
-- No agrega un grupo pagos a la búsqueda de pedidos.
-
-### `finanzas-anticipos-anular`: Anular anticipo de cliente
-
-**Para qué sirve:** Anular anticipo de cliente
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/anticipos/anulaciones`.
-
-**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Cuerpo:** obligatorio; object.
-
-**Campos del cuerpo**
-
-Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_comprobante_caja` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
-| `nota` | Sí | Tipo: string; no admite null; patrón: `\S` |
-| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
-| `observacion` | No | Tipo: string; no admite null |
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "id_comprobante_caja": 15420,
-    "id_empleado": 7,
-    "valor": 50000,
-    "nota": "Anticipo registrado por error",
-    "fecha_registro": "2026-10-19T10:00:00"
-  },
-  "confirmation": "confirm:finanzas-anticipos-anular"
-}
-```
-
-**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "id_comprobante_caja": 15420,
-    "status": "ANULADO"
-  },
-  "error": null,
-  "request_id": "0123456789abcdef0123456789abcdef"
-}
-```
-
-Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
-
-**Errores y límites**
-
-- Un anticipo inexistente o ya anulado se devuelve como rechazo controlado, no como una nueva anulación exitosa.
-
-**Notas**
-
-- Anulación completa del anticipo conforme a las reglas del ERP, incluidos sus cruces existentes.
-- No crea un nuevo recibo de contrapartida ni expone la opción nativa de retorno a otro banco.
-- data.id_comprobante_caja identifica el comprobante solicitado y status=ANULADO confirma la anulación; no se consulta otro recibo.
-
-### `finanzas-abonos-anular`: Anular completamente un abono
-
-**Para qué sirve:** Anular completamente un abono
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/abonos/anulaciones`.
-
-**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Cuerpo:** obligatorio; object.
-
-**Campos del cuerpo**
-
-Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_comprobante_caja` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
-| `nota` | Sí | Tipo: string; no admite null; patrón: `\S` |
-| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
-| `observacion` | No | Tipo: string; no admite null |
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "body": {
-    "id_comprobante_caja": 1542,
-    "id_empleado": 7,
-    "valor": 50000,
-    "nota": "Abono registrado por error",
-    "fecha_registro": "2026-10-19T10:00:00"
-  },
-  "confirmation": "confirm:finanzas-abonos-anular"
-}
-```
-
-**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "success": true,
-  "data": {
-    "id_comprobante_caja": 1542,
-    "status": "ANULADO"
-  },
-  "error": null,
-  "request_id": "0123456789abcdef0123456789abcdef"
-}
-```
-
-Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
-
-**Errores y límites**
-
-- Un comprobante inexistente o ya anulado es un rechazo controlado.
-- El selector de cruces es interno y no puede suministrarse desde la API pública.
-
-**Notas**
-
-- La ruta pública inyecta id_transacion_comprobante_transacion=[-1] para anular el comprobante completo.
-- No permite elegir cruces parciales ni enviar arreglos vacíos al DAO.
-- data.id_comprobante_caja conserva el ID solicitado, nunca el retorno nativo que puede ser cero o un valor financiero.
-
-### `finanzas-comprobante-caja-por-id`: Consultar comprobante de caja por ID
-
-**Para qué sirve:** Consulta el comprobante generado por un abono, dentro de la empresa autenticada.
-
-**Método:** `GET`.
-
-**Ruta:** `/api/v1/finanzas/comprobantes-caja/{id_comprobante_caja}`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Parámetros de ruta**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `id_comprobante_caja` | Sí | Tipo: integer; no admite null; mínimo: 1 |
-
-**Cuerpo:** sin cuerpo.
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "id_comprobante_caja": 1542
-}
-```
-
-**Respuesta esperada:** ComprobanteCaja[].
-
-**Ejemplo de respuesta:**
-
-```json
-[
-  {
-    "id_comprobante_caja": 1542,
-    "n_caja": "RV105",
-    "valor": 50000,
-    "es_activo": 1,
-    "fecha_registro": "2026-10-05 13:30:00.0",
-    "id_medio_pago": 1,
-    "nombre_medio_pago": "Efectivo",
-    "id_banco": 1,
-    "nombre_banco": "Caja General"
-  }
-]
-```
-
-**Errores y límites**
-
-- Los errores técnicos se devuelven como erp_query_failed sin detalles internos.
-
-**Notas**
-
-- Retorna [] si el ID no existe o no pertenece a la empresa autenticada.
-- La consulta es de solo lectura y no se almacena en cache.
-
-### `finanzas-cartera-cobrar-busquedas`: Buscar cuentas por cobrar
-
-**Para qué sirve:** Buscar cuentas por cobrar
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/busquedas`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
-| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
-| `id_transacion` | No | Tipo: integer; no admite null |
-| `id_cliente` | No | Tipo: integer; no admite null |
-| `id_vendedor` | No | Tipo: integer; no admite null |
-| `id_sucursal` | No | Tipo: integer; no admite null |
-| `tipo_documento` | No | Tipo: integer-list; no admite null |
-| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
-| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
-| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
-
-**Cuerpo:** obligatorio; object.
-
-**Grupos permitidos**
-
-```json
-[
-  {
-    "key": "grupos",
-    "allowed": [
-      "transaccion",
-      "fechas",
-      "sucursal",
-      "tercero",
-      "vendedor",
-      "saldo",
-      "estado"
-    ]
-  }
-]
-```
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "body": {
-    "grupos": [
-      "transaccion",
-      "fechas",
-      "sucursal",
-      "tercero",
-      "vendedor",
-      "saldo",
-      "estado"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, totales: { total_deuda: number, total_abono: number, total_pendiente: number }, cartera: DocumentoCartera[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "totales": {
-    "total_deuda": 100,
-    "total_abono": 20,
-    "total_pendiente": 80
-  },
-  "cartera": [
-    {
-      "transaccion": {
-        "id_transacion": 1,
-        "n_factura": 1,
-        "prefijo": "DOC"
-      },
-      "fechas": {
-        "fecha_registro": 1735689600000,
-        "fecha_vencimiento": 1738281600000,
-        "dias_vencimiento": 30
-      },
-      "sucursal": {
-        "id_sucursal": 1,
-        "nombre": "Sucursal principal"
-      },
-      "saldo": {
-        "total_factura": 100,
-        "total_abono": 20,
-        "saldo_pendiente": 80
-      },
-      "tercero": {
-        "id_cliente": 1,
-        "identificacion": "DOCUMENTO-EJEMPLO",
-        "nombre_cliente": "Cliente ejemplo"
-      },
-      "vendedor": {
-        "id_vendedor": 1,
-        "nombre_vendedor": "Vendedor ejemplo"
-      },
-      "estado": {
-        "estado_cartera": "Pendiente",
-        "dias_vencidos": 0
-      }
-    }
-  ]
-}
-```
-
-**Errores y límites**
-
-- es_ingreso es obligatorio y debe ser 0 o 1.
-- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
-
-**Notas**
-
-- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
-- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
-- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
-
-### `finanzas-cartera-pagar-busquedas`: Buscar cuentas por pagar
-
-**Para qué sirve:** Buscar cuentas por pagar
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/busquedas`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
-| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
-| `id_transacion` | No | Tipo: integer; no admite null |
-| `id_cliente` | No | Tipo: integer; no admite null |
-| `id_vendedor` | No | Tipo: integer; no admite null |
-| `id_sucursal` | No | Tipo: integer; no admite null |
-| `tipo_documento` | No | Tipo: integer-list; no admite null |
-| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
-| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
-| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
-
-**Cuerpo:** obligatorio; object.
-
-**Grupos permitidos**
-
-```json
-[
-  {
-    "key": "grupos",
-    "allowed": [
-      "transaccion",
-      "fechas",
-      "sucursal",
-      "tercero",
-      "vendedor",
-      "saldo",
-      "estado"
-    ]
-  }
-]
-```
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "body": {
-    "grupos": [
-      "transaccion",
-      "fechas",
-      "sucursal",
-      "tercero",
-      "vendedor",
-      "saldo",
-      "estado"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, totales: { total_deuda: number, total_abono: number, total_pendiente: number }, cartera: DocumentoCartera[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "totales": {
-    "total_deuda": 100,
-    "total_abono": 20,
-    "total_pendiente": 80
-  },
-  "cartera": [
-    {
-      "transaccion": {
-        "id_transacion": 1,
-        "n_factura": 1,
-        "prefijo": "DOC"
-      },
-      "fechas": {
-        "fecha_registro": 1735689600000,
-        "fecha_vencimiento": 1738281600000,
-        "dias_vencimiento": 30
-      },
-      "sucursal": {
-        "id_sucursal": 1,
-        "nombre": "Sucursal principal"
-      },
-      "saldo": {
-        "total_factura": 100,
-        "total_abono": 20,
-        "saldo_pendiente": 80
-      },
-      "tercero": {
-        "id_cliente": 1,
-        "identificacion": "DOCUMENTO-EJEMPLO",
-        "nombre_cliente": "Cliente ejemplo"
-      },
-      "vendedor": {
-        "id_vendedor": 1,
-        "nombre_vendedor": "Vendedor ejemplo"
-      },
-      "estado": {
-        "estado_cartera": "Pendiente",
-        "dias_vencidos": 0
-      }
-    }
-  ]
-}
-```
-
-**Errores y límites**
-
-- es_ingreso es obligatorio y debe ser 0 o 1.
-- Los filtros de fecha deben expresarse en milisegundos desde la época Unix.
-
-**Notas**
-
-- Los totales globales abarcan todos los registros filtrados, independientemente de la página actual.
-- Se excluyen los documentos anulados, inactivos, con saldos no positivos, de clientes internos y de clientes predeterminados.
-- Las respuestas financieras no deben usar la directiva stale-if-error sin una decisión explícita.
-
-### `finanzas-resumen-cobrar-busquedas`: Buscar resumen de cuentas por cobrar
-
-**Para qué sirve:** Buscar resumen de cuentas por cobrar
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-cobrar/resumenes-por-tercero/busquedas`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
-| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
-| `id_transacion` | No | Tipo: integer; no admite null |
-| `id_cliente` | No | Tipo: integer; no admite null |
-| `id_vendedor` | No | Tipo: integer; no admite null |
-| `id_sucursal` | No | Tipo: integer; no admite null |
-| `tipo_documento` | No | Tipo: integer-list; no admite null |
-| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
-| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
-| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
-
-**Cuerpo:** obligatorio; object.
-
-**Grupos permitidos**
-
-```json
-[
-  {
-    "key": "grupos",
-    "allowed": [
-      "tercero",
-      "documentos",
-      "saldo"
-    ]
-  }
-]
-```
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "body": {
-    "grupos": [
-      "tercero",
-      "documentos",
-      "saldo"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, resumen_terceros: SaldoTercero[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "resumen_terceros": [
-    {
-      "tercero": {
-        "id_cliente": 1,
-        "identificacion": "DOCUMENTO-EJEMPLO",
-        "nombre_cliente": "Cliente ejemplo"
-      },
-      "documentos": {
-        "total_documentos": 1
-      },
-      "saldo": {
-        "total_deuda": 100,
-        "total_abono": 20,
-        "saldo_pendiente": 80
-      }
-    }
-  ]
-}
-```
-
-**Errores y límites**
-
-- es_ingreso es obligatorio y debe ser 0 o 1.
-- grupos no debe estar vacío y debe contener valores únicos.
-
-**Notas**
-
-- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
-- Las cuentas por cobrar y por pagar nunca se mezclan.
-
-### `finanzas-resumen-pagar-busquedas`: Buscar resumen de cuentas por pagar
-
-**Para qué sirve:** Buscar resumen de cuentas por pagar
-
-**Método:** `POST`.
-
-**Ruta:** `/api/v1/finanzas/cartera/cuentas-por-pagar/resumenes-por-tercero/busquedas`.
-
-**Tipo:** Consulta.
-
-**Encabezados del REST público**
-
-| Encabezado | Obligatorio | Uso |
-| --- | --- | --- |
-| `Content-Type` | Sí | Valor de referencia: `application/json` |
-| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
-| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
-| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
-| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
-| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
-
-En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
-
-**Filtros disponibles**
-
-| Dato | Obligatorio | Valores que acepta |
-| --- | --- | --- |
-| `pagina` | No | Tipo: integer; no admite null; mínimo: 0; predeterminado: 0 |
-| `cantidad_registros` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 1000; predeterminado: 30 |
-| `id_transacion` | No | Tipo: integer; no admite null |
-| `id_cliente` | No | Tipo: integer; no admite null |
-| `id_vendedor` | No | Tipo: integer; no admite null |
-| `id_sucursal` | No | Tipo: integer; no admite null |
-| `tipo_documento` | No | Tipo: integer-list; no admite null |
-| `fecha_desde` | No | Tipo: epoch-milliseconds; no admite null |
-| `fecha_hasta` | No | Tipo: epoch-milliseconds; no admite null |
-| `vencida` | No | Tipo: integer; no admite null; valores: `0`, `1` |
-
-**Cuerpo:** obligatorio; object.
-
-**Grupos permitidos**
-
-```json
-[
-  {
-    "key": "grupos",
-    "allowed": [
-      "tercero",
-      "documentos",
-      "saldo"
-    ]
-  }
-]
-```
-
-**Ejemplo de argumentos:**
-
-```json
-{
-  "pagina": 0,
-  "cantidad_registros": 30,
-  "body": {
-    "grupos": [
-      "tercero",
-      "documentos",
-      "saldo"
-    ]
-  }
-}
-```
-
-**Respuesta esperada:** { pagina: integer, resumen_terceros: SaldoTercero[] }.
-
-**Ejemplo de respuesta:**
-
-```json
-{
-  "pagina": 0,
-  "resumen_terceros": [
-    {
-      "tercero": {
-        "id_cliente": 1,
-        "identificacion": "DOCUMENTO-EJEMPLO",
-        "nombre_cliente": "Cliente ejemplo"
-      },
-      "documentos": {
-        "total_documentos": 1
-      },
-      "saldo": {
-        "total_deuda": 100,
-        "total_abono": 20,
-        "saldo_pendiente": 80
-      }
-    }
-  ]
-}
-```
-
-**Errores y límites**
-
-- es_ingreso es obligatorio y debe ser 0 o 1.
-- grupos no debe estar vacío y debe contener valores únicos.
-
-**Notas**
-
-- Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
-- Las cuentas por cobrar y por pagar nunca se mezclan.
 
 ## Organización
 

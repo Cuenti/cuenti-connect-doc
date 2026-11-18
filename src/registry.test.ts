@@ -49,6 +49,10 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/tributario/impuestos/busquedas',
         'GET /api/v1/tributario/impuestos/{id_impuesto}',
         'POST /api/v1/finanzas/bancos/busquedas',
+        'POST /api/v1/finanzas/bancos/{id_banco}/movimientos/busquedas',
+        'POST /api/v1/finanzas/comprobantes-caja/busquedas',
+        'POST /api/v1/inventario/kardex/busquedas',
+        'POST /api/v1/transacciones/operativas/ordenes-produccion/busquedas',
         'POST /api/v1/finanzas/abonos',
         'POST /api/v1/finanzas/abonos/anulaciones',
         'POST /api/v1/finanzas/anticipos',
@@ -70,7 +74,7 @@ describe('canonical documentation registry', () => {
         'GET /api/v1/restaurante/mesas-ocupadas',
       ]),
     );
-    expect(tuples).toHaveLength(50);
+    expect(tuples).toHaveLength(54);
     expect(tuples.every((tuple) => tuple.includes('/api/v1/'))).toBe(true);
     expect(JSON.stringify(registry)).not.toContain('/jServerj4ErpPro');
     expect(
@@ -79,7 +83,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('keeps the public query and mutation split', () => {
-    expect(registry.endpoints).toHaveLength(50);
+    expect(registry.endpoints).toHaveLength(54);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -87,13 +91,13 @@ describe('canonical documentation registry', () => {
       registry.endpoints.filter(
         (endpoint) => endpoint.cache.mode === 'cacheable',
       ),
-    ).toHaveLength(32);
+    ).toHaveLength(33);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
     ).toHaveLength(14);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(18);
+    ).toHaveLength(21);
   });
 
   it('keeps the flat public service distribution', () => {
@@ -106,11 +110,11 @@ describe('canonical documentation registry', () => {
     );
     expect(counts).toEqual({
       Catálogo: 5,
-      Inventario: 1,
+      Inventario: 2,
       Terceros: 3,
-      'Transacciones y documentos': 19,
+      'Transacciones y documentos': 20,
       Impuestos: 2,
-      'Finanzas y cartera': 12,
+      'Finanzas y cartera': 14,
       Organización: 3,
       Facturación: 1,
       Restaurante: 4,

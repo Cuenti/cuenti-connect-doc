@@ -110,13 +110,27 @@ const projectDetails = (
 export const projectResponseExample = (
   endpoint: EndpointDoc,
   requestBody: unknown = endpoint.requestExample,
-) => {
+): unknown => {
   const example = clone(endpoint.responseExample);
   if (!example || endpoint.groups.length === 0) return example;
 
   const groupsByName = groupProjections(endpoint);
   const groups = selectedGroups(requestBody, 'grupos', groupsByName);
   if (!groups || !isObject(example)) return example;
+
+  if (endpoint.responseEnvelope && isObject(example.data)) {
+    return {
+      ...example,
+      data: projectResponseExample(
+        {
+          ...endpoint,
+          responseExample: example.data,
+          responseEnvelope: undefined,
+        },
+        requestBody,
+      ),
+    };
+  }
 
   const detail = selectedGroups(requestBody, 'detalle', groupsByName);
   const collection = Object.keys(example).find(

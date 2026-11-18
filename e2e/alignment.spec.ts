@@ -37,6 +37,10 @@ test('exposes all newly documented public routes', async ({ page }) => {
     'finanzas-comprobante-caja-por-id',
     'organizacion-centros-costo',
     'restaurante-mesas-ocupadas',
+    'finanzas-comprobantes-caja-busquedas',
+    'finanzas-bancos-movimientos-busquedas',
+    'inventario-kardex-busquedas',
+    'operativas-ordenes-produccion-busquedas',
   ]) {
     await page.goto(`/?endpoint=${id}`);
     const route = rawRegistry.routes.find((item) => item.routeId === id);
@@ -47,6 +51,110 @@ test('exposes all newly documented public routes', async ({ page }) => {
     await expect(page.locator('.endpoint-detail h1')).not.toBeEmpty();
   }
 });
+
+for (const id of [
+  'finanzas-comprobantes-caja-busquedas',
+  'finanzas-bancos-movimientos-busquedas',
+  'inventario-kardex-busquedas',
+  'operativas-ordenes-produccion-busquedas',
+]) {
+  test(`sends ${id} as a mocked read-only POST query`, async ({ page }) => {
+    const requests: Array<{
+      method: string;
+      url: string;
+      body: string | null;
+    }> = [];
+    const publicRoute = rawRegistry.routes.find(
+      (route) => route.routeId === id,
+    );
+    const source = rawRegistry.endpoints.find(
+      (item) => item.id === publicRoute?.contract,
+    );
+    if (!source) throw new Error(`Missing canonical contract ${id}`);
+    const production = Boolean(publicRoute?.translation.boundedProduction);
+    const response = structuredClone(source.response.example);
+    if (production && 'documentos' in response && response.documentos)
+      response.documentos[0].codigos.tipo_documento =
+        publicRoute?.translation.fixedQuery?.tipo_documento ?? 0;
+    await page.route('**/api/v1/**', async (route) => {
+      const request = route.request();
+      requests.push({
+        method: request.method(),
+        url: request.url(),
+        body: request.postData(),
+      });
+      await route.fulfill({
+        json: response,
+        headers: { 'Cache-Control': 'no-store' },
+      });
+    });
+    await page.goto(`/?endpoint=${id}`);
+    await configure(page, true);
+    await expect(
+      page.getByRole('checkbox', { name: /Entiendo que esta operación/ }),
+    ).toHaveCount(0);
+    await page.locator('#query-id_sucursal').fill('1');
+    await page.locator('#query-fecha_desde').fill('1735707600000');
+    await page.locator('#query-fecha_hasta').fill('1735794000000');
+    if (id === 'finanzas-bancos-movimientos-busquedas') {
+      await expect(page.locator('#path-id_banco')).toHaveValue('');
+      await page.locator('#path-id_banco').fill('73');
+      await expect(page.locator('.notes-list')).toContainText(
+        '31 días calendario inclusivos en GMT-0500',
+      );
+    }
+    if (id === 'inventario-kardex-busquedas')
+      await page.locator('#query-id_producto').fill('25');
+    const editor = page.getByLabel('Cuerpo JSON', { exact: true });
+    if (!production) {
+      await expect(editor).toHaveValue('{}');
+      await expect(page.locator('#query-pagina')).toHaveCount(0);
+      await expect(page.locator('#query-estado')).toHaveCount(0);
+      await expect(page.locator('#query-id_bodega')).toHaveCount(0);
+      await expect(page.locator('.notes-list')).toContainText(
+        'proyección SAFE completa',
+      );
+      await expect(page.locator('.notes-list')).toContainText(
+        'No admite columnas, detalle ni paginación',
+      );
+    } else {
+      await expect(page.locator('.notes-list')).toContainText(
+        'no consumos reales',
+      );
+      await expect(page.locator('#query-tipo_documento')).toHaveCount(0);
+      await expect(page.locator('#query-pagina')).toHaveCount(1);
+      await expect(page.locator('.notes-list')).toContainText(
+        '{} no es válido',
+      );
+      const validBody = await editor.inputValue();
+      await editor.fill('{}');
+      await page.getByRole('button', { name: 'Enviar solicitud' }).click();
+      await expect(page.getByRole('alert')).toContainText(
+        'grupos debe ser una lista no vacía',
+      );
+      expect(requests).toHaveLength(0);
+      await editor.fill(validBody);
+    }
+    await page.getByRole('button', { name: 'Enviar solicitud' }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].method).toBe('POST');
+    expect(new URL(requests[0].url).searchParams.get('id_sucursal')).toBe('1');
+    expect(requests[0].body).not.toContain('confirmation');
+    if (!production) {
+      expect(requests[0].body).toBe('{}');
+      await editor.fill('');
+      await page.getByRole('button', { name: 'Enviar solicitud' }).click();
+      await expect.poll(() => requests.length).toBe(2);
+      expect(requests[1].body).toBeNull();
+      const group = source.body.groups?.[0].allowed[0];
+      await editor.fill(JSON.stringify({ grupos: [group] }));
+      await page.getByRole('button', { name: 'Enviar solicitud' }).click();
+      await expect.poll(() => requests.length).toBe(3);
+      expect(JSON.parse(requests[2].body ?? '{}')).toEqual({ grupos: [group] });
+      await expect(page.locator('.response-panel')).toContainText('request_id');
+    }
+  });
+}
 
 test('preserves order references and nullable document integers and displays the unchanged rejection contract', async ({
   page,

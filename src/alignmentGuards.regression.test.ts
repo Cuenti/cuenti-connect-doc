@@ -53,7 +53,11 @@ test('S1/S2: all public consumers preserve drafts, reject invalid boundaries and
       );
     const secretDraft = {
       ...draft,
-      body: '{"password":"body-secret","nested":{"token":"nested-secret"}}',
+      body: JSON.stringify({
+        grupos: JSON.parse(draft.body || '{}')?.grupos,
+        password: 'body-secret',
+        nested: { token: 'nested-secret' },
+      }),
     };
     const request = buildRequest(endpoint, secretDraft);
     for (const secret of ['probe-secret', 'body-secret', 'nested-secret'])

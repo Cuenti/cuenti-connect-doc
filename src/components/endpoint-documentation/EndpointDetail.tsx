@@ -225,6 +225,9 @@ export const EndpointDetail = ({
                     />
                     <span className="projection-fields">
                       {group.description || getGroupDescription(group.name)}
+                      {group.fields.length
+                        ? ` Campos: ${group.fields.join(', ')}.`
+                        : ''}
                       {group.aliases?.length
                         ? ` Alias: ${group.aliases.join(', ')}.`
                         : ''}
@@ -318,7 +321,7 @@ export const EndpointDetail = ({
                     />
                     <p className={requestError ? 'form-error' : 'example-note'}>
                       {requestError ||
-                        'La respuesta ilustrativa se actualiza al cambiar grupos o detalle.'}
+                        'La respuesta ilustrativa se actualiza al cambiar la selección de grupos.'}
                     </p>
                   </>
                 )}

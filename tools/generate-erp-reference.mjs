@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { publicContract } from '../src/registry/publicContract.mjs';
 
 const json = (value) => `\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\``;
 const cell = (value) =>
@@ -64,7 +65,8 @@ const fields = (schema, prefix = '') =>
     ];
   });
 
-const project = (contract, route) => {
+const project = (sourceContract, route) => {
+  const contract = publicContract(sourceContract, route);
   const translation = route.translation ?? {};
   const bodyHidden = new Set([
     ...Object.keys(translation.fixedBody ?? {}),
@@ -110,11 +112,14 @@ const project = (contract, route) => {
       contract.tryIt?.path?.[parameter.name] ??
       contract.tryIt?.body?.[source] ??
       parameter.example ??
-      parameter.minimum ??
-      1;
+      `{{${parameter.name}}}`;
   }
   for (const parameter of query) {
-    const value = contract.tryIt?.query?.[parameter.name];
+    const value =
+      contract.tryIt?.query?.[parameter.name] ??
+      (parameter.required
+        ? (parameter.example ?? `{{${parameter.name}}}`)
+        : undefined);
     if (value !== undefined) example[parameter.name] = value;
   }
   if (body.type !== 'none')
@@ -285,7 +290,7 @@ export const renderErpReference = (registry, external) => {
       'Elige la herramienta por necesidad y contrasta siempre los argumentos con `tools/list` del servidor MCP.',
       'Los ejemplos de argumentos son MCP. Para REST usa únicamente `body` como cuerpo y los parámetros de ruta/consulta donde corresponda; nunca envíes `confirmation` al ERP.',
       'Solicita confirmación antes de cada mutación. Ante un resultado desconocido consulta el estado; no repitas automáticamente.',
-      'Usa los IDs reales de la empresa y páginas pequeñas. Los ejemplos no demuestran despliegue en producción.',
+      'Usa los IDs reales de la empresa; pagina solo cuando el contrato lo admita. Los ejemplos no demuestran despliegue en producción.',
       `El catálogo contiene ${registry.routes.length} rutas ERP y ${external.tools.length} herramienta externa.`,
       'Consulta [Finanzas y documentos](mcp-guide.md#finanzas-y-documentos) para errores, pagos y referencias de pedidos.',
     ]),

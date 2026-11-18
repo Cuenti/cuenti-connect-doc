@@ -75,6 +75,11 @@ const fixture = () => {
     '{"endpoints":[{"id":"stats-tool","visibility":"public","exposedAsTool":true}]}',
   );
   write('tools/verify-public-artifacts.mjs', '');
+  write('src/registry/publicContract.mjs', '');
+  copyFileSync(
+    resolve('src/registry/publicContract.mjs'),
+    join(root, 'src/registry/publicContract.mjs'),
+  );
   copyFileSync(
     resolve('tools/verify-public-artifacts.mjs'),
     join(root, 'tools/verify-public-artifacts.mjs'),

@@ -24,7 +24,7 @@ Mantén las credenciales en la configuración segura de la conexión MCP. Nunca 
 ## Finanzas y documentos
 
 - Un abono sin `id_comprobante_caja` crea un recibo; con ese campo aplica saldo de un anticipo existente. No ejecutes ambas variantes como si fueran equivalentes.
-- `fecha_registro` financiera usa `YYYY-MM-DDTHH:mm:ss`, sin zona ni epoch; los filtros de fecha de restaurante usan milisegundos Unix. Los IDs de empleado y sucursal son locales del ERP.
+- `fecha_registro` de las escrituras financieras usa `YYYY-MM-DDTHH:mm:ss`, sin zona ni epoch; los filtros de las consultas acotadas y de restaurante usan milisegundos Unix. Los IDs de empleado y sucursal son locales del ERP.
 - El REST de crear, listar y anular anticipos, anular abonos y consultar centros de costo usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`. Conserva el formato de cada herramienta restante; la envoltura MCP es independiente del payload REST.
 - Un comprobante enriquecido `null` no revierte un pago confirmado. Consulta su ID sin repetir la escritura; no reintentes automáticamente un resultado desconocido.
 - Para anular un documento usa `documentos-anular`, con `id_documento` de `vent_documento` y empleado local. Es una mutación sin cuerpo: el REST público usa POST y responde `ANULADO` o `YA_ESTABA_ANULADO`, no el JSON Java original. No uses la anulación de transacciones para un pedido.
@@ -34,3 +34,18 @@ Mantén las credenciales en la configuración segura de la conexión MCP. Nunca 
 - Consulta `organizacion-centros-costo` para obtener `data.items[].id_centro_costo`; su REST es `GET /api/v1/organizacion/centros-costo`, sin cuerpo, filtros ni caché. Para gasto (`tipoDocumento=7`), el documento exige `id_centro_costo` y cada línea usa `id_plan_cuentas`.
 - Los errores REST sin sobre estándar conservan `{error,message,request_id,retryable}`. Un rechazo HTTP 422 puede ampliar solo `message`: `El ERP rechazó la operación. codigo_error:1050:Producto de ejemplo sin existencia`. SQL, trazas, credenciales y mensajes inseguros no se exponen. `erp_mutation_outcome_unknown` exige consultar el estado, no repetir la escritura.
 - En terceros, `codigo_tributario: 5` significa No aplica ZZZ. Los contactos omitidos se conservan y `[]` no los elimina. Los campos aceptados no garantizan persistencia en Java de los hallazgos aún pendientes.
+
+## Consultas acotadas de caja, bancos, kardex y producción
+
+Son consultas POST de solo lectura: **no requieren confirmación** ni habilitan escrituras. Usa IDs reales de la empresa; los ejemplos no prueban disponibilidad en producción.
+
+| Herramienta | Alcance y límites |
+| --- | --- |
+| `finanzas-comprobantes-caja-busquedas` | Sucursal positiva y fechas obligatorias, ordenadas, máximo 31 días. `es_ingreso=0` o `1`; omitirlo consulta ambas direcciones y entrega todo o error. Filtros locales AND: `id_cliente`, `id_banco`, `id_medio_pago`, `n_caja` (texto), `es_activo`. |
+| `finanzas-bancos-movimientos-busquedas` | Banco positivo en la ruta y sucursal positiva. Hasta 31 días calendario inclusivos GMT-0500; expande a días locales completos, sin precisión intradía. No calcula saldos históricos ni identifica exclusivamente transferencias. |
+| `inventario-kardex-busquedas` | Producto y sucursal positivos obligatorios; fechas ordenadas, máximo 31 días. Sin modo todos los productos. Conserva el signo de cantidad y el costo histórico del movimiento; no sustituye ese costo por el catálogo actual ni reconstruye saldos. |
+| `operativas-ordenes-produccion-busquedas` | Fija el tipo de documento desde la ruta. Sucursal y fechas obligatorias, máximo 31 días; conserva grupos, detalle y paginación nativa de documentos. **Cobertura parcial:** líneas comerciales, no consumo real de insumos. Sin filtro `estado` ni bodega. |
+
+Las tres primeras aceptan cuerpo omitido o `{}` para la proyección **SAFE completa**, nunca el resultado crudo del ERP. También aceptan `{"grupos":["nombre_permitido"]}`: lista no vacía, sin duplicados, limitada a los grupos de cada contrato. No aceptan columnas, `detalle` ni paginación artificial. Sus campos visibles se enumeran en la referencia generada desde el registro canónico. Las relaciones ausentes conservan `null`.
+
+Sus respuestas REST usan `{success,data:{items:[...]},error,request_id}`, con cache bypass y `Cache-Control: no-store`; los errores usan `data:null` y `error:{code,message,retryable,field?}`. Las fechas de salida se normalizan a epoch-milliseconds. La consulta de producción conserva `documentos` y sus errores planos existentes; exige cuerpo con `grupos` no vacío. No envíes `confirmation` al REST ni lo solicites por tratarse de POST.

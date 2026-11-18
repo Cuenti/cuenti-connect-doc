@@ -153,6 +153,546 @@
   ],
   "endpoints": [
     {
+      "id": "consultarRecibosCaja",
+      "projectionPolicy": "groups-or-empty",
+      "title": "Buscar comprobantes de caja",
+      "summary": "Consulta comprobantes completos, sin paginación artificial.",
+      "category": "Finanzas",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/conciliacion_pagos/consultarRecibosCaja/{id_sucursal}/{es_ingreso}/{fecha1}/{fecha2}/{id_medio_pago}/{tipo_documento}/{fechaReciboCaja}/{tipo_recibo}/{es_anticipo}/{es_detallado}",
+      "operation": "query",
+      "cache": {
+        "policy": "bypass"
+      },
+      "invalidates": [],
+      "requiredHeaders": [
+        "Content-Type",
+        "X-Auth-Token-empresa",
+        "X-Auth-Token-sucursal",
+        "X-Id-Empleado",
+        "X-gtm",
+        "Authorization"
+      ],
+      "presets": [],
+      "params": {
+        "path": [],
+        "query": [
+          {
+            "name": "id_sucursal",
+            "type": "integer",
+            "required": true,
+            "minimum": 1
+          },
+          {
+            "name": "fecha_desde",
+            "type": "epoch-milliseconds",
+            "required": true,
+            "inclusive": true
+          },
+          {
+            "name": "fecha_hasta",
+            "type": "epoch-milliseconds",
+            "required": true,
+            "inclusive": true
+          },
+          {
+            "name": "es_ingreso",
+            "type": "integer",
+            "allowed": [
+              0,
+              1
+            ]
+          },
+          {
+            "name": "id_cliente",
+            "type": "integer",
+            "minimum": 1
+          },
+          {
+            "name": "id_banco",
+            "type": "integer",
+            "minimum": 1
+          },
+          {
+            "name": "id_medio_pago",
+            "type": "integer",
+            "minimum": 1
+          },
+          {
+            "name": "n_caja",
+            "type": "string"
+          },
+          {
+            "name": "es_activo",
+            "type": "integer",
+            "allowed": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      "body": {
+        "type": "object",
+        "required": false,
+        "groups": [
+          {
+            "key": "grupos",
+            "allowed": [
+              "comprobante",
+              "fechas",
+              "tercero",
+              "banco",
+              "medio_pago",
+              "sucursal",
+              "empleado",
+              "estado",
+              "nota"
+            ]
+          }
+        ],
+        "example": {}
+      },
+      "expectedCollection": "items",
+      "response": {
+        "envelope": "items",
+        "shape": "{ success: boolean, data: { items: ComprobanteCajaAgrupado[] } | null, error: { code: string, message: string, field?: string, retryable: boolean } | null, request_id: string }; dates are epoch-milliseconds",
+        "example": {
+          "success": true,
+          "data": {
+            "items": [
+              {
+                "comprobante": {"id_comprobante_caja": 101, "n_caja": "RC-EJEMPLO-001", "es_ingreso": 1, "valor": 12500.25},
+                "fechas": {"fecha_registro": 1735744272123},
+                "tercero": {"id_cliente": 8, "nombre_cliente": "Cliente ficticio", "identificacion": "EJEMPLO-008"},
+                "banco": {"id_banco": 9, "nombre": "Banco ficticio"},
+                "medio_pago": {"id_medio_pago": 2},
+                "sucursal": {"id_sucursal": 7},
+                "empleado": {"id_empleado": 42, "nombre": "Empleado ficticio"},
+                "estado": {"es_activo": 1, "es_cerrado": 0},
+                "nota": {"nota": "Comprobante ficticio de ejemplo"}
+              }
+            ]
+          },
+          "error": null,
+          "request_id": "00000000000000000000000000000000"
+        },
+        "boundedQuery": {
+          "maxWindowDays": 31,
+          "directions": "es_ingreso",
+          "defaults": {
+            "id_medio_pago": 0,
+            "tipo_documento": 0,
+            "fechaReciboCaja": 1,
+            "tipo_recibo": 0,
+            "es_anticipo": 0,
+            "es_detallado": 0
+          },
+          "filters": [
+            "id_cliente",
+            "id_banco",
+            "id_medio_pago",
+            "n_caja",
+            "es_activo"
+          ],
+          "requiredFields": {
+            "id_comprobante_caja": "id",
+            "n_caja": "text",
+            "abono_recibo": "number",
+            "fecha_caja": "date",
+            "id_sucursal": "id",
+            "id_cliente": "id",
+            "id_banco": "id",
+            "id_medio_pago": "id",
+            "id_empleado": "id",
+            "es_activo": "flag"
+          },
+          "groups": {
+            "comprobante": {
+              "id_comprobante_caja": "id_comprobante_caja",
+              "n_caja": "n_caja",
+              "es_ingreso": "$es_ingreso",
+              "valor": "abono_recibo"
+            },
+            "fechas": {
+              "fecha_registro": "fecha_caja"
+            },
+            "tercero": {
+              "id_cliente": "id_cliente",
+              "nombre_cliente": "nombre_cliente",
+              "identificacion": "identificacion"
+            },
+            "banco": {
+              "id_banco": "id_banco",
+              "nombre": "banco"
+            },
+            "medio_pago": {
+              "id_medio_pago": "id_medio_pago"
+            },
+            "sucursal": {
+              "id_sucursal": "id_sucursal"
+            },
+            "empleado": {
+              "id_empleado": "id_empleado",
+              "nombre": "empleado"
+            },
+            "estado": {
+              "es_activo": "es_activo",
+              "es_cerrado": "es_cerrado"
+            },
+            "nota": {
+              "nota": "nota"
+            }
+          }
+        }
+      },
+      "notes": [
+        "Las fechas públicas son epoch-milliseconds entre 0 y 253402300799999. Los timestamps SQL sin zona usan X-gtm (GMT-0500); los offsets RFC3339 explícitos se respetan.",
+        "Rango máximo de 31 días; filtros locales AND sobre el resultado completo. es_ingreso omitido consulta ambas direcciones, todo o error. valor es tc.valor (abono_recibo), no asignaciones. es_anticipo=0 incluye todos."
+      ],
+      "errors": [],
+      "tryIt": {
+        "enabled": false,
+        "proxyOnly": true
+      },
+      "cost": {
+        "tier": "high",
+        "factors": [
+          "Hasta dos consultas acotadas."
+        ]
+      }
+    },
+    {
+      "id": "consultarMovimientoBanco_idBanco",
+      "projectionPolicy": "groups-or-empty",
+      "title": "Buscar movimientos bancarios",
+      "summary": "Consulta movimientos por banco y sucursal con granularidad de día.",
+      "category": "Finanzas",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/adm/banco_movimiento/consultarMovimientoBanco_idBanco/{id_banco}/{id_sucursal}/{fecha1}/{fecha2}",
+      "operation": "query",
+      "cache": {
+        "policy": "bypass"
+      },
+      "invalidates": [],
+      "requiredHeaders": [
+        "Content-Type",
+        "X-Auth-Token-empresa",
+        "X-Auth-Token-sucursal",
+        "X-Id-Empleado",
+        "X-gtm",
+        "Authorization"
+      ],
+      "presets": [],
+      "dateGranularity": "local-day",
+      "params": {
+        "path": [
+          {
+            "name": "id_banco",
+            "type": "integer",
+            "required": true,
+            "minimum": 1
+          }
+        ],
+        "query": [
+          {
+            "name": "id_sucursal",
+            "type": "integer",
+            "required": true,
+            "minimum": 1
+          },
+          {
+            "name": "fecha_desde",
+            "type": "epoch-milliseconds",
+            "required": true,
+            "inclusive": true
+          },
+          {
+            "name": "fecha_hasta",
+            "type": "epoch-milliseconds",
+            "required": true,
+            "inclusive": true
+          }
+        ]
+      },
+      "body": {
+        "type": "object",
+        "required": false,
+        "groups": [
+          {
+            "key": "grupos",
+            "allowed": [
+              "movimiento",
+              "fechas",
+              "banco",
+              "sucursal",
+              "comprobante",
+              "tercero",
+              "empleado",
+              "medio_pago",
+              "transaccion"
+            ]
+          }
+        ],
+        "example": {}
+      },
+      "expectedCollection": "items",
+      "response": {
+        "envelope": "items",
+        "shape": "{ success: boolean, data: { items: MovimientoBancoAgrupado[] } | null, error: { code: string, message: string, field?: string, retryable: boolean } | null, request_id: string }; dates are epoch-milliseconds",
+        "example": {
+          "success": true,
+          "data": {
+            "items": [
+              {
+                "movimiento": {"id_movimiento": 201, "valor": -12500.25, "es_entrada": 0, "nota": "Movimiento ficticio de ejemplo"},
+                "fechas": {"fecha_registro": 1735744272123, "fecha_transaccion": null},
+                "banco": {"id_banco": 9},
+                "sucursal": {"id_sucursal": 7},
+                "comprobante": null,
+                "tercero": null,
+                "empleado": {"id_empleado": 42, "nombre": "Empleado ficticio"},
+                "medio_pago": null,
+                "transaccion": null
+              }
+            ]
+          },
+          "error": null,
+          "request_id": "00000000000000000000000000000000"
+        },
+        "boundedQuery": {
+          "maxWindowDays": 31,
+          "defaults": {},
+          "filters": [],
+          "requiredFields": {
+            "idMovimiento": "id",
+            "valor": "number",
+            "es_entrada": "flag",
+            "fecha_registro": "date",
+            "id_empleado": "id"
+          },
+          "groups": {
+            "movimiento": {
+              "id_movimiento": "idMovimiento",
+              "valor": "valor",
+              "es_entrada": "es_entrada",
+              "nota": "nota"
+            },
+            "fechas": {
+              "fecha_registro": "fecha_registro",
+              "fecha_transaccion": "fecha_registro_t"
+            },
+            "banco": {
+              "id_banco": "$id_banco"
+            },
+            "sucursal": {
+              "id_sucursal": "$id_sucursal"
+            },
+            "comprobante": {
+              "id_comprobante_caja": "id_comprobante_caja",
+              "n_caja": "n_caja",
+              "es_activo": "es_activo",
+              "es_ingreso": "es_ingreso"
+            },
+            "tercero": {
+              "id_cliente": "id_cliente",
+              "nombre_cliente": "nombre_cliente",
+              "identificacion": "identificacion"
+            },
+            "empleado": {
+              "id_empleado": "id_empleado",
+              "nombre": "nombre_completo"
+            },
+            "medio_pago": {
+              "nombre": "nombre_medio_pago"
+            },
+            "transaccion": {
+              "id_transacion": "id_transacion",
+              "tipo_documento": "tipoDocumento",
+              "n_factura": "nFactura",
+              "n_transacion": "n_transacion"
+            }
+          }
+        }
+      },
+      "notes": [
+        "Las fechas públicas son epoch-milliseconds entre 0 y 253402300799999. Los timestamps SQL sin zona usan X-gtm (GMT-0500); los offsets RFC3339 explícitos se respetan.",
+        "El origen expande fechas al día local completo 00:00..23:59:59; no ofrece precisión intradía. valor conserva su signo. es_activo pertenece al comprobante, no al movimiento. Sin saldos históricos ni filtro exclusivo de transferencias."
+      ],
+      "errors": [],
+      "tryIt": {
+        "enabled": false,
+        "proxyOnly": true
+      },
+      "cost": {
+        "tier": "high",
+        "factors": [
+          "Una consulta acotada."
+        ]
+      }
+    },
+    {
+      "presets": [],
+      "id": "consultarMovimientosDetalle",
+      "projectionPolicy": "groups-or-empty",
+      "title": "Buscar kardex",
+      "summary": "Consulta movimientos de un producto con costo histórico.",
+      "category": "Inventario",
+      "method": "GET",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/inv/movimiento/consultarMovimientosDetalle/{fecha1}/{fecha2}/{id_sucursal}/{id_producto}/{fecha_registro_factura}",
+      "operation": "query",
+      "cache": {
+        "policy": "bypass"
+      },
+      "invalidates": [],
+      "requiredHeaders": [
+        "Content-Type",
+        "X-Auth-Token-empresa",
+        "X-Auth-Token-sucursal",
+        "X-Id-Empleado",
+        "X-gtm",
+        "Authorization"
+      ],
+      "params": {
+        "path": [],
+        "query": [
+          {
+            "name": "id_producto",
+            "type": "integer",
+            "required": true,
+            "minimum": 1
+          },
+          {
+            "name": "id_sucursal",
+            "type": "integer",
+            "required": true,
+            "minimum": 1
+          },
+          {
+            "name": "fecha_desde",
+            "type": "epoch-milliseconds",
+            "required": true,
+            "inclusive": true
+          },
+          {
+            "name": "fecha_hasta",
+            "type": "epoch-milliseconds",
+            "required": true,
+            "inclusive": true
+          }
+        ]
+      },
+      "body": {
+        "type": "object",
+        "required": false,
+        "groups": [
+          {
+            "key": "grupos",
+            "allowed": [
+              "movimiento",
+              "producto",
+              "cantidades",
+              "costos",
+              "fechas",
+              "referencias",
+              "lote"
+            ]
+          }
+        ],
+        "example": {}
+      },
+      "expectedCollection": "items",
+      "response": {
+        "envelope": "items",
+        "shape": "{ success: boolean, data: { items: MovimientoKardexAgrupado[] } | null, error: { code: string, message: string, field?: string, retryable: boolean } | null, request_id: string }; dates are epoch-milliseconds",
+        "example": {
+          "success": true,
+          "data": {
+            "items": [
+              {
+                "movimiento": {"id_movimiento": 301, "id_concepto": 2, "es_entrada": 0, "nota": "Movimiento ficticio de ejemplo"},
+                "producto": {"id_producto": 5, "nombre": "SKU-EJEMPLO-Producto ficticio", "id_producto_sucursal": 51},
+                "cantidades": {"cantidad": -2.5, "cantidad_real_presentacion": -1, "presentacion": "Caja ficticia", "equivalencia": 2.5},
+                "costos": {"costo_actual": 5000.125},
+                "fechas": {"fecha_registro": 1735744272123},
+                "referencias": {"id_documento": 401, "id_transacion": null, "id_encabezado": 501, "n_factura": null, "id_traslado": null, "n_traslado": null, "numero_consecutivo_inv": "INV-EJEMPLO-001"},
+                "lote": null
+              }
+            ]
+          },
+          "error": null,
+          "request_id": "00000000000000000000000000000000"
+        },
+        "boundedQuery": {
+          "maxWindowDays": 31,
+          "defaults": {
+            "fecha_registro_factura": 0
+          },
+          "filters": [],
+          "requiredFields": {
+            "id": "id",
+            "id_producto": "id",
+            "cantidad": "number",
+            "costo_actual": "number",
+            "es_entrada": "flag",
+            "fecha_registro": "date"
+          },
+          "groups": {
+            "movimiento": {
+              "id_movimiento": "id",
+              "id_concepto": "id_concepto",
+              "es_entrada": "es_entrada",
+              "nota": "nota"
+            },
+            "producto": {
+              "id_producto": "id_producto",
+              "nombre": "producto",
+              "id_producto_sucursal": "id_producto_sucursal"
+            },
+            "cantidades": {
+              "cantidad": "cantidad",
+              "cantidad_real_presentacion": "cantidad_real_presentacion",
+              "presentacion": "presentacion",
+              "equivalencia": "equivalencia"
+            },
+            "costos": {
+              "costo_actual": "costo_actual"
+            },
+            "fechas": {
+              "fecha_registro": "fecha_registro"
+            },
+            "referencias": {
+              "id_documento": "id_documento",
+              "id_transacion": "id_transacion",
+              "id_encabezado": "id_encanbezado",
+              "n_factura": "nFactura",
+              "id_traslado": "id_traslado",
+              "n_traslado": "n_traslado",
+              "numero_consecutivo_inv": "numero_consecutivo_inv"
+            },
+            "lote": {
+              "lote": "lote"
+            }
+          }
+        }
+      },
+      "notes": [
+        "Las fechas públicas son epoch-milliseconds entre 0 y 253402300799999. Los timestamps SQL sin zona usan X-gtm (GMT-0500); los offsets RFC3339 explícitos se respetan.",
+        "Fecha real (fecha_registro_factura=0), máximo 31 días y producto positivo obligatorio. cantidad conserva signo y costo_actual es histórico; no se reconstruyen saldos ni se usa costo de catálogo."
+      ],
+      "errors": [],
+      "tryIt": {
+        "enabled": false,
+        "proxyOnly": true
+      },
+      "cost": {
+        "tier": "high",
+        "factors": [
+          "Una consulta acotada por producto."
+        ]
+      }
+    },
+    {
       "id": "buscarProductosCatalogo",
       "projectionPolicy": "groups-or-empty",
       "title": "Buscar productos del catálogo",
@@ -7697,6 +8237,49 @@
   ],
   "routes": [
     {
+      "routeId": "finanzas-comprobantes-caja-busquedas",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/comprobantes-caja/busquedas",
+      "contract": "consultarRecibosCaja",
+      "title": "Buscar comprobantes de caja",
+      "translation": {}
+    },
+    {
+      "routeId": "finanzas-bancos-movimientos-busquedas",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/bancos/{id_banco}/movimientos/busquedas",
+      "contract": "consultarMovimientoBanco_idBanco",
+      "title": "Buscar movimientos bancarios",
+      "translation": {}
+    },
+    {
+      "routeId": "inventario-kardex-busquedas",
+      "category": "Inventario",
+      "method": "POST",
+      "path": "/api/v1/inventario/kardex/busquedas",
+      "contract": "consultarMovimientosDetalle",
+      "title": "Buscar kardex",
+      "translation": {}
+    },
+    {
+      "routeId": "operativas-ordenes-produccion-busquedas",
+      "description": "Requiere sucursal, rango de hasta 31 días y body.grupos no vacío; detalle es opcional. Fechas públicas en epoch-milliseconds (0..253402300799999): timestamps SQL sin zona usan X-gtm GMT-0500 y RFC3339 conserva su offset explícito. No representa consumo real de producción.",
+      "category": "Transacciones y documentos",
+      "method": "POST",
+      "path": "/api/v1/transacciones/operativas/ordenes-produccion/busquedas",
+      "contract": "buscarDocumentosComerciales",
+      "title": "Buscar órdenes de producción",
+      "translation": {
+        "fixedQuery": {
+          "tipo_documento": 12
+        },
+        "boundedProduction": true,
+        "maxWindowDays": 31
+      }
+    },
+    {
       "routeId": "ventas-facturas-busquedas",
       "category": "Transacciones y documentos",
       "method": "POST",
@@ -7704,6 +8287,9 @@
       "contract": "buscarTransacciones",
       "title": "Buscar facturas",
       "translation": {
+        "omitBodyFields": [
+          "cartera_cliente"
+        ],
         "fixedQuery": {
           "tipo_documento": 1
         }

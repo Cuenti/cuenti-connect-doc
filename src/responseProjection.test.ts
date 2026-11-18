@@ -11,6 +11,38 @@ const endpointFor = (contractId: string) => {
 };
 
 describe('projectResponseExample', () => {
+  it('projects groups inside finance envelopes and keeps the full safe example for {}', () => {
+    const endpoint = {
+      ...endpointFor('buscarProductosCatalogo'),
+      responseEnvelope: 'items',
+      groups: [
+        { name: 'movimiento', fields: ['id'] },
+        { name: 'tercero', fields: ['nombre'] },
+      ],
+      responseExample: {
+        success: true,
+        data: {
+          items: [{ movimiento: { id: 7 }, tercero: null }],
+        },
+        error: null,
+        request_id: 'example-request',
+      },
+    };
+    expect(projectResponseExample(endpoint, {})).toEqual(
+      endpoint.responseExample,
+    );
+    expect(
+      projectResponseExample(endpoint, { grupos: ['movimiento'] }),
+    ).toEqual({
+      ...endpoint.responseExample,
+      data: { items: [{ movimiento: { id: 7 } }] },
+    });
+    expect(endpoint.responseExample.data.items[0]).toHaveProperty('tercero');
+    expect(projectResponseExample(endpoint, { grupos: ['tercero'] })).toEqual({
+      ...endpoint.responseExample,
+      data: { items: [{ tercero: null }] },
+    });
+  });
   it('removes and restores selected header groups', () => {
     const endpoint = endpointFor('buscarProductosCatalogo');
 

@@ -191,6 +191,30 @@ export const buildRequest = (
     }
   }
 
+  const requiredGroups = endpoint.bodyFields.find(
+    (field) => field.name === 'grupos' && field.required,
+  );
+  if (requiredGroups && parsedBody !== undefined) {
+    const groups =
+      parsedBody !== null && typeof parsedBody === 'object'
+        ? (parsedBody as Record<string, unknown>).grupos
+        : undefined;
+    if (
+      !Array.isArray(groups) ||
+      groups.length === 0 ||
+      new Set(groups).size !== groups.length ||
+      groups.some(
+        (group) =>
+          typeof group !== 'string' ||
+          !requiredGroups.allowedValues?.includes(group),
+      )
+    ) {
+      errors.push(
+        'grupos debe ser una lista no vacía, sin duplicados y solo con grupos permitidos.',
+      );
+    }
+  }
+
   if (errors.length > 0) throw new Error(errors.join(' '));
 
   const queryString = query.toString();
