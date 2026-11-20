@@ -1,0 +1,24 @@
+# Cuenti Developer Portal
+
+> Documentación pública para integrar Cuenti mediante la API REST, MCP ERP y MCP Stats: operaciones, parámetros, ejemplos y límites de uso.
+
+## API REST
+
+- [Referencia interactiva de la API](https://cuenti.github.io/cuenti-connect-doc/): métodos, rutas, encabezados, cuerpos y ejemplos por operación.
+- [Contratos del ERP en Markdown](https://cuenti.github.io/cuenti-connect-doc/skills/cuenti-mcp-erp/references/endpoints.md): documentos, ventas, compras, finanzas, inventario, catálogo, terceros, impuestos, organización, facturación y restaurante. Incluye rutas REST y argumentos MCP; la creación de comandas tiene ejemplos separados para cada interfaz.
+- [Catálogos y valores](https://cuenti.github.io/cuenti-connect-doc/skills/cuenti-mcp-erp/references/catalogos.md): identificadores y valores admitidos en los contratos del ERP.
+
+## MCP ERP
+
+- [Guía de conexión y uso](https://cuenti.github.io/cuenti-connect-doc/skills/cuenti-mcp-erp/references/mcp-guide.md): conexión, descubrimiento de herramientas y confirmación de operaciones de escritura.
+- [Guía en el portal](https://cuenti.github.io/cuenti-connect-doc/?section=mcp&server=erp): servicios disponibles y acceso a sus contratos públicos.
+
+## MCP Stats
+
+- [Guía de conexión y límites](https://cuenti.github.io/cuenti-connect-doc/skills/cuenti-mcp-stats/references/mcp-guide.md): conexión, acceso a sucursales y rangos de fechas.
+- [Referencia de herramientas](https://cuenti.github.io/cuenti-connect-doc/skills/cuenti-mcp-stats/references/tools.md): indicadores, reportes y parámetros de consulta.
+
+## Optional
+
+- [Skill de MCP ERP](https://cuenti.github.io/cuenti-connect-doc/skills/cuenti-mcp-erp/SKILL.md): instrucciones de uso para asistentes.
+- [Skill de MCP Stats](https://cuenti.github.io/cuenti-connect-doc/skills/cuenti-mcp-stats/SKILL.md): instrucciones de uso para asistentes.
