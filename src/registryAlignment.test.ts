@@ -271,7 +271,7 @@ describe('current wrapper public surface', () => {
   });
 
   it('covers the declared public catalog without exposing private descriptors', () => {
-    expect(registry.endpoints).toHaveLength(54);
+    expect(registry.endpoints).toHaveLength(60);
     expect(registry.endpoints.map((item) => item.id)).toEqual([
       ...rawRegistry.routes.map((route) => route.routeId),
       ...externalTools.tools.map((tool) => tool.id),

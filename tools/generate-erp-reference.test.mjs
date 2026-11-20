@@ -18,6 +18,18 @@ const sections = new Map(
   ].map(([, id, text]) => [id, text]),
 );
 
+test('labels the comanda items payload as REST, not as MCP arguments', () => {
+  const text = sections.get('restaurante-comandas-crear');
+  const example = text.match(
+    /\*\*Ejemplo de cuerpo REST \(no son argumentos MCP\):\*\*\s+```json\n(.*?)\n```/s,
+  );
+  expect(JSON.parse(example?.[1] ?? '')).toEqual(
+    external.tools[0].body.example,
+  );
+  expect(text).toContain('mcp-guide.md#crear-una-comanda-con-ia');
+  expect(text).toContain('**Respuesta REST:**');
+});
+
 test('generated reference preserves public response parity without private routes', () => {
   const adapted = adaptRegistry(registry);
   expect(sections.size).toBe(registry.routes.length + external.tools.length);

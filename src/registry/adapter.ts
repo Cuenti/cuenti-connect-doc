@@ -827,8 +827,11 @@ const projectPublicRoute = (
   projected.category = asString(route.category) || asString(projected.category);
   projected.publicRoute = true;
   projected.descriptionId = asString(route.contract);
+  const redacted = asRecord(redactTerms(projected, hidden));
   return {
-    ...asRecord(redactTerms(projected, hidden)),
+    ...redacted,
+    path: projected.path,
+    params: { ...asRecord(redacted.params), path },
     response: projected.response,
   };
 };

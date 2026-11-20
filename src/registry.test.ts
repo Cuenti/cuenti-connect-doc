@@ -12,7 +12,7 @@ const findEndpoint = (id: string) =>
   );
 
 describe('canonical documentation registry', () => {
-  it('exposes all 50 approved public method/path tuples', () => {
+  it('exposes the approved public method/path tuples', () => {
     const tuples = registry.endpoints.map(
       (endpoint) => `${endpoint.method} ${endpoint.path}`,
     );
@@ -38,6 +38,8 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/transacciones/operativas/descuentos/busquedas',
         'POST /api/v1/transacciones/operativas/consolidados/busquedas',
         'POST /api/v1/catalogo/productos/busquedas',
+        'POST /api/v1/catalogo/productos',
+        'PATCH /api/v1/catalogo/productos/{id_producto}',
         'POST /api/v1/catalogo/categorias/busquedas',
         'PATCH /api/v1/catalogo/productos/impuestos-licores',
         'GET /api/v1/catalogo/marcas',
@@ -51,6 +53,10 @@ describe('canonical documentation registry', () => {
         'POST /api/v1/finanzas/bancos/busquedas',
         'POST /api/v1/finanzas/bancos/{id_banco}/movimientos/busquedas',
         'POST /api/v1/finanzas/comprobantes-caja/busquedas',
+        'POST /api/v1/finanzas/comprobantes-caja/multiples',
+        'PATCH /api/v1/finanzas/comprobantes-caja/medio-pago',
+        'POST /api/v1/finanzas/traslados',
+        'POST /api/v1/finanzas/anticipos/proveedores',
         'POST /api/v1/inventario/kardex/busquedas',
         'POST /api/v1/transacciones/operativas/ordenes-produccion/busquedas',
         'POST /api/v1/finanzas/abonos',
@@ -74,7 +80,7 @@ describe('canonical documentation registry', () => {
         'GET /api/v1/restaurante/mesas-ocupadas',
       ]),
     );
-    expect(tuples).toHaveLength(54);
+    expect(tuples).toHaveLength(60);
     expect(tuples.every((tuple) => tuple.includes('/api/v1/'))).toBe(true);
     expect(JSON.stringify(registry)).not.toContain('/jServerj4ErpPro');
     expect(
@@ -83,7 +89,7 @@ describe('canonical documentation registry', () => {
   });
 
   it('keeps the public query and mutation split', () => {
-    expect(registry.endpoints).toHaveLength(54);
+    expect(registry.endpoints).toHaveLength(60);
     expect(
       new Set(registry.endpoints.map((endpoint) => endpoint.category)),
     ).toEqual(new Set(categories));
@@ -94,10 +100,10 @@ describe('canonical documentation registry', () => {
     ).toHaveLength(33);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.kind === 'mutation'),
-    ).toHaveLength(14);
+    ).toHaveLength(20);
     expect(
       registry.endpoints.filter((endpoint) => endpoint.cache.mode === 'bypass'),
-    ).toHaveLength(21);
+    ).toHaveLength(27);
   });
 
   it('keeps the flat public service distribution', () => {
@@ -109,12 +115,12 @@ describe('canonical documentation registry', () => {
       ]),
     );
     expect(counts).toEqual({
-      Catálogo: 5,
+      Catálogo: 7,
       Inventario: 2,
       Terceros: 3,
       'Transacciones y documentos': 20,
       Impuestos: 2,
-      'Finanzas y cartera': 14,
+      'Finanzas y cartera': 18,
       Organización: 3,
       Facturación: 1,
       Restaurante: 4,

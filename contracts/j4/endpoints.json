@@ -5872,7 +5872,7 @@
             "name": "tipoDocumento",
             "type": "integer",
             "required": true,
-            "description": "Tipo de documento; consulta el catálogo de valores admitidos antes de crear la operación."
+            "description": "Códigos documentados: 1 factura de venta, 4 pedido, 5 cotización, 6 otros ingresos, 7 compra o gasto, 8 despacho, 9 remisión. Es una lista de referencia, no un catálogo exhaustivo de J4."
           },
           {
             "name": "type_match_producto",
@@ -6213,13 +6213,14 @@
         ],
         "rules": [
           "Una solicitud contiene un solo documento.",
-          "tipoDocumento determina el documento que se crea; consulta el catálogo de valores para seleccionar el tipo correcto.",
+          "tipoDocumento determina qué se crea: 1 factura de venta, 4 pedido, 5 cotización, 6 otros ingresos, 7 compra o gasto, 8 despacho y 9 remisión. No confunda este código con id_consecutivo.",
           "Esta operación cubre transacciones como facturas, compras y remisiones, y documentos comerciales como órdenes de compra, cotizaciones y despachos.",
           "objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.",
           "cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.",
           "type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.",
           "emitir_electronicamente, bodega_destino e id_documento son opcionales, aceptan enteros sin mínimo o null y se reenvían sin cambios; si se omiten, el wrapper no los agrega.",
-          "Para gasto, tipoDocumento=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo."
+          "Para gasto (7), use type_match_producto=1, id_plan_cuentas en cada detalle e id_centro_costo en el documento. Para otros ingresos (6) con concepto, use type_match_producto=1 e id_plan_cuentas en cada detalle, sin identificadores de producto; incluya el cobro en lstPagos si corresponde.",
+          "Si el detalle usa id_plan_cuentas en lugar de un producto, J4 exige un objeto impuestos con un id_impuesto válido, incluso si el concepto no causa impuesto. Consulte los impuestos de su empresa; no copie el ID de otra empresa."
         ],
         "validation": {
           "kind": "simple-document"
@@ -6483,6 +6484,7 @@
       "operation": "mutation",
       "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
       "invalidates": [
+        {"domain": "master-banks", "scope": "tenant", "tags": ["tenant:{empresa}:master-banks"]},
         {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
         {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
         {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
@@ -6520,7 +6522,7 @@
       },
       "presets": [],
       "errors": ["Los rechazos y errores técnicos usan errores controlados sin detalles internos.", "No se debe repetir una escritura cuyo resultado sea desconocido o ya confirmado."],
-      "notes": ["Registra un anticipo recibido del cliente, no un abono vinculado a id_documento.", "id_empleado es el ID local del empleado, no id_usuario_portal.", "Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.", "El comprobante puede recuperarse por ID sin repetir el POST."],
+      "notes": ["Registra el anticipo del tercero sin vincularlo a una factura.", "id_empleado es el ID local del empleado, no id_usuario_portal.", "Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.", "El comprobante puede recuperarse por ID sin repetir el POST."],
       "tryIt": {"enabled": true, "proxyOnly": true, "query": {}, "body": {"id_cliente": 1234, "id_sucursal": 1, "id_empleado": 7, "id_medio_pago": 1, "id_banco": 1, "valor": 50000.0, "es_ingreso": 1, "nota": "Anticipo de pedido", "fecha_registro": "2026-10-19T10:00:00"}},
       "cost": {"tier": "critical", "factors": ["Escritura financiera y consulta posterior del comprobante"]}
     },
@@ -8233,6 +8235,144 @@
         ]
       },
       "summary": "Agrupa pedidos y cotizaciones para mostrar sus totales."
+    },
+    {
+      "id": "cambiarMedioPago",
+      "title": "Cambiar banco, medio de pago y fecha de un comprobante",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/cambiarMedioPago",
+      "operation": "mutation",
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {"type": "object", "required": true, "fields": [
+        {"name": "id_comprobante_caja", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "id_banco", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "id_medio_pago", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "fecha_registro", "type": "epoch-milliseconds", "required": true, "minimum": 1, "maximum": 253402300799999},
+        {"name": "nota", "type": "string", "required": true},
+        {"name": "digitos", "type": "string", "required": true},
+        {"name": "boucher", "type": "string", "required": true, "maxLength": 20}
+      ], "example": {"id_comprobante_caja": 42, "id_banco": 2, "id_medio_pago": 1, "fecha_registro": 1780000000000, "nota": "", "digitos": "", "boucher": ""}},
+      "expectedCollection": null,
+      "response": {"shape": "Mensaje { message: string, type: integer, retorno?: string }", "successWhen": {"type": 1}, "example": {"message": "save", "type": 1}},
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "master-banks", "scope": "tenant", "tags": ["tenant:{empresa}:master-banks"]}
+      ],
+      "presets": [], "errors": ["No admite comprobantes anulados ni de otra sucursal."],
+      "notes": ["No cambia el consecutivo ni el valor. J4 reemplaza fecha, nota, dígitos y voucher: envíe los valores que desea conservar."],
+      "tryIt": {"enabled": false, "proxyOnly": true},
+      "cost": {"tier": "critical", "factors": ["Actualiza el comprobante y sus movimientos de banco."]}
+    },
+    {
+      "id": "trasferenciaBanco",
+      "title": "Registrar traslado entre bancos o cajas",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/adm/banco_movimiento/trasferenciaBanco",
+      "operation": "mutation",
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {"type": "object", "required": true, "fields": [
+        {"name": "id_banco_origen", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "id_banco_destino", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "valor", "type": "number", "required": true, "exclusiveMinimum": 0},
+        {"name": "fecha_registro", "type": "epoch-milliseconds", "required": true, "minimum": 1, "maximum": 253402300799999},
+        {"name": "nota", "type": "string", "required": true},
+        {"name": "id_centro_costo", "type": "integer", "required": true, "minimum": 0, "maximum": 2147483647}
+      ], "example": {"id_banco_origen": 1, "id_banco_destino": 2, "valor": 50000, "fecha_registro": 1780000000000, "nota": "Traslado de tesorería", "id_centro_costo": 0}},
+      "expectedCollection": null,
+      "response": {"shape": "Mensaje { message: string, type: integer, retorno?: string }", "successWhen": {"type": 1}, "example": {"message": "save", "type": 1}},
+      "cache": {"policy": "bypass", "domain": "master-banks", "tags": []},
+      "invalidates": [{"domain": "master-banks", "scope": "tenant", "tags": ["tenant:{empresa}:master-banks"]}],
+      "presets": [], "errors": ["El banco de origen y el de destino deben ser distintos."],
+      "notes": ["J4 registra el débito y el crédito en una operación. Esta ruta no anula traslados ni devuelve un ID nuevo."],
+      "tryIt": {"enabled": false, "proxyOnly": true},
+      "cost": {"tier": "critical", "factors": ["Escritura de dos movimientos y del encabezado de traslado."]}
+    },
+    {
+      "id": "agregarPagoVariasTransaciones",
+      "title": "Registrar un comprobante para varias facturas",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/transacion/agregarPagoVariasTransaciones",
+      "operation": "mutation",
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {"type": "object", "required": true, "fields": [
+        {"name": "id_cliente", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "es_ingreso", "type": "integer", "required": true, "allowed": [0, 1]},
+        {"name": "id_banco", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "id_medio_pago", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+        {"name": "fecha_registro", "type": "epoch-milliseconds", "required": true, "minimum": 1, "maximum": 253402300799999},
+        {"name": "valor", "type": "number", "required": true, "exclusiveMinimum": 0},
+        {"name": "nota", "type": "string", "required": true},
+        {"name": "boucher", "type": "string", "required": false, "maxLength": 20},
+        {"name": "documentos", "type": "array", "required": true, "minimumItems": 2, "maximumItems": 400, "items": {"type": "object", "fields": [
+          {"name": "id_transacion", "type": "integer", "required": true, "minimum": 1, "maximum": 2147483647},
+          {"name": "valor", "type": "number", "required": true, "exclusiveMinimum": 0}
+        ]}}
+      ], "example": {"id_cliente": 20, "es_ingreso": 1, "id_banco": 2, "id_medio_pago": 1, "fecha_registro": 1780000000000, "valor": 50000, "nota": "Abono conjunto", "documentos": [{"id_transacion": 10, "valor": 20000}, {"id_transacion": 11, "valor": 30000}]}},
+      "expectedCollection": null,
+      "response": {"envelope": "receipt", "shape": "{ success: boolean, data: object|null, error: object|null, request_id: string }", "successWhen": {"type": 1}, "receiptContract": "consultarComprobanteCaja_id", "example": {"success": true, "data": {"id_comprobante_caja": 42, "comprobante": null}, "error": null, "request_id": "0123456789abcdef0123456789abcdef"}, "upstreamExample": {"type": 1, "message": "save", "retorno": "42"}},
+      "cache": {"policy": "bypass", "domain": "transactions", "tags": []},
+      "invalidates": [
+        {"domain": "transactions", "scope": "tenant", "tags": ["tenant:{empresa}:transactions"]},
+        {"domain": "accounts-receivable", "scope": "tenant", "tags": ["tenant:{empresa}:accounts-receivable"]},
+        {"domain": "third-parties", "scope": "tenant", "tags": ["tenant:{empresa}:third-parties"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]},
+        {"domain": "discounts", "scope": "tenant", "tags": ["tenant:{empresa}:discounts"]},
+        {"domain": "consolidated", "scope": "tenant", "tags": ["tenant:{empresa}:consolidated"]},
+        {"domain": "master-banks", "scope": "tenant", "tags": ["tenant:{empresa}:master-banks"]}
+      ],
+      "presets": [], "errors": ["Las facturas deben ser distintas, activas y del mismo tercero, sucursal y tipo. El valor debe igualar la suma de los abonos."],
+      "notes": ["Use es_ingreso=1 para facturas de venta y 0 para compras. No registra retenciones ni aplica anticipos. No reintente una escritura de resultado desconocido."],
+      "tryIt": {"enabled": false, "proxyOnly": true},
+      "cost": {"tier": "critical", "factors": ["Lee las facturas antes de llamar una vez a J4 para registrar un comprobante."]}
+    },
+    {
+      "id": "guardarProducto",
+      "title": "Guardar producto del catálogo",
+      "category": "Catálogo",
+      "method": "POST",
+      "path": "/jServerj4ErpPro/com/j4ErpPro/server/inv/producto/guardarProducto",
+      "operation": "mutation",
+      "requiredHeaders": ["Content-Type", "X-Auth-Token-empresa", "X-Auth-Token-sucursal", "X-Id-Empleado", "X-gtm", "Authorization"],
+      "params": {"path": [], "query": []},
+      "body": {"type": "object", "required": true, "fields": [
+        {"name": "id_producto", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "nombre", "type": "string", "pattern": "\\S"},
+        {"name": "sku", "type": "string"},
+        {"name": "codigo_barras", "type": "string"},
+        {"name": "alias", "type": "string"},
+        {"name": "nota", "type": "string"},
+        {"name": "id_categoria", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "id_marca", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "id_tipo_medida", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "id_tipo_producto", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "id_impuesto", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "id_impuesto_compra", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "id_proveedor", "type": "integer", "minimum": 1, "maximum": 2147483647},
+        {"name": "precio_venta", "type": "number", "minimum": 0},
+        {"name": "precio_compra", "type": "number", "minimum": 0},
+        {"name": "es_servicio", "type": "integer", "allowed": [0, 1]},
+        {"name": "es_activo", "type": "integer", "allowed": [0, 1]}
+      ], "example": {"nombre": "Producto de ejemplo", "sku": "EJ-01", "precio_venta": 15000}},
+      "expectedCollection": null,
+      "response": {"shape": "Mensaje { type: integer, message: string, id_producto: integer, id_producto_sucursal: integer }", "successWhen": {"type": 1}, "example": {"type": 1, "message": "Producto creado exitosamente", "id_producto": 42, "id_producto_sucursal": 43}},
+      "cache": {"policy": "bypass", "domain": "products", "tags": []},
+      "invalidates": [
+        {"domain": "products", "scope": "tenant", "tags": ["tenant:{empresa}:products"]},
+        {"domain": "inventory", "scope": "tenant", "tags": ["tenant:{empresa}:inventory"]},
+        {"domain": "purchased-products", "scope": "tenant", "tags": ["tenant:{empresa}:purchased-products"]}
+      ],
+      "presets": [], "errors": ["Para crear se requiere nombre; para actualizar se requiere al menos un campo."],
+      "notes": ["J4 solo actualiza los campos presentes. No modifica existencias ni imágenes en esta API."],
+      "tryIt": {"enabled": false, "proxyOnly": true},
+      "cost": {"tier": "high", "factors": ["Escritura en catálogo global y en la sucursal."]}
     }
   ],
   "routes": [
@@ -8760,6 +8900,58 @@
       "path": "/api/v1/restaurante/mesas-ocupadas",
       "contract": "mesasOcupadas",
       "translation": {}
+    },
+    {
+      "routeId": "finanzas-comprobantes-caja-medio-pago",
+      "category": "Finanzas y cartera",
+      "method": "PATCH",
+      "path": "/api/v1/finanzas/comprobantes-caja/medio-pago",
+      "contract": "cambiarMedioPago",
+      "translation": {}
+    },
+    {
+      "routeId": "finanzas-traslados-crear",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/traslados",
+      "contract": "trasferenciaBanco",
+      "translation": {}
+    },
+    {
+      "routeId": "finanzas-comprobantes-caja-multiples-crear",
+      "category": "Finanzas y cartera",
+      "method": "POST",
+      "path": "/api/v1/finanzas/comprobantes-caja/multiples",
+      "contract": "agregarPagoVariasTransaciones",
+      "translation": {}
+    },
+    {
+      "routeId": "finanzas-anticipos-proveedores-crear",
+      "category": "Finanzas y cartera",
+      "title": "Registrar anticipo a proveedor",
+      "description": "Registra un anticipo entregado al proveedor como egreso; id_cliente identifica al tercero. No lo aplica a una factura.",
+      "method": "POST",
+      "path": "/api/v1/finanzas/anticipos/proveedores",
+      "contract": "agregarPagoAnticipo",
+      "translation": {"fixedBody": {"es_ingreso": 0}}
+    },
+    {
+      "routeId": "catalogo-productos-crear",
+      "category": "Catálogo",
+      "title": "Crear producto",
+      "method": "POST",
+      "path": "/api/v1/catalogo/productos",
+      "contract": "guardarProducto",
+      "translation": {"fixedBody": {"id_producto": -1}}
+    },
+    {
+      "routeId": "catalogo-productos-actualizar",
+      "category": "Catálogo",
+      "title": "Editar producto",
+      "method": "PATCH",
+      "path": "/api/v1/catalogo/productos/{id_producto}",
+      "contract": "guardarProducto",
+      "translation": {"pathToBody": {"id_producto": "id_producto"}}
     }
   ]
 }

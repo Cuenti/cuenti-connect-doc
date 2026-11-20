@@ -96,6 +96,70 @@ export const McpGuide = () => (
           <li>Para una mutación, explica el cambio y solicita confirmación.</li>
         </ul>
       </section>
+
+      <section
+        className="mcp-guide-section"
+        aria-labelledby="mcp-erp-use-title"
+      >
+        <p className="section-index">03 / Operaciones</p>
+        <h2 id="mcp-erp-use-title">Servicios y contratos ERP</h2>
+        <ul>
+          <li>
+            <a href="?endpoint=finanzas-comprobantes-caja-multiples-crear">
+              Agrupar cobros o pagos
+            </a>
+            : un recibo o egreso para 2–400 facturas del mismo tercero y
+            sucursal.
+          </li>
+          <li>
+            <a href="?endpoint=finanzas-comprobantes-caja-medio-pago">
+              Editar un comprobante activo
+            </a>
+            : cambia el banco, el medio de pago o la fecha sin cambiar el valor
+            ni el consecutivo.
+          </li>
+          <li>
+            <a href="?endpoint=finanzas-traslados-crear">Registrar traslados</a>
+            ,{' '}
+            <a href="?endpoint=finanzas-anticipos-proveedores-crear">
+              anticipos a proveedores
+            </a>{' '}
+            y <a href="?endpoint=documentos-crear">otros ingresos con recibo</a>{' '}
+            (<code>tipoDocumento=6</code>).
+          </li>
+          <li>
+            <a href="?endpoint=catalogo-productos-crear">Crear productos</a> o{' '}
+            <a href="?endpoint=catalogo-productos-actualizar">editarlos</a> sin
+            cambiar existencias.
+          </li>
+          <li>
+            Consultar{' '}
+            <a href="?endpoint=finanzas-comprobantes-caja-busquedas">
+              recibos y egresos
+            </a>
+            ,{' '}
+            <a href="?endpoint=finanzas-bancos-movimientos-busquedas">
+              movimientos bancarios
+            </a>
+            , <a href="?endpoint=inventario-kardex-busquedas">Kárdex</a> u{' '}
+            <a href="?endpoint=operativas-ordenes-produccion-busquedas">
+              órdenes de producción
+            </a>
+            . Máximo 31 días por solicitud. Las órdenes muestran encabezado y
+            líneas, no consumos reales de insumos.
+          </li>
+        </ul>
+        <h3>Crear una comanda con IA</h3>
+        <p>
+          Usa <code>restaurante-comandas-crear</code> con <code>platos</code> y{' '}
+          <code>numero_mesa</code> en la raíz de los argumentos. Revisa plato,
+          cantidad y destino antes de confirmar. Para clientes REST,{' '}
+          <a href="?endpoint=restaurante-comandas-crear">
+            <code>POST /api/v1/restaurante/comandas</code>
+          </a>{' '}
+          recibe <code>{'{ "items": [...] }'}</code>, no los argumentos MCP.
+        </p>
+      </section>
     </div>
   </div>
 );

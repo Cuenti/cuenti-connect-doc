@@ -5,20 +5,20 @@
 ## Cómo usarlo
 
 - Elige la herramienta por necesidad y contrasta siempre los argumentos con `tools/list` del servidor MCP.
-- Los ejemplos de argumentos son MCP. Para REST usa únicamente `body` como cuerpo y los parámetros de ruta/consulta donde corresponda; nunca envíes `confirmation` al ERP.
+- En las rutas del wrapper, usa `body` como cuerpo REST y los parámetros donde corresponda. La creación de comandas tiene un ejemplo REST separado. Nunca envíes `confirmation` en el cuerpo REST.
 - Solicita confirmación antes de cada mutación. Ante un resultado desconocido consulta el estado; no repitas automáticamente.
 - Usa los IDs reales de la empresa; pagina solo cuando el contrato lo admita. Los ejemplos no demuestran despliegue en producción.
-- El catálogo contiene 53 rutas ERP y 1 herramienta externa.
+- El catálogo contiene 59 rutas ERP y 1 herramienta externa.
 - Consulta [Finanzas y documentos](mcp-guide.md#finanzas-y-documentos) para errores, pagos y referencias de pedidos.
 
 ## Herramientas por necesidad
 
 | Necesidad | Herramientas |
 | --- | --- |
-| Finanzas y cartera | `finanzas-comprobantes-caja-busquedas`, `finanzas-bancos-movimientos-busquedas`, `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `finanzas-abonos-crear`, `finanzas-anticipos-crear`, `finanzas-anticipos-cliente-sucursal`, `finanzas-anticipos-anular`, `finanzas-abonos-anular`, `finanzas-comprobante-caja-por-id`, `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas` |
+| Finanzas y cartera | `finanzas-comprobantes-caja-busquedas`, `finanzas-bancos-movimientos-busquedas`, `finanzas-bancos-busquedas`, `finanzas-medios-pago-busquedas`, `finanzas-abonos-crear`, `finanzas-anticipos-crear`, `finanzas-anticipos-cliente-sucursal`, `finanzas-anticipos-anular`, `finanzas-abonos-anular`, `finanzas-comprobante-caja-por-id`, `finanzas-cartera-cobrar-busquedas`, `finanzas-cartera-pagar-busquedas`, `finanzas-resumen-cobrar-busquedas`, `finanzas-resumen-pagar-busquedas`, `finanzas-comprobantes-caja-medio-pago`, `finanzas-traslados-crear`, `finanzas-comprobantes-caja-multiples-crear`, `finanzas-anticipos-proveedores-crear` |
 | Inventario | `inventario-kardex-busquedas`, `inventario-conteos` |
 | Transacciones y documentos | `operativas-ordenes-produccion-busquedas`, `ventas-facturas-busquedas`, `ventas-planes-separe-busquedas`, `ventas-otros-ingresos-busquedas`, `ventas-compras-gastos-busquedas`, `ventas-remisiones-busquedas`, `documentos-crear`, `transacciones-anular`, `documentos-anular`, `transacciones-notas-crear`, `transacciones-notas-credito-emitir`, `ventas-productos-comprados-busquedas`, `ventas-descuentos-busquedas`, `ventas-consolidados-busquedas`, `operativas-pedidos-busquedas`, `operativas-cotizaciones-busquedas`, `operativas-despachos-busquedas`, `operativas-productos-busquedas`, `operativas-descuentos-busquedas`, `operativas-consolidados-busquedas` |
-| Catálogo | `catalogo-productos-busquedas`, `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `catalogo-marcas`, `catalogo-marca-por-id` |
+| Catálogo | `catalogo-productos-busquedas`, `catalogo-categorias-busquedas`, `catalogo-productos-impuestos-licores`, `catalogo-marcas`, `catalogo-marca-por-id`, `catalogo-productos-crear`, `catalogo-productos-actualizar` |
 | Terceros | `terceros-busquedas`, `terceros-crear`, `terceros-actualizar` |
 | Impuestos | `tributario-impuestos-busquedas`, `tributario-impuesto-por-id` |
 | Organización | `organizacion-sucursales-busquedas`, `organizacion-empleados-busquedas`, `organizacion-centros-costo` |
@@ -892,7 +892,7 @@ Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error=
 
 **Notas**
 
-- Registra un anticipo recibido del cliente, no un abono vinculado a id_documento.
+- Registra el anticipo del tercero sin vincularlo a una factura.
 - id_empleado es el ID local del empleado, no id_usuario_portal.
 - Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.
 - El comprobante puede recuperarse por ID sin repetir el POST.
@@ -1700,6 +1700,361 @@ En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los ar
 
 - Los saldos se calculan como SUM(total_deuda) - SUM(total_abono) sobre el mismo conjunto filtrado.
 - Las cuentas por cobrar y por pagar nunca se mezclan.
+
+### `finanzas-comprobantes-caja-medio-pago`: Cambiar banco, medio de pago y fecha de un comprobante
+
+**Para qué sirve:** Cambiar banco, medio de pago y fecha de un comprobante
+
+**Método:** `PATCH`.
+
+**Ruta:** `/api/v1/finanzas/comprobantes-caja/medio-pago`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_comprobante_caja` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_medio_pago` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `fecha_registro` | Sí | Tipo: epoch-milliseconds; no admite null; mínimo: 1; máximo: 253402300799999 |
+| `nota` | Sí | Tipo: string; no admite null |
+| `digitos` | Sí | Tipo: string; no admite null |
+| `boucher` | Sí | Tipo: string; no admite null |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_comprobante_caja": 42,
+    "id_banco": 2,
+    "id_medio_pago": 1,
+    "fecha_registro": 1780000000000,
+    "nota": "",
+    "digitos": "",
+    "boucher": ""
+  },
+  "confirmation": "confirm:finanzas-comprobantes-caja-medio-pago"
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "save",
+  "type": 1
+}
+```
+
+**Errores y límites**
+
+- No admite comprobantes anulados ni de otra sucursal.
+
+**Notas**
+
+- No cambia el consecutivo ni el valor. J4 reemplaza fecha, nota, dígitos y voucher: envíe los valores que desea conservar.
+
+### `finanzas-traslados-crear`: Registrar traslado entre bancos o cajas
+
+**Para qué sirve:** Registrar traslado entre bancos o cajas
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/traslados`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_banco_origen` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_banco_destino` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+| `fecha_registro` | Sí | Tipo: epoch-milliseconds; no admite null; mínimo: 1; máximo: 253402300799999 |
+| `nota` | Sí | Tipo: string; no admite null |
+| `id_centro_costo` | Sí | Tipo: integer; no admite null; mínimo: 0; máximo: 2147483647 |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_banco_origen": 1,
+    "id_banco_destino": 2,
+    "valor": 50000,
+    "fecha_registro": 1780000000000,
+    "nota": "Traslado de tesorería",
+    "id_centro_costo": 0
+  },
+  "confirmation": "confirm:finanzas-traslados-crear"
+}
+```
+
+**Respuesta esperada:** Mensaje { message: string, type: integer, retorno?: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "message": "save",
+  "type": 1
+}
+```
+
+**Errores y límites**
+
+- El banco de origen y el de destino deben ser distintos.
+
+**Notas**
+
+- J4 registra el débito y el crédito en una operación. Esta ruta no anula traslados ni devuelve un ID nuevo.
+
+### `finanzas-comprobantes-caja-multiples-crear`: Registrar un comprobante para varias facturas
+
+**Para qué sirve:** Registrar un comprobante para varias facturas
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/comprobantes-caja/multiples`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_cliente` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `es_ingreso` | Sí | Tipo: integer; no admite null; valores: `0`, `1` |
+| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_medio_pago` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `fecha_registro` | Sí | Tipo: epoch-milliseconds; no admite null; mínimo: 1; máximo: 253402300799999 |
+| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+| `nota` | Sí | Tipo: string; no admite null |
+| `boucher` | No | Tipo: string; no admite null |
+| `documentos` | Sí | Tipo: array; no admite null; mínimo de elementos: 2; máximo de elementos: 400 |
+| `documentos[].id_transacion` | Sí | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `documentos[].valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_cliente": 20,
+    "es_ingreso": 1,
+    "id_banco": 2,
+    "id_medio_pago": 1,
+    "fecha_registro": 1780000000000,
+    "valor": 50000,
+    "nota": "Abono conjunto",
+    "documentos": [
+      {
+        "id_transacion": 10,
+        "valor": 20000
+      },
+      {
+        "id_transacion": 11,
+        "valor": 30000
+      }
+    ]
+  },
+  "confirmation": "confirm:finanzas-comprobantes-caja-multiples-crear"
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 42,
+    "comprobante": null
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Errores y límites**
+
+- Las facturas deben ser distintas, activas y del mismo tercero, sucursal y tipo. El valor debe igualar la suma de los abonos.
+
+**Notas**
+
+- Use es_ingreso=1 para facturas de venta y 0 para compras. No registra retenciones ni aplica anticipos. No reintente una escritura de resultado desconocido.
+
+### `finanzas-anticipos-proveedores-crear`: Registrar anticipo a proveedor
+
+**Para qué sirve:** Registra un anticipo entregado al proveedor como egreso; id_cliente identifica al tercero. No lo aplica a una factura.
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/finanzas/anticipos/proveedores`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_cliente` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_sucursal` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_empleado` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_medio_pago` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `id_banco` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+| `valor` | Sí | Tipo: number; no admite null; mayor que: 0 |
+| `nota` | Sí | Tipo: string; no admite null; patrón: `\S` |
+| `fecha_registro` | Sí | Tipo: local-date-time; no admite null |
+| `id_centro_costo` | No | Tipo: integer; no admite null; mínimo: 1 |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "id_cliente": 1234,
+    "id_sucursal": 1,
+    "id_empleado": 7,
+    "id_medio_pago": 1,
+    "id_banco": 1,
+    "valor": 50000,
+    "nota": "Anticipo de pedido",
+    "fecha_registro": "2026-10-19T10:00:00"
+  },
+  "confirmation": "confirm:finanzas-anticipos-proveedores-crear"
+}
+```
+
+**Respuesta esperada:** { success: boolean, data: object|null, error: object|null, request_id: string }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 15420,
+    "comprobante": {
+      "id_comprobante_caja": 15420,
+      "valor": 50000,
+      "id_cliente": 1234,
+      "id_sucursal": 1,
+      "es_activo": 1
+    }
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+**Respuesta alternativa de pago confirmado:**
+
+Si falta el comprobante enriquecido, consulta por ID sin repetir la escritura.
+
+```json
+{
+  "success": true,
+  "data": {
+    "id_comprobante_caja": 15420,
+    "comprobante": null
+  },
+  "error": null,
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
+```
+
+Este REST usa `{success,data,error,request_id}`. En error, `data=null` y `error={code,message,retryable,field?}`.
+
+**Errores y límites**
+
+- Los rechazos y errores técnicos usan errores controlados sin detalles internos.
+- No se debe repetir una escritura cuyo resultado sea desconocido o ya confirmado.
+
+**Notas**
+
+- Registra el anticipo del tercero sin vincularlo a una factura.
+- id_empleado es el ID local del empleado, no id_usuario_portal.
+- Tras confirmar el anticipo se consulta su comprobante con las mismas credenciales, sin cache.
+- El comprobante puede recuperarse por ID sin repetir el POST.
 
 ## Inventario
 
@@ -4498,7 +4853,7 @@ Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las
 
 | Dato | Obligatorio | Valores que acepta |
 | --- | --- | --- |
-| `tipoDocumento` | Sí | Tipo de documento; consulta el catálogo de valores admitidos antes de crear la operación.; Tipo: integer; no admite null |
+| `tipoDocumento` | Sí | Códigos documentados: 1 factura de venta, 4 pedido, 5 cotización, 6 otros ingresos, 7 compra o gasto, 8 despacho, 9 remisión. Es una lista de referencia, no un catálogo exhaustivo de J4.; Tipo: integer; no admite null |
 | `type_match_producto` | Sí | Tipo: integer; no admite null; valores: `1`, `2`, `3`; predeterminado: 1 |
 | `id_consecutivo` | Sí | Tipo: integer; no admite null; mínimo: 1 |
 | `emitir_electronicamente` | No | Indicador de emisión electrónica enviado al ERP.; Tipo: integer; admite null |
@@ -4559,13 +4914,14 @@ Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las
 **Reglas del cuerpo**
 
 - Una solicitud contiene un solo documento.
-- tipoDocumento determina el documento que se crea; consulta el catálogo de valores para seleccionar el tipo correcto.
+- tipoDocumento determina qué se crea: 1 factura de venta, 4 pedido, 5 cotización, 6 otros ingresos, 7 compra o gasto, 8 despacho y 9 remisión. No confunda este código con id_consecutivo.
 - Esta operación cubre transacciones como facturas, compras y remisiones, y documentos comerciales como órdenes de compra, cotizaciones y despachos.
 - objDetalle.total es el total de la línea; Cuenti registra internamente el precio unitario.
 - cambiar_precio_compra=true actualiza el costo unitario y false conserva el costo actual.
 - type_match_producto=1 usa id_producto, 2 usa code como SKU y 3 usa code como código de barras.
 - emitir_electronicamente, bodega_destino e id_documento son opcionales, aceptan enteros sin mínimo o null y se reenvían sin cambios; si se omiten, el wrapper no los agrega.
-- Para gasto, tipoDocumento=7, type_match_producto usa 1 por defecto, cada detalle usa id_plan_cuentas y el documento exige id_centro_costo.
+- Para gasto (7), use type_match_producto=1, id_plan_cuentas en cada detalle e id_centro_costo en el documento. Para otros ingresos (6) con concepto, use type_match_producto=1 e id_plan_cuentas en cada detalle, sin identificadores de producto; incluya el cobro en lstPagos si corresponde.
+- Si el detalle usa id_plan_cuentas en lugar de un producto, J4 exige un objeto impuestos con un id_impuesto válido, incluso si el concepto no causa impuesto. Consulte los impuestos de su empresa; no copie el ID de otra empresa.
 
 Los elementos de `objDetalle` admiten campos adicionales; los demás objetos conservan sus campos declarados.
 
@@ -7352,6 +7708,177 @@ En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los ar
 
 - precio_unidad se devuelve como valor numérico; su regla funcional no se interpreta en este contrato.
 
+### `catalogo-productos-crear`: Crear producto
+
+**Para qué sirve:** Crear producto
+
+**Método:** `POST`.
+
+**Ruta:** `/api/v1/catalogo/productos`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `nombre` | No | Tipo: string; no admite null; patrón: `\S` |
+| `sku` | No | Tipo: string; no admite null |
+| `codigo_barras` | No | Tipo: string; no admite null |
+| `alias` | No | Tipo: string; no admite null |
+| `nota` | No | Tipo: string; no admite null |
+| `id_categoria` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_marca` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_tipo_medida` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_tipo_producto` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_impuesto` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_impuesto_compra` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_proveedor` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `precio_venta` | No | Tipo: number; no admite null; mínimo: 0 |
+| `precio_compra` | No | Tipo: number; no admite null; mínimo: 0 |
+| `es_servicio` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "body": {
+    "nombre": "Producto de ejemplo",
+    "sku": "EJ-01",
+    "precio_venta": 15000
+  },
+  "confirmation": "confirm:catalogo-productos-crear"
+}
+```
+
+**Respuesta esperada:** Mensaje { type: integer, message: string, id_producto: integer, id_producto_sucursal: integer }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "Producto creado exitosamente",
+  "id_producto": 42,
+  "id_producto_sucursal": 43
+}
+```
+
+**Errores y límites**
+
+- Para crear se requiere nombre; para actualizar se requiere al menos un campo.
+
+**Notas**
+
+- J4 solo actualiza los campos presentes. No modifica existencias ni imágenes en esta API.
+
+### `catalogo-productos-actualizar`: Editar producto
+
+**Para qué sirve:** Editar producto
+
+**Método:** `PATCH`.
+
+**Ruta:** `/api/v1/catalogo/productos/{id_producto}`.
+
+**Tipo:** Mutación: confirma antes de ejecutarla y no reintentes automáticamente.
+
+**Encabezados del REST público**
+
+| Encabezado | Obligatorio | Uso |
+| --- | --- | --- |
+| `Content-Type` | Sí | Valor de referencia: `application/json` |
+| `X-Auth-Token-empresa` | Sí | Valor de referencia: `<empresa>` |
+| `X-Auth-Token-sucursal` | Sí | Valor de referencia: `<id-sucursal>` |
+| `X-Id-Empleado` | Sí | Valor de referencia: `<id-empleado>` |
+| `X-gtm` | Sí | Valor de referencia: `GMT-0500` |
+| `Authorization` | Sí | Valor de referencia: `Bearer <token>` |
+
+En MCP, las credenciales pertenecen al contexto seguro de conexión, no a los argumentos. `confirmation` es un argumento MCP, nunca un campo del body REST.
+
+**Parámetros de ruta**
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `id_producto` | Sí | Tipo: integer; no admite null; mínimo: 1 |
+
+**Cuerpo:** obligatorio; object.
+
+**Campos del cuerpo**
+
+Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las reglas condicionales se indican debajo.
+
+| Dato | Obligatorio | Valores que acepta |
+| --- | --- | --- |
+| `nombre` | No | Tipo: string; no admite null; patrón: `\S` |
+| `sku` | No | Tipo: string; no admite null |
+| `codigo_barras` | No | Tipo: string; no admite null |
+| `alias` | No | Tipo: string; no admite null |
+| `nota` | No | Tipo: string; no admite null |
+| `id_categoria` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_marca` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_tipo_medida` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_tipo_producto` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_impuesto` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_impuesto_compra` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `id_proveedor` | No | Tipo: integer; no admite null; mínimo: 1; máximo: 2147483647 |
+| `precio_venta` | No | Tipo: number; no admite null; mínimo: 0 |
+| `precio_compra` | No | Tipo: number; no admite null; mínimo: 0 |
+| `es_servicio` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+| `es_activo` | No | Tipo: integer; no admite null; valores: `0`, `1` |
+
+**Ejemplo de argumentos:**
+
+```json
+{
+  "id_producto": "{{id_producto}}",
+  "body": {
+    "nombre": "Producto de ejemplo",
+    "sku": "EJ-01",
+    "precio_venta": 15000
+  },
+  "confirmation": "confirm:catalogo-productos-actualizar"
+}
+```
+
+**Respuesta esperada:** Mensaje { type: integer, message: string, id_producto: integer, id_producto_sucursal: integer }.
+
+**Ejemplo de respuesta:**
+
+```json
+{
+  "type": 1,
+  "message": "Producto creado exitosamente",
+  "id_producto": 42,
+  "id_producto_sucursal": 43
+}
+```
+
+**Errores y límites**
+
+- Para crear se requiere nombre; para actualizar se requiere al menos un campo.
+
+**Notas**
+
+- J4 solo actualiza los campos presentes. No modifica existencias ni imágenes en esta API.
+
 ## Terceros
 
 ### `terceros-busquedas`: Buscar terceros
@@ -9195,29 +9722,26 @@ Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las
 | `items[].comensales` | No | Cantidad de personas; la API usa 1 si se omite.; Tipo: entero positivo; no admite null; predeterminado: 1 |
 | `items[].es_activo` | No | Enviar 0 únicamente para cancelar o anular un plato.; Tipo: entero 0 o 1; no admite null; predeterminado: 1 |
 
-**Ejemplo de argumentos:**
+**Ejemplo de cuerpo REST (no son argumentos MCP):**
 
 ```json
 {
-  "body": {
-    "items": [
-      {
-        "sync_uuid": "6a5e5f6a-1d5c-4f43-bf55-0c8f94c00b01",
-        "gui_pedido": "e4c6a3e8-7d8b-4c2e-8c3b-3e0b5a7c6d11",
-        "numero_mesa": 10,
-        "id_producto": "burger-1",
-        "nombre": "Hamburguesa",
-        "precio": 25000,
-        "cantidad": 1,
-        "nota": "Sin cebolla"
-      }
-    ]
-  },
-  "confirmation": "confirm:restaurante-comandas-crear"
+  "items": [
+    {
+      "sync_uuid": "6a5e5f6a-1d5c-4f43-bf55-0c8f94c00b01",
+      "gui_pedido": "e4c6a3e8-7d8b-4c2e-8c3b-3e0b5a7c6d11",
+      "numero_mesa": 10,
+      "id_producto": "burger-1",
+      "nombre": "Hamburguesa",
+      "precio": 25000,
+      "cantidad": 1,
+      "nota": "Sin cebolla"
+    }
+  ]
 }
 ```
 
-**Respuesta esperada:** { inserted_count: integer }.
+**Respuesta REST:** { inserted_count: integer }.
 
 **Ejemplo de respuesta:**
 
@@ -9235,6 +9759,7 @@ Los campos anidados obligatorios se exigen cuando se envía su objeto padre. Las
 - `sync_uuid` identifica cada plato y `gui_pedido` agrupa los platos de una misma orden. Los clientes REST deben enviarlos.
 - Los datos comerciales del plato se confían al cliente de sincronización y no se consultan contra el ERP.
 - La operación no utiliza cache porque modifica datos.
+- Para crear desde el MCP, usa los argumentos de [Crear una comanda con IA](mcp-guide.md#crear-una-comanda-con-ia).
 
 **Campos autocompletados**
 

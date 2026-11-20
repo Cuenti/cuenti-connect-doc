@@ -121,7 +121,7 @@ describe('documentation application', () => {
       }),
     ).toBeVisible();
     expect(
-      screen.getByRole('heading', { name: '54 operaciones' }),
+      screen.getByRole('heading', { name: '60 operaciones' }),
     ).toBeVisible();
   });
 
@@ -261,6 +261,18 @@ describe('documentation application', () => {
       2,
     );
     expect(
+      screen.getByRole('heading', { name: 'Servicios y contratos ERP' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: 'Agrupar cobros o pagos' }),
+    ).toHaveAttribute(
+      'href',
+      '?endpoint=finanzas-comprobantes-caja-multiples-crear',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Crear una comanda con IA' }),
+    ).toBeVisible();
+    expect(
       screen.queryByRole('heading', { name: 'Elegir type_match_producto' }),
     ).not.toBeInTheDocument();
     expect(
@@ -355,7 +367,7 @@ describe('documentation application', () => {
     expect(
       screen.getByText(/codigo_error:1050:Producto de ejemplo sin existencia/),
     ).toBeVisible();
-    expect(screen.getByText(/Para gasto, tipoDocumento=7/)).toBeVisible();
+    expect(screen.getByText(/Para gasto \(7\)/)).toBeVisible();
   });
 
   it('renders cost centers with their actual success and error envelopes without a request body', () => {

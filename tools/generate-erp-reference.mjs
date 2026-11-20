@@ -228,9 +228,11 @@ const section = (endpoint, headerDefinitions) => {
     );
   }
   blocks.push(
-    '**Ejemplo de argumentos:**',
+    endpoint.restOnlyExample
+      ? '**Ejemplo de cuerpo REST (no son argumentos MCP):**'
+      : '**Ejemplo de argumentos:**',
     json(endpoint.example),
-    `**Respuesta esperada:** ${endpoint.response.shape}.`,
+    `**Respuesta ${endpoint.restOnlyExample ? 'REST' : 'esperada'}:** ${endpoint.response.shape}.`,
     '**Ejemplo de respuesta:**',
     json(endpoint.response.example),
   );
@@ -277,7 +279,12 @@ export const renderErpReference = (registry, external) => {
     endpoints.push({
       ...tool,
       params: { path: [], query: [] },
-      example: { body: tool.body.example, confirmation: `confirm:${tool.id}` },
+      restOnlyExample: true,
+      example: tool.body.example,
+      notes: [
+        ...(tool.notes ?? []),
+        'Para crear desde el MCP, usa los argumentos de [Crear una comanda con IA](mcp-guide.md#crear-una-comanda-con-ia).',
+      ],
     });
   const categories = [
     ...new Set(endpoints.map((endpoint) => endpoint.category)),
@@ -288,7 +295,7 @@ export const renderErpReference = (registry, external) => {
     '## Cómo usarlo',
     list([
       'Elige la herramienta por necesidad y contrasta siempre los argumentos con `tools/list` del servidor MCP.',
-      'Los ejemplos de argumentos son MCP. Para REST usa únicamente `body` como cuerpo y los parámetros de ruta/consulta donde corresponda; nunca envíes `confirmation` al ERP.',
+      'En las rutas del wrapper, usa `body` como cuerpo REST y los parámetros donde corresponda. La creación de comandas tiene un ejemplo REST separado. Nunca envíes `confirmation` en el cuerpo REST.',
       'Solicita confirmación antes de cada mutación. Ante un resultado desconocido consulta el estado; no repitas automáticamente.',
       'Usa los IDs reales de la empresa; pagina solo cuando el contrato lo admita. Los ejemplos no demuestran despliegue en producción.',
       `El catálogo contiene ${registry.routes.length} rutas ERP y ${external.tools.length} herramienta externa.`,
